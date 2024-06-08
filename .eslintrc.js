@@ -2,7 +2,6 @@ const jsConfig = require("@ajv-validator/config/.eslintrc_js")
 const tsConfig = require("@ajv-validator/config/.eslintrc")
 
 module.exports = {
-  extends: ["plugin:prettier/recommended"],
   env: {
     es6: true,
     node: true,
