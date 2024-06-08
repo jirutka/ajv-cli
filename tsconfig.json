@@ -17,6 +17,8 @@
     "declaration": true,                                 /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     "sourceMap": true,                                   /* Create source map files for emitted JavaScript files. */
     "outDir": "./dist",
+    "newLine": "lf",                                     /* Set the newline character for emitting files. */
+    "stripInternal": true,                               /* Disable emitting declarations that have '@internal' in their JSDoc comments. */
 
     /* Interop Constraints */
     "esModuleInterop": false,                            /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
@@ -27,6 +29,10 @@
     "noUnusedLocals": true,                              /* Enable error reporting when local variables aren't read. */
     "noUnusedParameters": true,                          /* Raise an error when a function parameter isn't read. */
     "noFallthroughCasesInSwitch": true,                  /* Enable error reporting for fallthrough cases in switch statements. */
+    "noImplicitOverride": true,                          /* Ensure overriding members in derived classes are marked with an override modifier. */
+
+    /* Completeness */
+    "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
   },
   "include": ["src"],
 }
