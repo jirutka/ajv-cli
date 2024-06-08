@@ -39,7 +39,9 @@ function execute(argv: ParsedArgs): boolean {
   function validateDataFile(file: string): boolean {
     const data = openFile(file, `data file ${file}`)
     let original
-    if (argv.changes) original = JSON.parse(JSON.stringify(data))
+    if (argv.changes) {
+      original = JSON.parse(JSON.stringify(data))
+    }
     const validData = validate(data) as boolean
 
     if (validData) {

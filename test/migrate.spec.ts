@@ -121,7 +121,9 @@ describe('migrate', function () {
 function assertMigrated(stdout: string, count: number): void {
   const lines = stdout.split('\n')
   assert.strictEqual(lines.length, count + 1)
-  for (let i = 0; i < count; i++) assert(/saved\smigrated\sschema/.test(lines[i]))
+  for (let i = 0; i < count; i++) {
+    assert(/saved\smigrated\sschema/.test(lines[i]))
+  }
 }
 
 function assertError(stderr: string): string[] {

@@ -30,7 +30,9 @@ export default cmd
 function execute(argv: ParsedArgs): boolean {
   const ajv = getAjv(argv)
   const schemaFiles = getFiles(argv.s)
-  if ('o' in argv && schemaFiles.length > 1) return compileMultiExportModule(schemaFiles)
+  if ('o' in argv && schemaFiles.length > 1) {
+    return compileMultiExportModule(schemaFiles)
+  }
   return schemaFiles.map(compileSchemaAndSave).every(x => x)
 
   function compileMultiExportModule(files: string[]): boolean {
@@ -44,7 +46,9 @@ function execute(argv: ParsedArgs): boolean {
 
   function compileSchemaAndSave(file: string): boolean {
     const validate = compileSchema(file)
-    if (validate) return 'o' in argv ? saveStandaloneCode(validate) : true
+    if (validate) {
+      return 'o' in argv ? saveStandaloneCode(validate) : true
+    }
     return false
   }
 
@@ -54,7 +58,9 @@ function execute(argv: ParsedArgs): boolean {
       const id = sch?.$id
       ajv.addSchema(sch, id ? undefined : file)
       const validate = ajv.getSchema(id || file)
-      if (argv.o !== true) console.log(`schema ${file} is valid`)
+      if (argv.o !== true) {
+        console.log(`schema ${file} is valid`)
+      }
       return validate
     } catch (err) {
       console.error(`schema ${file} is invalid`)
@@ -81,8 +87,11 @@ function execute(argv: ParsedArgs): boolean {
     try {
       const moduleCode = standaloneCode(ajv, refsOrFunc)
       try {
-        if (argv.o === true) console.log(moduleCode)
-        else fs.writeFileSync(argv.o, moduleCode)
+        if (argv.o === true) {
+          console.log(moduleCode)
+        } else {
+          fs.writeFileSync(argv.o, moduleCode)
+        }
         return true
       } catch (e) {
         console.error('error saving file:', e)

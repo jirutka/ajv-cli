@@ -9,8 +9,11 @@ import * as JSON5 from 'json5'
 
 export function getFiles(args: string | string[]): string[] {
   let files: string[] = []
-  if (Array.isArray(args)) args.forEach(_getFiles)
-  else _getFiles(args)
+  if (Array.isArray(args)) {
+    args.forEach(_getFiles)
+  } else {
+    _getFiles(args)
+  }
   return files
 
   function _getFiles(fileOrPattern: string): void {
@@ -72,7 +75,9 @@ export function logJSON(mode: string, data: any, ajv?: Ajv): string {
       data = ''
       break
     case 'text':
-      if (ajv) data = ajv.errorsText(data)
+      if (ajv) {
+        data = ajv.errorsText(data)
+      }
   }
   return data
 }

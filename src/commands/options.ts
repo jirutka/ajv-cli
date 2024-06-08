@@ -60,7 +60,9 @@ export function checkOptions(schema: SchemaObject, argv: ParsedArgs): string | n
   schema.additionalProperties = false
 
   const valid = ajv.validate(schema, argv)
-  if (valid) return null
+  if (valid) {
+    return null
+  }
   let errors = ''
   ajv.errors?.forEach((err: ErrorObject) => {
     errors += 'error: '
@@ -98,7 +100,9 @@ export function getOptions(argv: ParsedArgs): Options & { code: CodeOptions } {
   const options: { [K in string]: any } = { code: {} }
   for (const opt in ajvOptions) {
     const value = argv[toDashCase(opt)] ?? argv[opt]
-    if (value === undefined) continue
+    if (value === undefined) {
+      continue
+    }
     if (opt.startsWith(CODE)) {
       options.code[opt.slice(CODE.length)] = value
     } else {

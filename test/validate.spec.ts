@@ -356,7 +356,9 @@ describe('validate', function () {
 function assertValid(stdout: string, count: number, extraLines = 0): string[] {
   const lines = stdout.split('\n')
   assert.strictEqual(lines.length, count + extraLines + 1)
-  for (let i = 0; i < count; i++) assert(/\svalid/.test(lines[i]))
+  for (let i = 0; i < count; i++) {
+    assert(/\svalid/.test(lines[i]))
+  }
   return lines
 }
 

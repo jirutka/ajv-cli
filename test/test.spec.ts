@@ -137,7 +137,9 @@ describe('test', function () {
 function assertNoErrors(out: string, count: number, regexp: RegExp): void {
   const lines = out.split('\n')
   assert.strictEqual(lines.length, count + 1)
-  for (let i = 0; i < count; i++) assert(regexp.test(lines[i]))
+  for (let i = 0; i < count; i++) {
+    assert(regexp.test(lines[i]))
+  }
 }
 
 function assertErrors(out: string, count: number, regexp: RegExp): DefinedError[][] {

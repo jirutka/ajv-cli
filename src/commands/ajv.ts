@@ -32,15 +32,21 @@ const AjvClass: { [S in SchemaSpec]?: typeof AjvCore } = {
 
 export default function (argv: ParsedArgs): AjvCore {
   const opts = getOptions(argv)
-  if (argv.o) opts.code.source = true
+  if (argv.o) {
+    opts.code.source = true
+  }
   const Ajv: typeof AjvCore = AjvClass[argv.spec as SchemaSpec] || Ajv7
   const ajv = new Ajv(opts)
   let invalid: boolean | undefined
-  if (argv.spec !== 'jtd') ajv.addMetaSchema(draft6metaSchema)
+  if (argv.spec !== 'jtd') {
+    ajv.addMetaSchema(draft6metaSchema)
+  }
   addSchemas(argv.m, 'addMetaSchema', 'meta-schema')
   addSchemas(argv.r, 'addSchema', 'schema')
   customFormatsKeywords(argv.c)
-  if (invalid) process.exit(1)
+  if (invalid) {
+    process.exit(1)
+  }
   return ajv
 
   function addSchemas(
@@ -48,7 +54,9 @@ export default function (argv: ParsedArgs): AjvCore {
     method: AjvMethod,
     fileType: string,
   ): void {
-    if (!args) return
+    if (!args) {
+      return
+    }
     const files = util.getFiles(args)
     files.forEach(file => {
       const schema = util.openFile(file, fileType)
@@ -63,10 +71,14 @@ export default function (argv: ParsedArgs): AjvCore {
   }
 
   function customFormatsKeywords(args: string | string[] | undefined): void {
-    if (!args) return
+    if (!args) {
+      return
+    }
     const files = util.getFiles(args)
     files.forEach(file => {
-      if (file[0] === '.') file = path.resolve(process.cwd(), file)
+      if (file[0] === '.') {
+        file = path.resolve(process.cwd(), file)
+      }
       try {
         if (file.endsWith('.ts')) {
           requireTypeScriptKeyword(file)

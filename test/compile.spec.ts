@@ -190,7 +190,9 @@ describe('compile', function () {
 function assertValid(stdout: string, count: number): void {
   const lines = stdout.split('\n')
   assert.strictEqual(lines.length, count + 1)
-  for (let i = 0; i < count; i++) assert(/\svalid/.test(lines[i]))
+  for (let i = 0; i < count; i++) {
+    assert(/\svalid/.test(lines[i]))
+  }
 }
 
 function assertError(stderr: string): string[] {

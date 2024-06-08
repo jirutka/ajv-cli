@@ -1,7 +1,7 @@
 const jsConfigRules = {
   'block-scoped-var': 'error',
   'callback-return': 'error',
-  curly: ['error', 'multi-line', 'consistent'],
+  curly: 'error',
   'dot-location': ['error', 'property'],
   'dot-notation': 'error',
   eqeqeq: ['error', 'smart'],
