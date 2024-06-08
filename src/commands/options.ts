@@ -1,5 +1,5 @@
 import Ajv, { CodeOptions, Options } from 'ajv/dist/2019'
-import type { SchemaObject, SchemaMap, ErrorObject } from 'ajv/dist/types'
+import type { SchemaObject, SchemaMap } from 'ajv/dist/types'
 import * as glob from 'glob'
 import type { ParsedArgs } from 'minimist'
 
@@ -64,7 +64,7 @@ export function checkOptions(schema: SchemaObject, argv: ParsedArgs): string | n
     return null
   }
   let errors = ''
-  ajv.errors?.forEach((err: ErrorObject) => {
+  for (const err of ajv.errors ?? []) {
     errors += 'error: '
     switch (err.keyword) {
       case 'required':
@@ -87,8 +87,7 @@ export function checkOptions(schema: SchemaObject, argv: ParsedArgs): string | n
         errors += `parameter ${parameter(err.instancePath.slice(1))} ${err.message}`
     }
     errors += '\n'
-  })
-
+  }
   return errors
 }
 

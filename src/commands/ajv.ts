@@ -57,8 +57,7 @@ export default function (argv: ParsedArgs): AjvCore {
     if (!args) {
       return
     }
-    const files = util.getFiles(args)
-    files.forEach(file => {
+    for (const file of util.getFiles(args)) {
       const schema = util.openFile(file, fileType)
       try {
         ajv[method](schema)
@@ -67,15 +66,14 @@ export default function (argv: ParsedArgs): AjvCore {
         console.error(`error: ${(err as Error).message}`)
         invalid = true
       }
-    })
+    }
   }
 
   function customFormatsKeywords(args: string | string[] | undefined): void {
     if (!args) {
       return
     }
-    const files = util.getFiles(args)
-    files.forEach(file => {
+    for (let file of util.getFiles(args)) {
       if (file[0] === '.') {
         file = path.resolve(process.cwd(), file)
       }
@@ -90,7 +88,7 @@ export default function (argv: ParsedArgs): AjvCore {
         console.error(`error: ${(err as Error).message}`)
         invalid = true
       }
-    })
+    }
   }
 
   function requireTypeScriptKeyword(file: string): void {

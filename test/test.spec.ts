@@ -154,12 +154,11 @@ function assertErrors(out: string, count: number, regexp: RegExp): DefinedError[
 }
 
 function assertRequiredErrors(out: string, count: number, regexp: RegExp, schemaRef = '#'): void {
-  const results = assertErrors(out, count, regexp)
-  results.forEach(errors => {
+  for (const errors of assertErrors(out, count, regexp)) {
     const err = errors[0]
     assert.strictEqual(err.keyword, 'required')
     assert.strictEqual(err.instancePath, '/0/dimensions')
     assert.strictEqual(err.schemaPath, schemaRef + '/items/properties/dimensions/required')
     assert.deepStrictEqual(err.params, { missingProperty: 'height' })
-  })
+  }
 }

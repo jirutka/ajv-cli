@@ -73,12 +73,14 @@ function execute(argv: ParsedArgs): boolean {
     validators: AnyValidateFunction[],
     files: string[],
   ): { [K in string]?: string } {
-    const refs: { [K in string]?: string } = {}
-    validators.forEach((v, i) => {
-      const ref = typeof v.schema == 'object' ? v.schema.$id || files[i] : files[i]
-      refs[ref] = ref
-    })
-    return refs
+    return validators.reduce(
+      (refs, { schema }, idx) => {
+        const ref = typeof schema === 'object' ? schema.$id || files[idx] : files[idx]
+        refs[ref] = ref
+        return refs
+      },
+      {} as { [K in string]?: string },
+    )
   }
 
   function saveStandaloneCode(

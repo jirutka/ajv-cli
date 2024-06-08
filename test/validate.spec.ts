@@ -103,7 +103,9 @@ describe('validate', function () {
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
-          assertErrors(stderr, 1).forEach(errors => assert.strictEqual(errors.length, 1))
+          for (const errors of assertErrors(stderr, 1)) {
+            assert.strictEqual(errors.length, 1)
+          }
           done()
         },
       )
@@ -363,14 +365,13 @@ function assertValid(stdout: string, count: number, extraLines = 0): string[] {
 }
 
 function assertRequiredErrors(stderr: string, schemaRef = '#', count = 1): void {
-  const results = assertErrors(stderr, count)
-  results.forEach(errors => {
+  for (const errors of assertErrors(stderr, count)) {
     const err = errors[0]
     assert.strictEqual(err.keyword, 'required')
     assert.strictEqual(err.instancePath, '/0/dimensions')
     assert.strictEqual(err.schemaPath, schemaRef + '/items/properties/dimensions/required')
     assert.deepStrictEqual(err.params, { missingProperty: 'height' })
-  })
+  }
 }
 
 function assertErrors(stderr: string, count = 1): DefinedError[][] {

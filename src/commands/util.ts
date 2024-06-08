@@ -7,23 +7,23 @@ import * as glob from 'glob'
 import * as yaml from 'js-yaml'
 import * as JSON5 from 'json5'
 
-export function getFiles(args: string | string[]): string[] {
-  let files: string[] = []
-  if (Array.isArray(args)) {
-    args.forEach(_getFiles)
-  } else {
-    _getFiles(args)
-  }
-  return files
+function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
+  return (
+    value == null ? []
+    : Array.isArray(value) ? value
+    : [value]) as T[]
+}
 
-  function _getFiles(fileOrPattern: string): void {
+export function getFiles(args: string | string[]): string[] {
+  return arrify(args).reduce((files, fileOrPattern) => {
     if (glob.hasMagic(fileOrPattern)) {
       const dataFiles = glob.sync(fileOrPattern, { cwd: process.cwd() })
       files = files.concat(dataFiles)
     } else {
       files.push(fileOrPattern)
     }
-  }
+    return files
+  }, [] as string[])
 }
 
 function getFormatFromFileName(filename: string): string {

@@ -12,7 +12,6 @@ const jsConfigRules = {
   'no-debugger': 'error',
   'no-duplicate-imports': 'error',
   'no-else-return': 'error',
-  'no-eq-null': 'error',
   'no-eval': 'error',
   'no-fallthrough': 'error',
   'no-invalid-this': 'off',
