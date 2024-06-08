@@ -227,13 +227,13 @@ Ajv options (see https://github.com/epoberezkin/ajv#options):
     --multiple-of-precision=N  pass integer number
 
     --messages=false   do not include text messages in errors
-    
+
     --loop-required=   max size of "required to compile to expression (rather than to loop)
 
     --loop-enum=       max size of "enum" to compile to expression (rather than to loop)
-    
+
     --own-properties   only validate own properties (not relevant for JSON, but can have effect for JavaScript objects)
-    
+
     --code-es5         generate ES5 code
 
     --code-lines       generate multi-line code
