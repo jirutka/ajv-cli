@@ -1,5 +1,6 @@
-import {exec, ExecException} from "child_process"
-import * as path from "path"
+import {exec, ExecException} from "node:child_process"
+import * as path from "node:path"
+
 const cwd = path.join(__dirname, "..")
 
 export default function cli(

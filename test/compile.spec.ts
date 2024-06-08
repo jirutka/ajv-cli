@@ -1,7 +1,8 @@
-import type {ExecException} from "child_process"
+import assert from "node:assert/strict"
+import type {ExecException} from "node:child_process"
+import fs from "node:fs"
+
 import cli from "./cli"
-import assert = require("assert")
-import fs = require("fs")
 
 describe("compile", function () {
   this.timeout(10000)

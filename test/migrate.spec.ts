@@ -1,8 +1,10 @@
-import cli from "./cli"
-import assert = require("assert")
-import fs = require("fs")
-import path = require("path")
+import assert from "node:assert/strict"
+import fs from "node:fs"
+import path from "node:path"
+
 import {AnySchemaObject} from "ajv"
+
+import cli from "./cli"
 
 describe("migrate", function () {
   this.timeout(10000)

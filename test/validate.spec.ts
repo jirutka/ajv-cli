@@ -1,6 +1,8 @@
-import cli from "./cli"
-import assert = require("assert")
+import assert from "node:assert/strict"
+
 import type {DefinedError} from "ajv"
+
+import cli from "./cli"
 
 describe("validate", function () {
   this.timeout(10000)
