@@ -325,8 +325,8 @@ describe("validate", function () {
           const errors = results[0]
           const err = errors[0]
           assert.strictEqual(err.keyword, "typeof")
-          assert.strictEqual(err.instancePath, "")
-          assert.strictEqual(err.schemaPath, "#/typeof")
+          assert.strictEqual((err as DefinedError).instancePath, "")
+          assert.strictEqual((err as DefinedError).schemaPath, "#/typeof")
           done()
         }
       )
@@ -342,8 +342,8 @@ describe("validate", function () {
           const errors = results[0]
           const err = errors[0]
           assert.strictEqual(err.keyword, "typeof")
-          assert.strictEqual(err.instancePath, "")
-          assert.strictEqual(err.schemaPath, "#/typeof")
+          assert.strictEqual((err as DefinedError).instancePath, "")
+          assert.strictEqual((err as DefinedError).schemaPath, "#/typeof")
           done()
         }
       )
