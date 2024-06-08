@@ -5,16 +5,16 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["*.ts"],
+      files: ['*.ts'],
       parserOptions: {
-        project: ["./test/tsconfig.json"],
+        project: ['./test/tsconfig.json'],
       },
       rules: {
-        "@typescript-eslint/no-invalid-this": "off",
+        '@typescript-eslint/no-invalid-this': 'off',
       },
     },
   ],
   rules: {
-    "no-empty": "off",
+    'no-empty': 'off',
   },
 }

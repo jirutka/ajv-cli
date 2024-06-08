@@ -1,11 +1,11 @@
-import {exec, ExecException} from "node:child_process"
-import * as path from "node:path"
+import { exec, ExecException } from 'node:child_process'
+import * as path from 'node:path'
 
-const cwd = path.join(__dirname, "..")
+const cwd = path.join(__dirname, '..')
 
 export default function cli(
   params: string,
-  callback?: (error: ExecException | null, stdout: string, stderr: string) => void
+  callback?: (error: ExecException | null, stdout: string, stderr: string) => void,
 ): void {
-  exec(`node dist/index ${params}`, {cwd}, callback)
+  exec(`node dist/index ${params}`, { cwd }, callback)
 }

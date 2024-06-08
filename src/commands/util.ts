@@ -1,11 +1,11 @@
-import * as fs from "node:fs"
-import * as path from "node:path"
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 
-import type Ajv from "ajv"
-import {AnyValidateFunction} from "ajv/dist/core"
-import * as glob from "glob"
-import * as yaml from "js-yaml"
-import * as JSON5 from "json5"
+import type Ajv from 'ajv'
+import { AnyValidateFunction } from 'ajv/dist/core'
+import * as glob from 'glob'
+import * as yaml from 'js-yaml'
+import * as JSON5 from 'json5'
 
 export function getFiles(args: string | string[]): string[] {
   let files: string[] = []
@@ -15,7 +15,7 @@ export function getFiles(args: string | string[]): string[] {
 
   function _getFiles(fileOrPattern: string): void {
     if (glob.hasMagic(fileOrPattern)) {
-      const dataFiles = glob.sync(fileOrPattern, {cwd: process.cwd()})
+      const dataFiles = glob.sync(fileOrPattern, { cwd: process.cwd() })
       files = files.concat(dataFiles)
     } else {
       files.push(fileOrPattern)
@@ -29,14 +29,14 @@ function getFormatFromFileName(filename: string): string {
 
 function decodeFile(contents: string, format: string): any {
   switch (format) {
-    case "json":
+    case 'json':
       return JSON.parse(contents)
-    case "jsonc":
-    case "json5":
+    case 'jsonc':
+    case 'json5':
       return JSON5.parse(contents)
-    case "yml":
-    case "yaml":
-      return yaml.load(contents, {schema: yaml.CORE_SCHEMA})
+    case 'yml':
+    case 'yaml':
+      return yaml.load(contents, { schema: yaml.CORE_SCHEMA })
     default:
       throw new Error(`unsupported file format ${format}`)
   }
@@ -54,7 +54,7 @@ export function openFile(filename: string, suffix: string): any {
     }
   } catch (err: any) {
     const msg: string = err.message
-    console.error(`error:  ${msg.replace(" module", " " + suffix)}`)
+    console.error(`error:  ${msg.replace(' module', ' ' + suffix)}`)
     process.exit(2)
   }
   return json
@@ -62,23 +62,23 @@ export function openFile(filename: string, suffix: string): any {
 
 export function logJSON(mode: string, data: any, ajv?: Ajv): string {
   switch (mode) {
-    case "json":
-      data = JSON.stringify(data, null, "  ")
+    case 'json':
+      data = JSON.stringify(data, null, '  ')
       break
-    case "line":
+    case 'line':
       data = JSON.stringify(data)
       break
-    case "no":
-      data = ""
+    case 'no':
+      data = ''
       break
-    case "text":
+    case 'text':
       if (ajv) data = ajv.errorsText(data)
   }
   return data
 }
 
 export function compile(ajv: Ajv, schemaFile: string): AnyValidateFunction {
-  const schema = openFile(schemaFile, "schema")
+  const schema = openFile(schemaFile, 'schema')
   try {
     return ajv.compile(schema)
   } catch (err: any) {

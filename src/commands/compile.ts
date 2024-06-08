@@ -1,25 +1,25 @@
-import * as fs from "node:fs"
+import * as fs from 'node:fs'
 
-import type {AnyValidateFunction} from "ajv/dist/core"
-import standaloneCode from "ajv/dist/standalone"
-import type {ParsedArgs} from "minimist"
+import type { AnyValidateFunction } from 'ajv/dist/core'
+import standaloneCode from 'ajv/dist/standalone'
+import type { ParsedArgs } from 'minimist'
 
-import getAjv from "./ajv"
-import type {Command} from "./types"
-import {getFiles, openFile} from "./util"
+import getAjv from './ajv'
+import type { Command } from './types'
+import { getFiles, openFile } from './util'
 
 const cmd: Command = {
   execute,
   schema: {
-    type: "object",
-    required: ["s"],
+    type: 'object',
+    required: ['s'],
     properties: {
-      s: {$ref: "#/$defs/stringOrArray"},
-      r: {$ref: "#/$defs/stringOrArray"},
-      m: {$ref: "#/$defs/stringOrArray"},
-      c: {$ref: "#/$defs/stringOrArray"},
-      o: {anyOf: [{type: "string", format: "notGlob"}, {type: "boolean"}]},
-      spec: {enum: ["draft7", "draft2019", "draft2020", "jtd"]},
+      s: { $ref: '#/$defs/stringOrArray' },
+      r: { $ref: '#/$defs/stringOrArray' },
+      m: { $ref: '#/$defs/stringOrArray' },
+      c: { $ref: '#/$defs/stringOrArray' },
+      o: { anyOf: [{ type: 'string', format: 'notGlob' }, { type: 'boolean' }] },
+      spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
     },
     ajvOptions: true,
   },
@@ -30,21 +30,21 @@ export default cmd
 function execute(argv: ParsedArgs): boolean {
   const ajv = getAjv(argv)
   const schemaFiles = getFiles(argv.s)
-  if ("o" in argv && schemaFiles.length > 1) return compileMultiExportModule(schemaFiles)
-  return schemaFiles.map(compileSchemaAndSave).every((x) => x)
+  if ('o' in argv && schemaFiles.length > 1) return compileMultiExportModule(schemaFiles)
+  return schemaFiles.map(compileSchemaAndSave).every(x => x)
 
   function compileMultiExportModule(files: string[]): boolean {
     const validators = files.map(compileSchema)
-    if (validators.every((v) => v)) {
+    if (validators.every(v => v)) {
       return saveStandaloneCode(getRefs(validators as AnyValidateFunction[], files))
     }
-    console.error("module not saved")
+    console.error('module not saved')
     return false
   }
 
   function compileSchemaAndSave(file: string): boolean {
     const validate = compileSchema(file)
-    if (validate) return "o" in argv ? saveStandaloneCode(validate) : true
+    if (validate) return 'o' in argv ? saveStandaloneCode(validate) : true
     return false
   }
 
@@ -63,16 +63,21 @@ function execute(argv: ParsedArgs): boolean {
     }
   }
 
-  function getRefs(validators: AnyValidateFunction[], files: string[]): {[K in string]?: string} {
-    const refs: {[K in string]?: string} = {}
+  function getRefs(
+    validators: AnyValidateFunction[],
+    files: string[],
+  ): { [K in string]?: string } {
+    const refs: { [K in string]?: string } = {}
     validators.forEach((v, i) => {
-      const ref = typeof v.schema == "object" ? v.schema.$id || files[i] : files[i]
+      const ref = typeof v.schema == 'object' ? v.schema.$id || files[i] : files[i]
       refs[ref] = ref
     })
     return refs
   }
 
-  function saveStandaloneCode(refsOrFunc: AnyValidateFunction | {[K in string]?: string}): boolean {
+  function saveStandaloneCode(
+    refsOrFunc: AnyValidateFunction | { [K in string]?: string },
+  ): boolean {
     try {
       const moduleCode = standaloneCode(ajv, refsOrFunc)
       try {
@@ -80,11 +85,11 @@ function execute(argv: ParsedArgs): boolean {
         else fs.writeFileSync(argv.o, moduleCode)
         return true
       } catch (e) {
-        console.error("error saving file:", e)
+        console.error('error saving file:', e)
         return false
       }
     } catch (e) {
-      console.error("error preparing module:", e)
+      console.error('error preparing module:', e)
       return false
     }
   }

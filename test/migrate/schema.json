@@ -24,20 +24,20 @@
       "maximum": 3,
       "exclusiveMaximum": false
     },
-    "singleValue": {"enum": ["foo"]},
-    "singleValueConstant": {"constant": "foo"},
-    "multipleValues": {"enum": ["foo", "bar"]},
+    "singleValue": { "enum": ["foo"] },
+    "singleValueConstant": { "constant": "foo" },
+    "multipleValues": { "enum": ["foo", "bar"] },
     "alwaysValid": {},
-    "alsoAlwaysValid": {"not": {"not": {}}},
-    "alwaysInvalid": {"not": {}},
-    "alsoAlwaysInvalid": {"not": {"not": {"not": {}}}}
+    "alsoAlwaysValid": { "not": { "not": {} } },
+    "alwaysInvalid": { "not": {} },
+    "alsoAlwaysInvalid": { "not": { "not": { "not": {} } } }
   },
   "dependencies": {
     "foo": ["bar"],
     "bar": {
       "required": ["baz"],
       "properties": {
-        "baz": {"type": "string"}
+        "baz": { "type": "string" }
       }
     }
   }

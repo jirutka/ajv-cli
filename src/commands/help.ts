@@ -1,21 +1,21 @@
-import type {ParsedArgs} from "minimist"
+import type { ParsedArgs } from 'minimist'
 
-import type {Command, CmdName} from "./types"
-import usage from "./usage"
+import type { Command, CmdName } from './types'
+import usage from './usage'
 
 const cmd: Command = {
   execute,
   schema: {
-    type: "object",
+    type: 'object',
     properties: {
-      _: {maxItems: 2},
+      _: { maxItems: 2 },
     },
   },
 }
 
 export default cmd
 
-const commands: {[Name in CmdName]: () => void} = {
+const commands: { [Name in CmdName]: () => void } = {
   help: mainHelp,
   compile: helpCompile,
   validate: helpValidate,
@@ -35,7 +35,7 @@ function execute(argv: ParsedArgs): boolean {
     return true
   }
 
-  console.error("Unknown command", command)
+  console.error('Unknown command', command)
   usage()
   return false
 }

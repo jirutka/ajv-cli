@@ -3,12 +3,12 @@
   "mapping": {
     "a": {
       "properties": {
-        "a": {"type": "int32"}
+        "a": { "type": "int32" }
       }
     },
     "b": {
       "optionalProperties": {
-        "b": {"type": "timestamp"}
+        "b": { "type": "timestamp" }
       }
     }
   }
