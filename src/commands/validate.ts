@@ -1,8 +1,9 @@
-import type {Command} from "./types"
-import type {ParsedArgs} from "minimist"
-import {compile, getFiles, openFile, logJSON} from "./util"
-import getAjv from "./ajv"
 import * as jsonPatch from "fast-json-patch"
+import type {ParsedArgs} from "minimist"
+
+import getAjv from "./ajv"
+import type {Command} from "./types"
+import {compile, getFiles, openFile, logJSON} from "./util"
 
 const cmd: Command = {
   execute,

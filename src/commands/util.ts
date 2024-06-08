@@ -1,10 +1,11 @@
+import * as fs from "node:fs"
+import * as path from "node:path"
+
 import type Ajv from "ajv"
+import {AnyValidateFunction} from "ajv/dist/core"
 import * as glob from "glob"
-import * as path from "path"
-import * as fs from "fs"
 import * as yaml from "js-yaml"
 import * as JSON5 from "json5"
-import {AnyValidateFunction} from "ajv/dist/core"
 
 export function getFiles(args: string | string[]): string[] {
   let files: string[] = []

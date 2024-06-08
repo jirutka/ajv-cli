@@ -1,15 +1,17 @@
-import type AjvCore from "ajv/dist/core"
-import type {ParsedArgs} from "minimist"
-import type {SchemaSpec} from "./types"
+import * as path from "node:path"
+
 import Ajv7, {Plugin} from "ajv"
 import Ajv2019 from "ajv/dist/2019"
 import Ajv2020 from "ajv/dist/2020"
+import type AjvCore from "ajv/dist/core"
 import AjvJTD from "ajv/dist/jtd"
-import {Service} from "ts-node"
-import {getOptions} from "./options"
-import * as util from "./util"
-import * as path from "path"
 import * as draft6metaSchema from "ajv/lib/refs/json-schema-draft-06.json"
+import type {ParsedArgs} from "minimist"
+import {Service} from "ts-node"
+
+import {getOptions} from "./options"
+import type {SchemaSpec} from "./types"
+import * as util from "./util"
 
 type AjvMethod = "addSchema" | "addMetaSchema"
 

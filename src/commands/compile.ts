@@ -1,10 +1,12 @@
-import type {Command} from "./types"
+import * as fs from "node:fs"
+
 import type {AnyValidateFunction} from "ajv/dist/core"
-import type {ParsedArgs} from "minimist"
-import {getFiles, openFile} from "./util"
-import getAjv from "./ajv"
 import standaloneCode from "ajv/dist/standalone"
-import * as fs from "fs"
+import type {ParsedArgs} from "minimist"
+
+import getAjv from "./ajv"
+import type {Command} from "./types"
+import {getFiles, openFile} from "./util"
 
 const cmd: Command = {
   execute,
