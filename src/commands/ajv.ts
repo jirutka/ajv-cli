@@ -11,7 +11,7 @@ import { Service } from 'ts-node'
 
 import { getOptions } from './options'
 import type { SchemaSpec } from './types'
-import * as util from './util'
+import * as util from '../utils'
 
 type AjvMethod = 'addSchema' | 'addMetaSchema'
 

@@ -7,7 +7,7 @@ import type { ParsedArgs } from 'minimist'
 
 import getAjv from './ajv'
 import type { Command, JSONSchemaDraft } from './types'
-import { getFiles, openFile } from './util'
+import { getFiles, openFile } from '../utils'
 
 const cmd: Command = {
   execute,
