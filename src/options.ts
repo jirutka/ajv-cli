@@ -1,7 +1,8 @@
 import Ajv, { CodeOptions, Options } from 'ajv/dist/2019'
 import type { SchemaObject, SchemaMap } from 'ajv/dist/types'
-import * as glob from 'glob'
 import type { ParsedArgs } from 'minimist'
+
+import { isGlob } from './glob'
 
 const boolOrNat = { type: ['boolean', 'integer'], minimum: 0 }
 const CODE = 'code-'
@@ -39,7 +40,7 @@ const ajv = new Ajv({
   allErrors: true,
   coerceTypes: 'array',
   strictTypes: false,
-  formats: { notGlob: s => !glob.hasMagic(s) },
+  formats: { notGlob: s => !isGlob(s) },
   keywords: ['ajvOptions'],
 })
 

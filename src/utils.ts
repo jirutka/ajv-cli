@@ -3,9 +3,10 @@ import * as path from 'node:path'
 
 import type Ajv from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/core'
-import * as glob from 'glob'
 import * as yaml from 'js-yaml'
 import * as JSON5 from 'json5'
+
+import { glob } from './glob'
 
 function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
   return (
@@ -16,8 +17,8 @@ function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
 
 export function getFiles(args: string | string[]): string[] {
   return arrify(args).reduce((files, fileOrPattern) => {
-    if (glob.hasMagic(fileOrPattern)) {
-      const dataFiles = glob.sync(fileOrPattern, { cwd: process.cwd() })
+    const dataFiles = glob(fileOrPattern)
+    if (dataFiles) {
       files = files.concat(dataFiles)
     } else {
       files.push(fileOrPattern)
