@@ -23,7 +23,8 @@ const commands: { [Name in CmdName]: () => void } = {
   test: helpTest,
 }
 
-function execute(argv: ParsedArgs): boolean {
+// eslint-disable-next-line @typescript-eslint/require-await
+async function execute(argv: ParsedArgs): Promise<boolean> {
   const command = argv._[1]
   if (!command) {
     mainHelp()

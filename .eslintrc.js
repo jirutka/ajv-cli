@@ -110,6 +110,7 @@ module.exports = {
         '@typescript-eslint/no-unsafe-return': 'off',
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
+        '@typescript-eslint/require-await': 'warn',
       },
     },
   ],

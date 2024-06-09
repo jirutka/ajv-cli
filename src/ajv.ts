@@ -30,7 +30,7 @@ const AjvClass: { [S in SchemaSpec]?: typeof AjvCore } = {
   draft2020: Ajv2020,
 }
 
-export default function (argv: ParsedArgs): AjvCore {
+export default async function (argv: ParsedArgs): Promise<AjvCore> {
   const opts = getOptions(argv)
   if (argv.o) {
     opts.code.source = true

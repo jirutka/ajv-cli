@@ -26,21 +26,21 @@ const cmd: Command = {
 
 export default cmd
 
-function execute(argv: ParsedArgs): boolean {
+async function execute(argv: ParsedArgs): Promise<boolean> {
   const schemaFiles = getFiles(argv.s)
   if (argv.o && schemaFiles.length > 1) {
     console.error('multiple schemas cannot be migrated to a named output file')
     return false
   }
-  return schemaFiles.map(migrateSchema).every(x => x)
+  return (await Promise.all(schemaFiles.map(migrateSchema))).every(x => x)
 
-  function migrateSchema(file: string): boolean {
+  async function migrateSchema(file: string): Promise<boolean> {
     const sch = openFile(file, `schema ${file}`)
     const migratedSchema: AnySchemaObject = JSON.parse(JSON.stringify(sch))
     const spec = (argv.spec || 'draft7') as JSONSchemaDraft
     migrate[spec](migratedSchema)
     if (argv['validate-schema'] !== false) {
-      const ajv = getAjv(argv)
+      const ajv = await getAjv(argv)
       const valid = ajv.validateSchema(migratedSchema) as boolean
       if (!valid) {
         console.error(`schema ${file} is invalid after migration`)

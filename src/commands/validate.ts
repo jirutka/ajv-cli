@@ -29,8 +29,8 @@ const cmd: Command = {
 
 export default cmd
 
-function execute(argv: ParsedArgs): boolean {
-  const ajv = getAjv(argv)
+async function execute(argv: ParsedArgs): Promise<boolean> {
+  const ajv = await getAjv(argv)
   const validate = compile(ajv, argv.s)
   return getFiles(argv.d)
     .map(validateDataFile)
