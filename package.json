@@ -27,11 +27,14 @@
     "ajv": "dist/index.js"
   },
   "preferGlobal": true,
-  "author": "Jesse Collis <jesse@jcmultimedia.com.au>",
+  "author": {
+    "name": "Jakub Jirutka",
+    "email": "jakub@jirutka.cz"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ajv-validator/ajv-cli"
+    "url": "https://github.com/jirutka/ajv-cli"
   },
   "dependencies": {
     "ajv": "^8.0.0",
