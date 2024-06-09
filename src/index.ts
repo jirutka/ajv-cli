@@ -2,9 +2,9 @@
 import * as minimist from 'minimist'
 
 import commands from './commands'
-import { checkOptions } from './commands/options'
 import usage from './commands/usage'
 import type { CmdName } from './commands/types'
+import { checkOptions } from './options'
 
 const argv = minimist(process.argv.slice(2))
 const command = argv._[0] || 'validate'
