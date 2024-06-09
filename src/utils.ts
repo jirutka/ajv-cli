@@ -50,15 +50,11 @@ export function openFile(filename: string, suffix: string): any {
   let json = null
   const file = path.resolve(process.cwd(), filename)
   try {
-    try {
-      const format = getFormatFromFileName(filename)
-      json = decodeFile(fs.readFileSync(file).toString(), format)
-    } catch (e) {
-      json = require(file)
-    }
+    const format = getFormatFromFileName(filename)
+    json = decodeFile(fs.readFileSync(file).toString(), format)
   } catch (err: any) {
     const msg: string = err.message
-    console.error(`error:  ${msg.replace(' module', ' ' + suffix)}`)
+    console.error(`error:  ${msg} ${suffix}`)
     process.exit(2)
   }
   return json

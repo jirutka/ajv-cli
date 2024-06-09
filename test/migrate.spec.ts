@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import { AnySchemaObject } from 'ajv'
 
-import { cli } from './helpers'
+import { cli, readJson } from './helpers'
 
 describe('migrate', function () {
   this.timeout(10000)
@@ -12,7 +12,7 @@ describe('migrate', function () {
   it('should migrate schema to draft-07', done => {
     testMigrate(
       'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json --spec=draft7',
-      './migrate/expected_migrated_schema.json',
+      './test/migrate/expected_migrated_schema.json',
       done,
     )
   })
@@ -20,7 +20,7 @@ describe('migrate', function () {
   it('should migrate schema to draft-07 by default', done => {
     testMigrate(
       'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json',
-      './migrate/expected_migrated_schema.json',
+      './test/migrate/expected_migrated_schema.json',
       done,
     )
   })
@@ -28,7 +28,7 @@ describe('migrate', function () {
   it('should migrate schema to draft-2019-09', done => {
     testMigrate(
       'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json --spec=draft2019',
-      './migrate/expected_migrated_schema_2019.json',
+      './test/migrate/expected_migrated_schema_2019.json',
       done,
     )
   })
@@ -44,7 +44,7 @@ describe('migrate', function () {
         assertMigrated(stdout, 1)
         assert.strictEqual(stderr, '')
         const migratedSchema = readSchema('migrated_schema.json')
-        const expectedMigratedSchema = require(expectedFile)
+        const expectedMigratedSchema = readJson(expectedFile)
         assert.deepStrictEqual(migratedSchema, expectedMigratedSchema)
       } finally {
         deleteSchema('migrated_schema.json')
@@ -65,7 +65,7 @@ describe('migrate', function () {
         assert.deepStrictEqual(backupSchema, JSON.parse(backup))
 
         const migratedSchema = readSchema('schema.json')
-        const expectedMigratedSchema = require('./migrate/expected_migrated_schema.json')
+        const expectedMigratedSchema = readJson('./test/migrate/expected_migrated_schema.json')
         assert.deepStrictEqual(migratedSchema, expectedMigratedSchema)
       } finally {
         fs.writeFileSync(path.join(__dirname, 'migrate', 'schema.json'), backup)

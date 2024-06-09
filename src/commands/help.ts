@@ -93,8 +93,8 @@ parameters
 function _helpValidate(): void {
   console.log(`
 Validate data file(s) against schema
-    ajv [validate] -s schema[.json] -d data[.json]
-    ajv [validate] -s schema[.json] -d "data*.json"`)
+    ajv [validate] -s schema.json -d data.json
+    ajv [validate] -s schema.json -d "data*.json"`)
 }
 
 function helpCompile(): void {
@@ -120,7 +120,7 @@ parameters
 function _helpCompile(): void {
   console.log(`
 Compile schema(s)
-    ajv compile -s schema[.json]
+    ajv compile -s schema.json
     ajv compile -s "schema*.json"`)
 }
 
@@ -144,7 +144,7 @@ parameters
 function _helpMigrate(): void {
   console.log(`
 Migrate schema(s) to draft-07 or draft-2019-09
-    ajv migrate -s schema[.json] -o migrated_schema.json
+    ajv migrate -s schema.json -o migrated_schema.json
     ajv migrate -s "schema*.json"`)
 }
 
@@ -178,9 +178,9 @@ parameters
 function _helpTest(): void {
   console.log(`
 Test data validation result
-    ajv test -s schema[.json] -d data[.json] --valid
-    ajv test -s schema[.json] -d data[.json] --invalid
-    ajv test -s schema[.json] -d "data*.json" --valid`)
+    ajv test -s schema.json -d data.json --valid
+    ajv test -s schema.json -d data.json --invalid
+    ajv test -s schema.json -d "data*.json" --valid`)
 }
 
 function helpAjvOptions(): void {
