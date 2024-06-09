@@ -2,6 +2,18 @@
   "name": "ajv-cli",
   "version": "5.0.0",
   "description": "Command line interface for Ajv JSON schema validator",
+  "author": {
+    "name": "Jakub Jirutka",
+    "email": "jakub@jirutka.cz"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jirutka/ajv-cli"
+  },
+  "bin": {
+    "ajv": "dist/index.js"
+  },
   "scripts": {
     "build": "rm -rf dist && tsc",
     "prepublish": "npm run build",
@@ -11,30 +23,6 @@
     "test-spec": "TS_NODE_PROJECT=test/tsconfig.json mocha -r ts-node/register \"test/**/*.spec.{ts,js}\" -R spec",
     "test-cov": "nyc npm run test-spec",
     "test": "npm run build && npm run eslint && npm run test-cov"
-  },
-  "nyc": {
-    "exclude": [
-      "test",
-      "node_modules"
-    ],
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "cache": true
-  },
-  "bin": {
-    "ajv": "dist/index.js"
-  },
-  "preferGlobal": true,
-  "author": {
-    "name": "Jakub Jirutka",
-    "email": "jakub@jirutka.cz"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jirutka/ajv-cli"
   },
   "dependencies": {
     "ajv": "^8.0.0",
@@ -69,5 +57,16 @@
     "ts-node": {
       "optional": true
     }
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "node_modules"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "cache": true
   }
 }
