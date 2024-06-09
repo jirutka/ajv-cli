@@ -3,7 +3,7 @@ import * as path from 'node:path'
 
 import type Ajv from 'ajv'
 import { AnyValidateFunction } from 'ajv/dist/core'
-import * as yaml from 'js-yaml'
+import * as YAML from 'yaml'
 import * as JSON5 from 'json5'
 
 import { glob } from './glob'
@@ -40,7 +40,7 @@ function decodeFile(contents: string, format: string): any {
       return JSON5.parse(contents)
     case 'yml':
     case 'yaml':
-      return yaml.load(contents, { schema: yaml.CORE_SCHEMA })
+      return YAML.parse(contents)
     default:
       throw new Error(`unsupported file format ${format}`)
   }
