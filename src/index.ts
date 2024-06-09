@@ -3,7 +3,7 @@ import * as minimist from 'minimist'
 
 import commands from './commands'
 import usage from './commands/usage'
-import type { CmdName } from './commands/types'
+import type { CmdName } from './types'
 import { checkOptions } from './options'
 
 const argv = minimist(process.argv.slice(2))

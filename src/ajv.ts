@@ -9,7 +9,7 @@ import * as draft6metaSchema from 'ajv/lib/refs/json-schema-draft-06.json'
 import type { ParsedArgs } from 'minimist'
 import { Service } from 'ts-node'
 
-import type { SchemaSpec } from './commands/types'
+import type { SchemaSpec } from './types'
 import { getOptions } from './options'
 import * as util from './utils'
 

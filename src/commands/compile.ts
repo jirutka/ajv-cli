@@ -5,7 +5,7 @@ import standaloneCode from 'ajv/dist/standalone'
 import type { ParsedArgs } from 'minimist'
 
 import getAjv from '../ajv'
-import type { Command } from './types'
+import type { Command } from '../types'
 import { getFiles, openFile } from '../utils'
 
 const cmd: Command = {
