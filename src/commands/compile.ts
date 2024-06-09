@@ -4,7 +4,7 @@ import type { AnyValidateFunction } from 'ajv/dist/core'
 import standaloneCode from 'ajv/dist/standalone'
 import type { ParsedArgs } from 'minimist'
 
-import getAjv from './ajv'
+import getAjv from '../ajv'
 import type { Command } from './types'
 import { getFiles, openFile } from '../utils'
 

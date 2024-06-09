@@ -1,7 +1,7 @@
 import * as jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
-import getAjv from './ajv'
+import getAjv from '../ajv'
 import type { Command } from './types'
 import { compile, getFiles, openFile, logJSON } from '../utils'
 

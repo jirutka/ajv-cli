@@ -5,7 +5,7 @@ import * as migrate from 'json-schema-migrate'
 import * as jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
-import getAjv from './ajv'
+import getAjv from '../ajv'
 import type { Command, JSONSchemaDraft } from './types'
 import { getFiles, openFile } from '../utils'
 

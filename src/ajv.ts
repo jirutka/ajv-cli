@@ -9,9 +9,9 @@ import * as draft6metaSchema from 'ajv/lib/refs/json-schema-draft-06.json'
 import type { ParsedArgs } from 'minimist'
 import { Service } from 'ts-node'
 
-import { getOptions } from '../options'
-import type { SchemaSpec } from './types'
-import * as util from '../utils'
+import type { SchemaSpec } from './commands/types'
+import { getOptions } from './options'
+import * as util from './utils'
 
 type AjvMethod = 'addSchema' | 'addMetaSchema'
 
