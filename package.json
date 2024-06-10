@@ -22,7 +22,7 @@
     "prettier:write": "prettier --write \"./**/*.{json,yaml,js,ts}\"",
     "prettier:check": "prettier --list-different \"./**/*.{json,yaml,js,ts}\"",
     "test-spec": "TS_NODE_PROJECT=test/tsconfig.json mocha",
-    "test-cov": "nyc npm run test-spec",
+    "test-cov": "c8 npm run test-spec",
     "test": "npm run build && npm run eslint && npm run test-cov"
   },
   "dependencies": {
@@ -43,10 +43,10 @@
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
     "ajv-keywords": "^5.0.0",
+    "c8": "^9.1.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "mocha": "^10.4.0",
-    "nyc": "^15.0.1",
     "prettier": "^3.3.0",
     "ts-node": "^10.9.0",
     "typescript": "^5.4.5"
