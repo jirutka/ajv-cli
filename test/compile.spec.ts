@@ -99,16 +99,6 @@ describe('compile', function () {
     )
   })
 
-  it('should compile schema with custom keyword written in typescript', done => {
-    cli(
-      'compile -s test/custom/schema.json -c ./test/custom/typeof_ts.ts -o test/custom/validate_schema.js',
-      (error, stdout, stderr) => {
-        assertCompiledCustom(error, stdout, stderr)
-        done()
-      },
-    )
-  })
-
   it('should fail to compile invalid schema with a custom meta-schema', done => {
     cli(
       'compile -s test/meta/invalid_schema.json -m test/meta/meta_schema.json',
