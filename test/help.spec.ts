@@ -45,16 +45,6 @@ describe('help', function () {
     })
   })
 
-  it('should print help for test', done => {
-    cli('help test', (error, stdout, stderr) => {
-      assert.strictEqual(error, null)
-      assert(stdout.includes('Test'))
-      assert(stdout.includes('options'))
-      assert.strictEqual(stderr, '')
-      done()
-    })
-  })
-
   it('should print usage if unknown command is used', done => {
     cli('unknown', (error, stdout, stderr) => {
       assert(error instanceof Error)

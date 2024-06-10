@@ -20,7 +20,6 @@ const commands: { [Name in CmdName]: () => void } = {
   compile: helpCompile,
   validate: helpValidate,
   migrate: helpMigrate,
-  test: helpTest,
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -45,7 +44,6 @@ function mainHelp(): void {
   _helpValidate()
   _helpCompile()
   _helpMigrate()
-  _helpTest()
   schemaSpecOption()
   console.log(`
 More information:
@@ -146,41 +144,6 @@ function _helpMigrate(): void {
 Migrate schema(s) to draft-07 or draft-2019-09
     ajv migrate -s schema.json -o migrated_schema.json
     ajv migrate -s "schema*.json"`)
-}
-
-function helpTest(): void {
-  _helpTest()
-  console.log(`
-parameters
-    -s JSON schema to validate against (required, only one schema allowed)
-    -d data file(s) to be validated (required)
-    -r referenced schema(s)
-    -m meta schema(s)
-    -c custom keywords/formats definitions
-    --valid/--invalid data file(s) must be valid/invalid for this command to succeed
-
-    -d, -r, -m, -c can be globs and can be used multiple times
-    glob should be enclosed in double quotes
-    -c module(s) should export a function that accepts Ajv instance as parameter
-    (file path should start with ".", otherwise used as require package)
-    .json extension can be omitted (but should be used in globs)
-    --valid=false can be used instead of --invalid`)
-  schemaSpecOption()
-  console.log(`
-    --errors=          error reporting
-             js        JavaScript object (default)
-             json      JSON format
-             line      JSON single line
-             text      text message`)
-  helpAjvOptions()
-}
-
-function _helpTest(): void {
-  console.log(`
-Test data validation result
-    ajv test -s schema.json -d data.json --valid
-    ajv test -s schema.json -d data.json --invalid
-    ajv test -s schema.json -d "data*.json" --valid`)
 }
 
 function helpAjvOptions(): void {

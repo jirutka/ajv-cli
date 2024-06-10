@@ -17,7 +17,6 @@ Supports [JSON](http://json.org/), [JSON5](http://json5.org/), and [YAML](http:/
   - [Validate data](#validate-data)
   - [Compile schemas](#compile-schemas)
   - [Migrate schemas](#migrate-schemas)
-  - [Test validation result](#test-validation-result)
 - [Ajv options](#ajv-options)
 - [Version History, License](#version_history)
 
@@ -45,7 +44,6 @@ ajv help
 ajv help validate
 ajv help compile
 ajv help migrate
-ajv help test
 ```
 
 ### Validate data
@@ -185,19 +183,6 @@ ajv compile -s "schema.json" -o migrated_schema.json
 
 - `--indent=`: indentation in migrated schema JSON file, 4 by default
 - `--validate-schema=false`: skip schema validation
-
-### Test validation result
-
-This command asserts that the result of the validation is as expected.
-
-```sh
-ajv test -s test/schema.json -d test/valid_data.json --valid
-ajv test -s test/schema.json -d test/invalid_data.json --invalid
-```
-
-If the option `--valid` (`--invalid`) is used for the `test` to pass (exit code 0) the data file(s) should be valid (invalid).
-
-This command supports the same options and parameters as [validate](#validate-data) with the exception of `--changes`.
 
 ## Ajv options
 
