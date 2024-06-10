@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import { AnySchemaObject } from 'ajv'
 
-import cli from './cli'
+import { cli } from './helpers'
 
 describe('migrate', function () {
   this.timeout(10000)

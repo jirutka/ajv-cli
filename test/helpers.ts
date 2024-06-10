@@ -3,7 +3,7 @@ import * as path from 'node:path'
 
 const cwd = path.join(__dirname, '..')
 
-export default function cli(
+export function cli(
   params: string,
   callback?: (error: ExecException | null, stdout: string, stderr: string) => void,
 ): void {

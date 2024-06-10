@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import type { ExecException } from 'node:child_process'
 import fs from 'node:fs'
 
-import cli from './cli'
+import { cli } from './helpers'
 
 describe('compile', function () {
   this.timeout(10000)

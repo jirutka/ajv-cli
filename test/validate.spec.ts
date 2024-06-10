@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 
 import type { DefinedError } from 'ajv'
 
-import cli from './cli'
+import { cli } from './helpers'
 
 describe('validate', function () {
   this.timeout(10000)
