@@ -2,33 +2,39 @@ import assert from 'node:assert/strict'
 
 import type { DefinedError } from 'ajv'
 
-import { cli } from './helpers.js'
+import { cli, fixturesDir as fdir } from './helpers.js'
 
 describe('test', function () {
   this.timeout(10000)
 
   describe('test valid data', () => {
     it('should pass if expected result is valid', done => {
-      cli('test -s test/schema.json -d test/valid_data.json --valid', (error, stdout, stderr) => {
-        assert.strictEqual(error, null)
-        assertNoErrors(stdout, 1, /\spassed/)
-        assert.strictEqual(stderr, '')
-        done()
-      })
+      cli(
+        `test -s ${fdir}/schema.json -d ${fdir}/valid_data.json --valid`,
+        (error, stdout, stderr) => {
+          assert.strictEqual(error, null)
+          assertNoErrors(stdout, 1, /\spassed/)
+          assert.strictEqual(stderr, '')
+          done()
+        },
+      )
     })
 
     it('should pass multiple files if expected result is valid', done => {
-      cli('test -s test/schema.json -d "test/valid*.json" --valid', (error, stdout, stderr) => {
-        assert.strictEqual(error, null)
-        assertNoErrors(stdout, 2, /\spassed/)
-        assert.strictEqual(stderr, '')
-        done()
-      })
+      cli(
+        `test -s ${fdir}/schema.json -d "${fdir}/valid*.json" --valid`,
+        (error, stdout, stderr) => {
+          assert.strictEqual(error, null)
+          assertNoErrors(stdout, 2, /\spassed/)
+          assert.strictEqual(stderr, '')
+          done()
+        },
+      )
     })
 
     it('should fail if expected result is invalid', done => {
       cli(
-        'test -s test/schema.json -d test/valid_data.json --invalid',
+        `test -s ${fdir}/schema.json -d ${fdir}/valid_data.json --invalid`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assertNoErrors(stderr, 1, /\sfailed/)
@@ -39,19 +45,22 @@ describe('test', function () {
     })
 
     it('should fail multiple files if expected result is invalid', done => {
-      cli('test -s test/schema.json -d "test/valid*.json" --invalid', (error, stdout, stderr) => {
-        assert(error instanceof Error)
-        assertNoErrors(stderr, 2, /\sfailed/)
-        assert.strictEqual(stdout, '')
-        done()
-      })
+      cli(
+        `test -s ${fdir}/schema.json -d "${fdir}/valid*.json" --invalid`,
+        (error, stdout, stderr) => {
+          assert(error instanceof Error)
+          assertNoErrors(stderr, 2, /\sfailed/)
+          assert.strictEqual(stdout, '')
+          done()
+        },
+      )
     })
   })
 
   describe('test invalid data', () => {
     it('should pass if expected result is invalid', done => {
       cli(
-        'test -s test/schema.json -d test/invalid_data.json --invalid --errors=line',
+        `test -s ${fdir}/schema.json -d ${fdir}/invalid_data.json --invalid --errors=line`,
         (error, stdout, stderr) => {
           assert.strictEqual(error, null)
           assertRequiredErrors(stdout, 1, /\spassed/)
@@ -63,7 +72,7 @@ describe('test', function () {
 
     it('should pass if expected result is invalid (valid=false)', done => {
       cli(
-        'test -s test/schema.json -d test/invalid_data.json --valid=false --errors=line',
+        `test -s ${fdir}/schema.json -d ${fdir}/invalid_data.json --valid=false --errors=line`,
         (error, stdout, stderr) => {
           assert.strictEqual(error, null)
           assertRequiredErrors(stdout, 1, /\spassed/)
@@ -75,7 +84,7 @@ describe('test', function () {
 
     it('should pass multiple files if expected result is invalid', done => {
       cli(
-        'test -s test/schema.json -d "test/invalid*.json" --invalid --errors=line',
+        `test -s ${fdir}/schema.json -d "${fdir}/invalid*.json" --invalid --errors=line`,
         (error, stdout, stderr) => {
           assert.strictEqual(error, null)
           assertRequiredErrors(stdout, 2, /\spassed/)
@@ -87,7 +96,7 @@ describe('test', function () {
 
     it('should fail if expected result is valid', done => {
       cli(
-        'test -s test/schema.json -d test/invalid_data.json --valid --errors=line',
+        `test -s ${fdir}/schema.json -d ${fdir}/invalid_data.json --valid --errors=line`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assertRequiredErrors(stderr, 1, /\sfailed/)
@@ -99,7 +108,7 @@ describe('test', function () {
 
     it('should fail multiple files if expected result is valid', done => {
       cli(
-        'test -s test/schema.json -d "test/invalid*.json" --valid --errors=line',
+        `test -s ${fdir}/schema.json -d "${fdir}/invalid*.json" --valid --errors=line`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assertRequiredErrors(stderr, 2, /\sfailed/)
@@ -113,7 +122,7 @@ describe('test', function () {
   describe('test valid and invalid data', () => {
     it('should pass valid, fail invalid and return error if expected result is valid', done => {
       cli(
-        'test -s test/schema.json -d test/valid_data.json -d test/invalid_data.json --valid --errors=line',
+        `test -s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/invalid_data.json --valid --errors=line`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assertNoErrors(stdout, 1, /\spassed/)
@@ -125,7 +134,7 @@ describe('test', function () {
 
     it('should fail valid, pass invalid and return error if expected result is invalid', done => {
       cli(
-        'test -s test/schema.json -d test/valid_data.json -d test/invalid_data.json --invalid --errors=line',
+        `test -s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/invalid_data.json --invalid --errors=line`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assertNoErrors(stderr, 1, /\sfailed/)

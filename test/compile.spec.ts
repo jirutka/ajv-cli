@@ -2,13 +2,13 @@ import assert from 'node:assert/strict'
 import type { ExecException } from 'node:child_process'
 import fs from 'node:fs'
 
-import { asyncCli, cli, readJson } from './helpers.js'
+import { asyncCli, cli, fixturesDir as fdir, readJson } from './helpers.js'
 
 describe('compile', function () {
   this.timeout(10000)
 
   it('should compile valid schema', done => {
-    cli('compile -s test/schema.json', (error, stdout, stderr) => {
+    cli(`compile -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert.strictEqual(error, null)
       assertValid(stdout, 1)
       assert.strictEqual(stderr, '')
@@ -18,7 +18,7 @@ describe('compile', function () {
 
   it('should compile multiple schemas', done => {
     cli(
-      'compile -s test/schema.json -s test/meta/schema.json -m test/meta/meta_schema.json --strict=false',
+      `compile -s ${fdir}/schema.json -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
         assert.strictEqual(error, null)
         assertValid(stdout, 2)
@@ -30,18 +30,18 @@ describe('compile', function () {
 
   it('should compile schema to output file', () =>
     asyncCli(
-      'compile -s test/schema.json -o test/validate_schema1.cjs',
+      `compile -s ${fdir}/schema.json -o ${fdir}/validate_schema1.cjs`,
       async (error, stdout, stderr) => {
         // @ts-ignore
-        const validate = await import('./validate_schema1.cjs')
-        fs.unlinkSync('test/validate_schema1.cjs')
+        const validate = await import('./fixtures/validate_schema1.cjs')
+        fs.unlinkSync(`${fdir}/validate_schema1.cjs`)
 
         assert.strictEqual(error, null)
         assertValid(stdout, 1)
         assert.strictEqual(stderr, '')
 
-        const validData = readJson('./test/valid_data.json')
-        const invalidData = readJson('./test/invalid_data.json')
+        const validData = readJson(`${fdir}/valid_data.json`)
+        const invalidData = readJson(`${fdir}/invalid_data.json`)
         assert.strictEqual(validate.default(validData), true)
         assert.strictEqual(validate.default(invalidData), false)
       },
@@ -49,18 +49,18 @@ describe('compile', function () {
 
   it('should compile multiple schemas to output file', () =>
     asyncCli(
-      'compile -s test/schema.json -s test/schema_with_ref.json -o test/validate_schema2.cjs',
+      `compile -s ${fdir}/schema.json -s ${fdir}/schema_with_ref.json -o ${fdir}/validate_schema2.cjs`,
       async (error, stdout, stderr) => {
         // @ts-ignore
-        const validators = await import('./validate_schema2.cjs')
-        fs.unlinkSync('test/validate_schema2.cjs')
+        const validators = await import('./fixtures/validate_schema2.cjs')
+        fs.unlinkSync(`${fdir}/validate_schema2.cjs`)
 
         assert.strictEqual(error, null)
         assertValid(stdout, 2)
         assert.strictEqual(stderr, '')
 
-        const validData = readJson('./test/valid_data.json')
-        const invalidData = readJson('./test/invalid_data.json')
+        const validData = readJson(`${fdir}/valid_data.json`)
+        const invalidData = readJson(`${fdir}/invalid_data.json`)
         assert.strictEqual(validators['schema.json'](validData), true)
         assert.strictEqual(validators['schema.json'](invalidData), false)
         assert.strictEqual(validators['schema_with_ref.json'](validData), true)
@@ -70,7 +70,7 @@ describe('compile', function () {
 
   it('should compile valid schema with a custom meta-schema', done => {
     cli(
-      'compile -s test/meta/schema.json -m test/meta/meta_schema.json --strict=false',
+      `compile -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
         assert.strictEqual(error, null)
         assertValid(stdout, 1)
@@ -82,19 +82,19 @@ describe('compile', function () {
 
   it('should compile schema with custom keyword', () =>
     asyncCli(
-      'compile -s test/custom/schema.json -c ./test/custom/typeof.js -o test/custom/validate_schema.cjs',
+      `compile -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -o ./${fdir}/custom/validate_schema.cjs`,
       assertCompiledCustom,
     ))
 
   it('should compile schema with custom keyword from npm package', () =>
     asyncCli(
-      'compile -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -o test/custom/validate_schema.cjs',
+      `compile -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -o ${fdir}/custom/validate_schema.cjs`,
       assertCompiledCustom,
     ))
 
   it('should fail to compile invalid schema with a custom meta-schema', done => {
     cli(
-      'compile -s test/meta/invalid_schema.json -m test/meta/meta_schema.json',
+      `compile -s ${fdir}/meta/invalid_schema.json -m ${fdir}/meta/meta_schema.json`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
@@ -107,7 +107,7 @@ describe('compile', function () {
 
   it('should fail to save compiled schemas when path does not exist', done => {
     cli(
-      'compile -s test/schema.json -o no_folder/validate_schema.cjs',
+      `compile -s ${fdir}/schema.json -o no_folder/validate_schema.cjs`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
         assertValid(stdout, 1)
@@ -121,7 +121,7 @@ describe('compile', function () {
 
   it('should fail to compile if referenced schema is invalid', done => {
     cli(
-      'compile -s test/schema.json -r test/meta/invalid_schema2.json',
+      `compile -s ${fdir}/schema.json -r ${fdir}/meta/invalid_schema2.json`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
@@ -134,7 +134,7 @@ describe('compile', function () {
 
   it('should fail to compile if custom package does not export function', done => {
     cli(
-      'compile -s test/custom/schema.json -c ./test/custom/invalid_custom.js',
+      `compile -s ${fdir}/custom/schema.json -c ${fdir}/custom/invalid_custom.js`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
@@ -146,7 +146,7 @@ describe('compile', function () {
   })
 
   it('should fail if output file is glob', done => {
-    cli('compile -s test/schema.json -o test/*.foo', (error, stdout, stderr) => {
+    cli(`compile -s ${fdir}/schema.json -o ${fdir}/*.foo`, (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert(stderr.includes('only one file is allowed'))
       assert(stderr.includes('usage'))
@@ -156,7 +156,7 @@ describe('compile', function () {
   })
 
   it('should fail if too many parameters', done => {
-    cli('compile file -s test/schema.json', (error, stdout, stderr) => {
+    cli(`compile file -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert(stderr.includes('too many arguments'))
       assert(stderr.includes('usage'))
@@ -166,7 +166,7 @@ describe('compile', function () {
   })
 
   it('should compile JTD schema', done => {
-    cli('compile -s test/jtd/schema.json --spec=jtd', (error, stdout, stderr) => {
+    cli(`compile -s ${fdir}/jtd/schema.json --spec=jtd`, (error, stdout, stderr) => {
       assert.strictEqual(error, null)
       assertValid(stdout, 1)
       assert.strictEqual(stderr, '')
@@ -202,11 +202,11 @@ async function assertCompiledCustom(
   assert.strictEqual(stderr, '')
 
   // @ts-ignore
-  const validate = await import('./custom/validate_schema.cjs')
-  const validData = readJson('./test/custom/valid_data.json')
-  const invalidData = readJson('./test/custom/invalid_data.json')
+  const validate = await import('./fixtures/custom/validate_schema.cjs')
+  const validData = readJson(`${fdir}/custom/valid_data.json`)
+  const invalidData = readJson(`${fdir}/custom/invalid_data.json`)
   assert.strictEqual(validate.default(validData), true)
   assert.strictEqual(validate.default(invalidData), false)
 
-  fs.unlinkSync('test/custom/validate_schema.cjs')
+  fs.unlinkSync(`${fdir}/custom/validate_schema.cjs`)
 }

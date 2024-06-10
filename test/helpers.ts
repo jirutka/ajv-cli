@@ -4,6 +4,8 @@ import * as path from 'node:path'
 
 const cwd = path.join(import.meta.dirname, '..')
 
+export const fixturesDir = 'test/fixtures'
+
 export async function asyncCli(
   params: string,
   callback: (error: ExecException | null, stdout: string, stderr: string) => Promise<void>,

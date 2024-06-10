@@ -4,31 +4,29 @@ import path from 'node:path'
 
 import { AnySchemaObject } from 'ajv'
 
-import { cli, readJson } from './helpers.js'
-
-const __dirname = import.meta.dirname
+import { cli, fixturesDir as fdir, readJson } from './helpers.js'
 
 describe('migrate', function () {
   this.timeout(10000)
 
   it('should migrate schema to draft-07', () => {
     testMigrate(
-      'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json --spec=draft7',
-      './test/migrate/expected_migrated_schema.json',
+      `migrate -s ${fdir}/migrate/schema.json -o ${fdir}/migrate/migrated_schema.json --spec=draft7`,
+      `${fdir}/migrate/expected_migrated_schema.json`,
     )
   })
 
   it('should migrate schema to draft-07 by default', () => {
     testMigrate(
-      'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json',
-      './test/migrate/expected_migrated_schema.json',
+      `migrate -s ${fdir}/migrate/schema.json -o ${fdir}/migrate/migrated_schema.json`,
+      `${fdir}/migrate/expected_migrated_schema.json`,
     )
   })
 
   it('should migrate schema to draft-2019-09', () => {
     testMigrate(
-      'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json --spec=draft2019',
-      './test/migrate/expected_migrated_schema_2019.json',
+      `migrate -s ${fdir}/migrate/schema.json -o ${fdir}/migrate/migrated_schema.json --spec=draft2019`,
+      `${fdir}/migrate/expected_migrated_schema_2019.json`,
     )
   })
 
@@ -52,9 +50,9 @@ describe('migrate', function () {
   }
 
   it('should migrate schema to draft-07 to the same file and create backup', () => {
-    const backup = fs.readFileSync(path.join(__dirname, 'migrate', 'schema.json'), 'utf8')
+    const backup = fs.readFileSync(path.join(fdir, 'migrate', 'schema.json'), 'utf8')
 
-    cli('migrate -s test/migrate/schema.json', (error, stdout, stderr) => {
+    cli(`migrate -s ${fdir}/migrate/schema.json`, (error, stdout, stderr) => {
       try {
         assert.strictEqual(error, null)
         assertMigrated(stdout, 1)
@@ -63,10 +61,10 @@ describe('migrate', function () {
         assert.deepStrictEqual(backupSchema, JSON.parse(backup))
 
         const migratedSchema = readSchema('schema.json')
-        const expectedMigratedSchema = readJson('./test/migrate/expected_migrated_schema.json')
+        const expectedMigratedSchema = readJson(`${fdir}/migrate/expected_migrated_schema.json`)
         assert.deepStrictEqual(migratedSchema, expectedMigratedSchema)
       } finally {
-        fs.writeFileSync(path.join(__dirname, 'migrate', 'schema.json'), backup)
+        fs.writeFileSync(path.join(fdir, 'migrate', 'schema.json'), backup)
         deleteSchema('schema.json.bak')
       }
     })
@@ -74,7 +72,7 @@ describe('migrate', function () {
 
   it('should not save schema if schema is draft-07 compatible', done => {
     cli(
-      'migrate -s test/migrate/schema_no_changes.json -o test/migrate/migrated_schema.json',
+      `migrate -s ${fdir}/migrate/schema_no_changes.json -o ${fdir}/migrate/migrated_schema.json`,
       (error, stdout, stderr) => {
         assert.strictEqual(error, null)
         assert.strictEqual(stderr, '')
@@ -94,7 +92,7 @@ describe('migrate', function () {
   })
 
   it('should fail on invalid schema', done => {
-    cli('migrate -s test/migrate/schema_invalid.json', (error, stdout, stderr) => {
+    cli(`migrate -s ${fdir}/migrate/schema_invalid.json`, (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert.strictEqual(stdout, '')
       assertError(stderr)
@@ -104,7 +102,7 @@ describe('migrate', function () {
 
   it('should fail if multiple schemas passed with -o option', done => {
     cli(
-      'migrate -s "test/migrate/schema*.json"  -o test/migrate/migrated_schema.json',
+      `migrate -s "${fdir}/migrate/schema*.json"  -o ${fdir}/migrate/migrated_schema.json`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
@@ -133,9 +131,9 @@ function assertError(stderr: string): string[] {
 }
 
 function readSchema(file: string): AnySchemaObject {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, 'migrate', file), 'utf8'))
+  return JSON.parse(fs.readFileSync(path.join(fdir, 'migrate', file), 'utf8'))
 }
 
 function deleteSchema(file: string): void {
-  fs.unlinkSync(path.join(__dirname, 'migrate', file))
+  fs.unlinkSync(path.join(fdir, 'migrate', file))
 }
