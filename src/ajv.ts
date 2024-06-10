@@ -4,7 +4,6 @@ import { Ajv as Ajv7 } from 'ajv'
 import { Ajv2019 } from 'ajv/dist/2019.js'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { Ajv as AjvJTD } from 'ajv/dist/jtd.js'
-import * as draft6metaSchema from 'ajv/lib/refs/json-schema-draft-06.json' assert { type: 'json' }
 import type { ParsedArgs } from 'minimist'
 
 import type { SchemaSpec } from './types.js'
@@ -13,6 +12,8 @@ import * as util from './utils.js'
 
 type AjvCore = typeof Ajv7
 type AjvMethod = 'addSchema' | 'addMetaSchema'
+
+const draft6metaSchemaPath = import.meta.resolve('ajv/lib/refs/json-schema-draft-06.json').slice(6) // strip `file://`
 
 const AjvClass: { [S in SchemaSpec]?: AjvCore } = {
   jtd: AjvJTD,
@@ -30,7 +31,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
   const ajv = new Ajv(opts)
   let invalid: boolean | undefined
   if (argv.spec !== 'jtd') {
-    ajv.addMetaSchema(draft6metaSchema)
+    ajv.addMetaSchema(util.openFile(draft6metaSchemaPath, 'default meta-schema'))
   }
   addSchemas(argv.m, 'addMetaSchema', 'meta-schema')
   addSchemas(argv.r, 'addSchema', 'schema')
