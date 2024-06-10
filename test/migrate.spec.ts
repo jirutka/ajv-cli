@@ -9,36 +9,33 @@ import { cli, readJson } from './helpers'
 describe('migrate', function () {
   this.timeout(10000)
 
-  it('should migrate schema to draft-07', done => {
+  it('should migrate schema to draft-07', () => {
     testMigrate(
       'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json --spec=draft7',
       './test/migrate/expected_migrated_schema.json',
-      done,
     )
   })
 
-  it('should migrate schema to draft-07 by default', done => {
+  it('should migrate schema to draft-07 by default', () => {
     testMigrate(
       'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json',
       './test/migrate/expected_migrated_schema.json',
-      done,
     )
   })
 
-  it('should migrate schema to draft-2019-09', done => {
+  it('should migrate schema to draft-2019-09', () => {
     testMigrate(
       'migrate -s test/migrate/schema.json -o test/migrate/migrated_schema.json --spec=draft2019',
       './test/migrate/expected_migrated_schema_2019.json',
-      done,
     )
   })
 
-  function testMigrate(cmd: string, expectedFile: string, done: () => void): void {
+  function testMigrate(cmd: string, expectedFile: string): void {
     try {
       deleteSchema('migrated_schema.json')
     } catch (e) {}
 
-    cli(cmd, (error, stdout, stderr) => {
+    cli(cmd, async (error, stdout, stderr) => {
       try {
         assert.strictEqual(error, null)
         assertMigrated(stdout, 1)
@@ -49,11 +46,10 @@ describe('migrate', function () {
       } finally {
         deleteSchema('migrated_schema.json')
       }
-      done()
     })
   }
 
-  it('should migrate schema to draft-07 to the same file and create backup', done => {
+  it('should migrate schema to draft-07 to the same file and create backup', () => {
     const backup = fs.readFileSync(path.join(__dirname, 'migrate', 'schema.json'), 'utf8')
 
     cli('migrate -s test/migrate/schema.json', (error, stdout, stderr) => {
@@ -71,7 +67,6 @@ describe('migrate', function () {
         fs.writeFileSync(path.join(__dirname, 'migrate', 'schema.json'), backup)
         deleteSchema('schema.json.bak')
       }
-      done()
     })
   })
 

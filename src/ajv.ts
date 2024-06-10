@@ -34,7 +34,7 @@ export default async function (argv: ParsedArgs): Promise<AjvCore> {
   }
   addSchemas(argv.m, 'addMetaSchema', 'meta-schema')
   addSchemas(argv.r, 'addSchema', 'schema')
-  customFormatsKeywords(argv.c)
+  await customFormatsKeywords(argv.c)
   if (invalid) {
     process.exit(1)
   }
@@ -60,7 +60,7 @@ export default async function (argv: ParsedArgs): Promise<AjvCore> {
     }
   }
 
-  function customFormatsKeywords(args: string | string[] | undefined): void {
+  async function customFormatsKeywords(args: string | string[] | undefined): Promise<void> {
     if (!args) {
       return
     }
@@ -69,7 +69,8 @@ export default async function (argv: ParsedArgs): Promise<AjvCore> {
         file = path.resolve(process.cwd(), file)
       }
       try {
-        require(file)(ajv)
+        const module = await import(file)
+        module(ajv)
       } catch (err) {
         console.error(`module ${file} is invalid; it should export function`)
         console.error(`error: ${(err as Error).message}`)

@@ -303,7 +303,7 @@ describe('validate', function () {
 
     it('should validate valid data; custom keyword definition in package', done => {
       cli(
-        'validate -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof -d test/custom/valid_data.json',
+        'validate -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d test/custom/valid_data.json',
         (error, stdout, stderr) => {
           assert.strictEqual(error, null)
           assertValid(stdout, 1)
