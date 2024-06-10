@@ -46,7 +46,7 @@ function decodeFile(contents: string, format: string): any {
   }
 }
 
-export function openFile(filename: string, suffix: string): any {
+export function readFile(filename: string, suffix: string): any {
   let json = null
   const file = path.resolve(process.cwd(), filename)
   try {
@@ -80,7 +80,7 @@ export function logJSON(mode: string, data: any, ajv?: Ajv): string {
 }
 
 export function compile(ajv: Ajv, schemaFile: string): AnyValidateFunction {
-  const schema = openFile(schemaFile, 'schema')
+  const schema = readFile(schemaFile, 'schema')
   try {
     return ajv.compile(schema)
   } catch (err: any) {

@@ -3,7 +3,7 @@ import type { ParsedArgs } from 'minimist'
 
 import getAjv from '../ajv.js'
 import type { Command } from '../types.js'
-import { compile, getFiles, openFile, logJSON } from '../utils.js'
+import { compile, getFiles, readFile, logJSON } from '../utils.js'
 
 const cmd: Command = {
   execute,
@@ -37,7 +37,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     .every(x => x)
 
   function validateDataFile(file: string): boolean {
-    const data = openFile(file, `data file ${file}`)
+    const data = readFile(file, `data file ${file}`)
     let original
     if (argv.changes) {
       original = JSON.parse(JSON.stringify(data))

@@ -31,7 +31,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
   const ajv = new Ajv(opts)
   let invalid: boolean | undefined
   if (argv.spec !== 'jtd') {
-    ajv.addMetaSchema(util.openFile(draft6metaSchemaPath, 'default meta-schema'))
+    ajv.addMetaSchema(util.readFile(draft6metaSchemaPath, 'default meta-schema'))
   }
   addSchemas(argv.m, 'addMetaSchema', 'meta-schema')
   addSchemas(argv.r, 'addSchema', 'schema')
@@ -50,7 +50,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
       return
     }
     for (const file of util.getFiles(args)) {
-      const schema = util.openFile(file, fileType)
+      const schema = util.readFile(file, fileType)
       try {
         ajv[method](schema)
       } catch (err) {
