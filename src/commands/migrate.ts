@@ -2,12 +2,12 @@ import * as fs from 'node:fs'
 
 import type { AnySchemaObject } from 'ajv'
 import * as migrate from 'json-schema-migrate'
-import * as jsonPatch from 'fast-json-patch'
+import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
-import getAjv from '../ajv'
-import type { Command, JSONSchemaDraft } from '../types'
-import { getFiles, openFile } from '../utils'
+import getAjv from '../ajv.js'
+import type { Command, JSONSchemaDraft } from '../types.js'
+import { getFiles, openFile } from '../utils.js'
 
 const cmd: Command = {
   execute,

@@ -1,12 +1,12 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import type Ajv from 'ajv'
-import { AnyValidateFunction } from 'ajv/dist/core'
-import * as YAML from 'yaml'
-import * as JSON5 from 'json5'
+import { Ajv } from 'ajv'
+import { AnyValidateFunction } from 'ajv/dist/core.js'
+import YAML from 'yaml'
+import JSON5 from 'json5'
 
-import { glob } from './glob'
+import { glob } from './glob.js'
 
 function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
   return (

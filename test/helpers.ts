@@ -2,7 +2,7 @@ import { exec, ExecException } from 'node:child_process'
 import * as FS from 'node:fs'
 import * as path from 'node:path'
 
-const cwd = path.join(__dirname, '..')
+const cwd = path.join(import.meta.dirname, '..')
 
 export async function asyncCli(
   params: string,

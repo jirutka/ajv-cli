@@ -1,7 +1,5 @@
-'use strict'
+import ajvKeywords from 'ajv-keywords'
 
-const ajvKeywords = require('ajv-keywords')
-
-module.exports = function (ajv) {
+export default function (ajv) {
   ajvKeywords(ajv, 'typeof')
 }

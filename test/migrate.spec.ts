@@ -4,7 +4,9 @@ import path from 'node:path'
 
 import { AnySchemaObject } from 'ajv'
 
-import { cli, readJson } from './helpers'
+import { cli, readJson } from './helpers.js'
+
+const __dirname = import.meta.dirname
 
 describe('migrate', function () {
   this.timeout(10000)

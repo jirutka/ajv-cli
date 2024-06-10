@@ -1,8 +1,10 @@
-import Ajv, { CodeOptions, Options } from 'ajv/dist/2019'
-import type { SchemaObject, SchemaMap } from 'ajv/dist/types'
+import type { AnySchema, CodeOptions, Options, SchemaObject } from 'ajv'
+import { Ajv2019 as Ajv } from 'ajv/dist/2019.js'
 import type { ParsedArgs } from 'minimist'
 
-import { isGlob } from './glob'
+import { isGlob } from './glob.js'
+
+type SchemaMap = Record<string, AnySchema>
 
 const boolOrNat = { type: ['boolean', 'integer'], minimum: 0 }
 const CODE = 'code-'

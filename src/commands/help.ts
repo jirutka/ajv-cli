@@ -1,7 +1,7 @@
 import type { ParsedArgs } from 'minimist'
 
-import type { Command, CmdName } from '../types'
-import usage from './usage'
+import type { Command, CmdName } from '../types.js'
+import usage from './usage.js'
 
 const cmd: Command = {
   execute,

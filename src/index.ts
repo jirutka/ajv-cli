@@ -1,10 +1,10 @@
 #! /usr/bin/env node
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 
-import commands from './commands'
-import usage from './commands/usage'
-import type { CmdName } from './types'
-import { checkOptions } from './options'
+import commands from './commands/index.js'
+import usage from './commands/usage.js'
+import type { CmdName } from './types.js'
+import { checkOptions } from './options.js'
 
 const argv = minimist(process.argv.slice(2))
 const command = argv._[0] || 'validate'

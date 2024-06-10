@@ -1,9 +1,9 @@
-import compile from './compile'
-import help from './help'
-import migrate from './migrate'
-import test from './test'
-import type { Command, CmdName } from '../types'
-import validate from './validate'
+import compile from './compile.js'
+import help from './help.js'
+import migrate from './migrate.js'
+import test from './test.js'
+import type { Command, CmdName } from '../types.js'
+import validate from './validate.js'
 
 const commands: { [Name in CmdName]: Command } = {
   help,

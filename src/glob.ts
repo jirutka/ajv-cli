@@ -1,8 +1,7 @@
 import * as FS from 'node:fs'
 import { join as joinPath } from 'node:path'
 
-import * as picomatch from 'picomatch'
-import type { PicomatchOptions } from 'picomatch'
+import picomatch, { type PicomatchOptions } from 'picomatch'
 
 export function glob(pattern: string, options: PicomatchOptions = {}): string[] | null {
   const isFullMatch = picomatch(pattern, options)

@@ -1,32 +1,32 @@
 import * as path from 'node:path'
 
-import Ajv7 from 'ajv'
-import Ajv2019 from 'ajv/dist/2019'
-import Ajv2020 from 'ajv/dist/2020'
-import type AjvCore from 'ajv/dist/core'
-import AjvJTD from 'ajv/dist/jtd'
-import * as draft6metaSchema from 'ajv/lib/refs/json-schema-draft-06.json'
+import { Ajv as Ajv7 } from 'ajv'
+import { Ajv2019 } from 'ajv/dist/2019.js'
+import { Ajv2020 } from 'ajv/dist/2020.js'
+import { Ajv as AjvJTD } from 'ajv/dist/jtd.js'
+import * as draft6metaSchema from 'ajv/lib/refs/json-schema-draft-06.json' assert { type: 'json' }
 import type { ParsedArgs } from 'minimist'
 
-import type { SchemaSpec } from './types'
-import { getOptions } from './options'
-import * as util from './utils'
+import type { SchemaSpec } from './types.js'
+import { getOptions } from './options.js'
+import * as util from './utils.js'
 
+type AjvCore = typeof Ajv7
 type AjvMethod = 'addSchema' | 'addMetaSchema'
 
-const AjvClass: { [S in SchemaSpec]?: typeof AjvCore } = {
+const AjvClass: { [S in SchemaSpec]?: AjvCore } = {
   jtd: AjvJTD,
   draft7: Ajv7,
   draft2019: Ajv2019,
   draft2020: Ajv2020,
 }
 
-export default async function (argv: ParsedArgs): Promise<AjvCore> {
+export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>> {
   const opts = getOptions(argv)
   if (argv.o) {
     opts.code.source = true
   }
-  const Ajv: typeof AjvCore = AjvClass[argv.spec as SchemaSpec] || Ajv7
+  const Ajv = AjvClass[argv.spec as SchemaSpec] || Ajv7
   const ajv = new Ajv(opts)
   let invalid: boolean | undefined
   if (argv.spec !== 'jtd') {
@@ -70,7 +70,11 @@ export default async function (argv: ParsedArgs): Promise<AjvCore> {
       }
       try {
         const module = await import(file)
-        module(ajv)
+        if (typeof module.default === 'function') {
+          module.default(ajv)
+        } else {
+          module(ajv)
+        }
       } catch (err) {
         console.error(`module ${file} is invalid; it should export function`)
         console.error(`error: ${(err as Error).message}`)

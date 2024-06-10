@@ -5,5 +5,8 @@
     "types": ["node", "mocha"],
     "noImplicitAny": false,
     "esModuleInterop": true
+  },
+  "ts-node": {
+    "esm": true,
   }
 }

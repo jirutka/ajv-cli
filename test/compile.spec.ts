@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import type { ExecException } from 'node:child_process'
 import fs from 'node:fs'
 
-import { asyncCli, cli, readJson } from './helpers'
+import { asyncCli, cli, readJson } from './helpers.js'
 
 describe('compile', function () {
   this.timeout(10000)
@@ -82,13 +82,13 @@ describe('compile', function () {
 
   it('should compile schema with custom keyword', () =>
     asyncCli(
-      'compile -s test/custom/schema.json -c ./test/custom/typeof.js -o test/custom/validate_schema.js',
+      'compile -s test/custom/schema.json -c ./test/custom/typeof.js -o test/custom/validate_schema.cjs',
       assertCompiledCustom,
     ))
 
   it('should compile schema with custom keyword from npm package', () =>
     asyncCli(
-      'compile -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -o test/custom/validate_schema.js',
+      'compile -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -o test/custom/validate_schema.cjs',
       assertCompiledCustom,
     ))
 
@@ -106,14 +106,17 @@ describe('compile', function () {
   })
 
   it('should fail to save compiled schemas when path does not exist', done => {
-    cli('compile -s test/schema.json -o no_folder/validate_schema.js', (error, stdout, stderr) => {
-      assert(error instanceof Error)
-      assertValid(stdout, 1)
-      const lines = stderr.split('\n')
-      assert(lines.length > 1)
-      assert(/error\ssaving\sfile/.test(lines[0]))
-      done()
-    })
+    cli(
+      'compile -s test/schema.json -o no_folder/validate_schema.cjs',
+      (error, stdout, stderr) => {
+        assert(error instanceof Error)
+        assertValid(stdout, 1)
+        const lines = stderr.split('\n')
+        assert(lines.length > 1)
+        assert(/error\ssaving\sfile/.test(lines[0]))
+        done()
+      },
+    )
   })
 
   it('should fail to compile if referenced schema is invalid', done => {
@@ -199,11 +202,11 @@ async function assertCompiledCustom(
   assert.strictEqual(stderr, '')
 
   // @ts-ignore
-  const validate = await import('./custom/validate_schema.js')
+  const validate = await import('./custom/validate_schema.cjs')
   const validData = readJson('./test/custom/valid_data.json')
   const invalidData = readJson('./test/custom/invalid_data.json')
   assert.strictEqual(validate.default(validData), true)
   assert.strictEqual(validate.default(invalidData), false)
 
-  fs.unlinkSync('test/custom/validate_schema.js')
+  fs.unlinkSync('test/custom/validate_schema.cjs')
 }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 
 import type { DefinedError } from 'ajv'
 
-import { cli } from './helpers'
+import { cli } from './helpers.js'
 
 describe('validate', function () {
   this.timeout(10000)
@@ -332,7 +332,7 @@ describe('validate', function () {
 
     it('should validate invalid data; custom keyword definition in package', done => {
       cli(
-        'validate -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof -d test/custom/invalid_data.json --errors=line',
+        'validate -s test/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d test/custom/invalid_data.json --errors=line',
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')

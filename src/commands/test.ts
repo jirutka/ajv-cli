@@ -1,8 +1,8 @@
 import type { ParsedArgs } from 'minimist'
 
-import getAjv from '../ajv'
-import type { Command } from '../types'
-import { compile, getFiles, openFile, logJSON } from '../utils'
+import getAjv from '../ajv.js'
+import type { Command } from '../types.js'
+import { compile, getFiles, openFile, logJSON } from '../utils.js'
 
 const cmd: Command = {
   execute,

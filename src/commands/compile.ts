@@ -1,12 +1,12 @@
 import * as fs from 'node:fs'
 
-import type { AnyValidateFunction } from 'ajv/dist/core'
-import standaloneCode from 'ajv/dist/standalone'
+import type { AnyValidateFunction } from 'ajv/dist/core.js'
+import standaloneCode from 'ajv/dist/standalone/index.js'
 import type { ParsedArgs } from 'minimist'
 
-import getAjv from '../ajv'
-import type { Command } from '../types'
-import { getFiles, openFile } from '../utils'
+import getAjv from '../ajv.js'
+import type { Command } from '../types.js'
+import { getFiles, openFile } from '../utils.js'
 
 const cmd: Command = {
   execute,
@@ -87,7 +87,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     refsOrFunc: AnyValidateFunction | { [K in string]?: string },
   ): boolean {
     try {
-      const moduleCode = standaloneCode(ajv, refsOrFunc)
+      const moduleCode = standaloneCode.default(ajv, refsOrFunc)
       try {
         if (argv.o === true) {
           console.log(moduleCode)
