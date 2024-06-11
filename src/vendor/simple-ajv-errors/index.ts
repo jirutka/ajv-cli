@@ -17,7 +17,7 @@ import type {
     Schema,
 } from './types.js';
 
-import clone from 'clone';
+import { deepClone as clone } from '../../utils.js';
 import pluralize from './pluralize.js';
 
 import {
