@@ -18,7 +18,7 @@ import type {
 } from './types.js';
 
 import clone from 'clone';
-import pluralize from 'pluralize';
+import pluralize from './pluralize.js';
 
 import {
     ofErrorKeywords,
