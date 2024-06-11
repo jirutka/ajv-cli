@@ -28,7 +28,7 @@ const jsConfigRules = {
   'prefer-destructuring': ['warn', { VariableDeclarator: { object: true } }],
   radix: 'error',
   semi: 'off',
-  'valid-jsdoc': ['error', { requireReturn: false }],
+  'valid-jsdoc': 'off',
   'no-useless-escape': 'error',
   'no-void': 'error',
   'no-var': 'error',
