@@ -1,8 +1,6 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-import { Ajv } from 'ajv'
-import { AnyValidateFunction } from 'ajv/dist/core.js'
 import YAML from 'yaml'
 import JSON5 from 'json5'
 
@@ -74,34 +72,4 @@ export function readFile(filename: string, suffix: string): any {
     process.exit(2)
   }
   return json
-}
-
-export function logJSON(mode: string, data: any, ajv?: Ajv): string {
-  switch (mode) {
-    case 'json':
-      data = JSON.stringify(data, null, '  ')
-      break
-    case 'line':
-      data = JSON.stringify(data)
-      break
-    case 'no':
-      data = ''
-      break
-    case 'text':
-      if (ajv) {
-        data = ajv.errorsText(data)
-      }
-  }
-  return data
-}
-
-export function compile(ajv: Ajv, schemaFile: string): AnyValidateFunction {
-  const schema = readFile(schemaFile, 'schema')
-  try {
-    return ajv.compile(schema)
-  } catch (err: any) {
-    console.error(`schema ${schemaFile} is invalid`)
-    console.error(`error: ${err.message}`)
-    process.exit(1)
-  }
 }

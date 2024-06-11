@@ -1,9 +1,11 @@
+import type { Ajv } from 'ajv'
+import type { AnyValidateFunction } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
 import getAjv from '../ajv.js'
 import type { Command } from '../types.js'
-import { compile, getFiles, readFile, logJSON } from '../utils.js'
+import { getFiles, readFile } from '../utils.js'
 
 const cmd: Command = {
   execute,
@@ -31,7 +33,7 @@ export default cmd
 
 async function execute(argv: ParsedArgs): Promise<boolean> {
   const ajv = await getAjv(argv)
-  const validate = compile(ajv, argv.s)
+  const validate = compileSchema(ajv, argv.s)
   return getFiles(argv.d)
     .map(validateDataFile)
     .every(x => x)
@@ -52,13 +54,43 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
           console.log('no changes')
         } else {
           console.log('changes:')
-          console.log(logJSON(argv.changes, patch))
+          console.log(formatData(argv.changes, patch))
         }
       }
     } else {
       console.error(file, 'invalid')
-      console.error(logJSON(argv.errors, validate.errors, ajv))
+      console.error(formatData(argv.errors, validate.errors, ajv))
     }
     return validData
   }
+}
+
+function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
+  const schema = readFile(schemaFile, 'schema')
+  try {
+    return ajv.compile(schema)
+  } catch (err: any) {
+    console.error(`schema ${schemaFile} is invalid`)
+    console.error(`error: ${err.message}`)
+    process.exit(1)
+  }
+}
+
+function formatData(mode: string, data: any, ajv?: Ajv): string {
+  switch (mode) {
+    case 'json':
+      data = JSON.stringify(data, null, '  ')
+      break
+    case 'line':
+      data = JSON.stringify(data)
+      break
+    case 'no':
+      data = ''
+      break
+    case 'text':
+      if (ajv) {
+        data = ajv.errorsText(data)
+      }
+  }
+  return data
 }
