@@ -3,6 +3,7 @@ import type { AnyValidateFunction } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
+import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
 import type { Command } from '../types.js'
 import { getFiles, readFile } from '../utils.js'
@@ -58,8 +59,9 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
         }
       }
     } else {
+      const errors = rewriteSchemaPathInErrors(validate.errors!, argv.verbose)
       console.error(file, 'invalid')
-      console.error(formatData(argv.errors, validate.errors, ajv))
+      console.error(formatData(argv.errors, errors, ajv))
     }
     return validData
   }
@@ -68,6 +70,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
 function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
   const schema = readFile(schemaFile, 'schema')
   try {
+    injectPathToSchemas(schema, '#')
     return ajv.compile(schema)
   } catch (err: any) {
     console.error(`schema ${schemaFile} is invalid`)

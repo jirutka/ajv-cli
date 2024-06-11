@@ -185,7 +185,7 @@ describe('validate', function () {
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
-          assertRequiredErrors(stderr, 'schema.json')
+          assertRequiredErrors(stderr, 'schema.json#')
           done()
         },
       )

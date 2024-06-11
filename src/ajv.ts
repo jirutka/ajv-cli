@@ -6,6 +6,7 @@ import { Ajv2020 } from 'ajv/dist/2020.js'
 import { Ajv as AjvJTD } from 'ajv/dist/jtd.js'
 import type { ParsedArgs } from 'minimist'
 
+import { injectPathToSchemas } from './ajv-schema-path-workaround.js'
 import type { SchemaSpec } from './types.js'
 import { getOptions } from './options.js'
 import * as util from './utils.js'
@@ -24,6 +25,11 @@ const AjvClass: { [S in SchemaSpec]?: AjvCore } = {
 
 export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>> {
   const opts = getOptions(argv)
+  const isValidate = !argv._[0] || argv._[0] === 'validate'
+  if (isValidate) {
+    // verbose is needed for ajv-schema-path-workaround.
+    opts.verbose = true
+  }
   if (argv.o) {
     opts.code.source = true
   }
@@ -52,6 +58,9 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
     for (const file of util.getFiles(args)) {
       const schema = util.readFile(file, fileType)
       try {
+        if (isValidate && method === 'addSchema') {
+          injectPathToSchemas(schema)
+        }
         ajv[method](schema)
       } catch (err) {
         console.error(`${fileType} ${file} is invalid`)
