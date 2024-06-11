@@ -3,6 +3,7 @@ import type { AnyValidateFunction } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
+import { mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
 import type { Command } from '../types.js'
@@ -22,6 +23,7 @@ const cmd: Command = {
       r: { $ref: '#/$defs/stringOrArray' },
       m: { $ref: '#/$defs/stringOrArray' },
       c: { $ref: '#/$defs/stringOrArray' },
+      'merge-errors': { type: 'boolean' },
       errors: { enum: ['json', 'line', 'text', 'js', 'no'] },
       changes: { enum: [true, 'json', 'line', 'js'] },
       spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
@@ -59,9 +61,15 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
         }
       }
     } else {
-      const errors = rewriteSchemaPathInErrors(validate.errors!, argv.verbose)
       console.error(file, 'invalid')
-      console.error(formatData(argv.errors, errors, ajv))
+
+      if (argv['merge-errors']) {
+        const errors = rewriteSchemaPathInErrors(validate.errors!, true)
+        console.error(formatData(argv.errors, mergeErrorObjects(errors, argv.verbose || false)))
+      } else {
+        const errors = rewriteSchemaPathInErrors(validate.errors!, argv.verbose)
+        console.error(formatData(argv.errors, errors, ajv))
+      }
     }
     return validData
   }
