@@ -1,5 +1,7 @@
+import { inspect } from 'node:util'
+
 import type { Ajv } from 'ajv'
-import type { AnyValidateFunction } from 'ajv/dist/core.js'
+import type { AnyValidateFunction, ErrorObject } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
@@ -9,6 +11,8 @@ import getAjv from '../ajv.js'
 import { parseFile } from '../parsers/index.js'
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
+
+type ErrorFormat = 'js' | 'json' | 'line' | 'text'
 
 const cmd: Command = {
   execute,
@@ -58,18 +62,19 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
           console.log('no changes')
         } else {
           console.log('changes:')
-          console.log(formatData(argv.changes, patch))
+          console.log(stringify(patch, argv.changes))
         }
       }
     } else {
       console.error(file, 'invalid')
 
-      if (argv['merge-errors']) {
-        const errors = rewriteSchemaPathInErrors(validate.errors!, true)
-        console.error(formatData(argv.errors, mergeErrorObjects(errors, argv.verbose || false)))
-      } else {
-        const errors = rewriteSchemaPathInErrors(validate.errors!, argv.verbose)
-        console.error(formatData(argv.errors, errors, ajv))
+      if (argv.errors !== 'no') {
+        const output = formatErrors(validate.errors!, ajv, {
+          format: argv.errors,
+          merge: !!argv['merge-errors'],
+          verbose: !!argv.verbose,
+        })
+        console.error(output)
       }
     }
     return validData
@@ -88,21 +93,28 @@ function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
   }
 }
 
-function formatData(mode: string, data: any, ajv?: Ajv): string {
-  switch (mode) {
-    case 'json':
-      data = JSON.stringify(data, null, '  ')
-      break
-    case 'line':
-      data = JSON.stringify(data)
-      break
-    case 'no':
-      data = ''
-      break
-    case 'text':
-      if (ajv) {
-        data = ajv.errorsText(data)
-      }
+function formatErrors(
+  rawErrors: ErrorObject[],
+  ajv: Ajv,
+  opts: { format: ErrorFormat; merge: boolean; verbose: boolean },
+): string {
+  if (opts.format === 'text') {
+    return ajv.errorsText(rawErrors)
+  } else if (opts.merge) {
+    const errors = rewriteSchemaPathInErrors(rawErrors, true)
+    return stringify(mergeErrorObjects(errors, opts.verbose), opts.format)
   }
-  return data
+  const errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
+  return stringify(errors, opts.format)
+}
+
+function stringify(data: unknown, format: 'js' | 'json' | 'line'): string {
+  switch (format) {
+    case 'json':
+      return JSON.stringify(data, null, '  ')
+    case 'line':
+      return JSON.stringify(data)
+    default:
+      return inspect(data, { colors: process.stdout.isTTY, depth: 5 })
+  }
 }
