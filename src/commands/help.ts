@@ -214,10 +214,11 @@ ${schemaSpecOption}
       * js            JavaScript object (default).
       * json          Formatted JSON.
       * json-oneline  Single line JSON.
+      * jsonpath      One error message per line preceded by JSON Path of the
+                      invalid value.
       * line          One error message per line preceded by the location
                       (<filepath:<line>:<column>) of the invalid value. This
                       implicitly enables --errors-location.
-      * text          Text message.
       * no            Don't log errors.
 
   --changes <format>

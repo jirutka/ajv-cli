@@ -17,7 +17,7 @@ import {
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
-type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'line' | 'text'
+type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'line' | 'jsonpath'
 
 const cmd: Command = {
   execute,
@@ -35,7 +35,7 @@ const cmd: Command = {
       c: { $ref: '#/$defs/stringOrArray' },
       'errors-location': { type: 'boolean' },
       'merge-errors': { type: 'boolean' },
-      errors: { enum: ['json', 'json-oneline', 'line', 'text', 'js', 'no'] },
+      errors: { enum: ['json', 'json-oneline', 'line', 'jsonpath', 'js', 'no'] },
       changes: { enum: [true, 'json', 'json-oneline', 'js'] },
       spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
     },
@@ -74,7 +74,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
       console.error(filepath, 'invalid')
 
       if (argv.errors !== 'no') {
-        const output = formatErrors(validate.errors!, ajv, file, {
+        const output = formatErrors(validate.errors!, file, {
           format: argv.errors,
           location: !!argv['errors-location'],
           merge: !!argv['merge-errors'],
@@ -101,15 +101,12 @@ function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
 
 function formatErrors(
   rawErrors: ErrorObject[],
-  ajv: Ajv,
   file: ParsedFile,
   opts: { format: ErrorFormat; location: boolean; merge: boolean; verbose: boolean },
 ): string {
   let errors: MergedErrorObject[]
 
-  if (opts.format === 'text') {
-    return ajv.errorsText(rawErrors)
-  } else if (opts.merge) {
+  if (opts.merge) {
     errors = mergeErrorObjects(rewriteSchemaPathInErrors(rawErrors, true), opts.verbose)
   } else {
     errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
@@ -128,6 +125,9 @@ function formatErrors(
         .join('\n')
     }
     errors = errorsWithLoc
+  }
+  if (opts.format === 'jsonpath') {
+    return errors.map(err => `#${err.instancePath} - ${err.message}`).join('\n')
   }
 
   return stringify(errors, opts.format)
