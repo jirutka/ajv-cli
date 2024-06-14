@@ -17,7 +17,7 @@ import {
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
-type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'text'
+type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'line' | 'text'
 
 const cmd: Command = {
   execute,
@@ -35,7 +35,7 @@ const cmd: Command = {
       c: { $ref: '#/$defs/stringOrArray' },
       'errors-location': { type: 'boolean' },
       'merge-errors': { type: 'boolean' },
-      errors: { enum: ['json', 'json-oneline', 'text', 'js', 'no'] },
+      errors: { enum: ['json', 'json-oneline', 'line', 'text', 'js', 'no'] },
       changes: { enum: [true, 'json', 'json-oneline', 'js'] },
       spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
     },
@@ -114,9 +114,22 @@ function formatErrors(
   } else {
     errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
   }
-  if (opts.location) {
-    errors = withInstanceLocation(errors, file)
+  if (opts.location || opts.format === 'line') {
+    const errorsWithLoc = withInstanceLocation(errors, file)
+
+    if (opts.format === 'line') {
+      return errorsWithLoc
+        .map(err => {
+          const { start } = err.instanceLocation
+          return start ?
+              `${file.filename}:${start.line}:${start.col} - ${err.message}`
+            : `${file.filename} - ${err.message}`
+        })
+        .join('\n')
+    }
+    errors = errorsWithLoc
   }
+
   return stringify(errors, opts.format)
 }
 
