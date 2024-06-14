@@ -26,6 +26,7 @@
     "test": "npm run build && npm run eslint && npm run test-cov"
   },
   "dependencies": {
+    "@humanwhocodes/momoa": "^3.0.2",
     "@json-schema-tools/traverse": "^1.10.4",
     "ajv": "^8.0.0",
     "damerau-levenshtein": "^1.0.8",
