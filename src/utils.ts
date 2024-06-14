@@ -50,7 +50,6 @@ function decodeFile(contents: string, format: string): any {
     case 'json':
       return JSON.parse(contents)
     case 'jsonc':
-    case 'json5':
       return JSON5.parse(contents)
     case 'yml':
     case 'yaml':

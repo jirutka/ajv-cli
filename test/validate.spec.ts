@@ -35,15 +35,6 @@ describe('validate', function () {
       })
     })
 
-    it('should validate valid data with the "json5" extension', done => {
-      cli(`-s ${fdir}/schema.json -d ${fdir}/valid_data.json5`, (error, stdout, stderr) => {
-        assert.strictEqual(error, null)
-        assertValid(stdout, 1)
-        assert.strictEqual(stderr, '')
-        done()
-      })
-    })
-
     it('should validate valid data with the "jsonc" extension', done => {
       cli(`-s ${fdir}/schema.json -d ${fdir}/valid_data.jsonc`, (error, stdout, stderr) => {
         assert.strictEqual(error, null)
