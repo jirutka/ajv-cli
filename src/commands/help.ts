@@ -1,7 +1,6 @@
 import type { ParsedArgs } from 'minimist'
 
 import type { Command, CmdName } from '../types.js'
-import usage from './usage.js'
 
 const cmd: Command = {
   execute,
@@ -14,6 +13,16 @@ const cmd: Command = {
 }
 
 export default cmd
+
+export function usage(): void {
+  console.error(`
+usage:
+  validate:  ajv [validate] -s schema.json -d data.json
+  compile:   ajv compile -s schema.json
+
+    help:      ajv help
+               ajv help <command>`)
+}
 
 const commands: { [Name in CmdName]: () => void } = {
   help: mainHelp,

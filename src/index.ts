@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 import minimist from 'minimist'
 
+import { usage } from './commands/help.js'
 import commands from './commands/index.js'
-import usage from './commands/usage.js'
 import type { CmdName } from './types.js'
 import { checkOptions } from './options.js'
 
