@@ -5,8 +5,9 @@ import standaloneCode from 'ajv/dist/standalone/index.js'
 import type { ParsedArgs } from 'minimist'
 
 import getAjv from '../ajv.js'
+import { parseFile } from '../parsers/index.js'
 import type { Command } from '../types.js'
-import { getFiles, readFile } from '../utils.js'
+import { getFiles } from '../utils.js'
 
 const cmd: Command = {
   execute,
@@ -53,7 +54,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
   }
 
   function compileSchema(file: string): AnyValidateFunction | undefined {
-    const sch = readFile(file, `schema ${file}`)
+    const sch = parseFile(file)
     try {
       const id = sch?.$id
       ajv.addSchema(sch, id ? undefined : file)

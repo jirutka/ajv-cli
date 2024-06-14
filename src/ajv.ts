@@ -9,6 +9,7 @@ import type { ParsedArgs } from 'minimist'
 import { injectPathToSchemas } from './ajv-schema-path-workaround.js'
 import type { SchemaSpec } from './types.js'
 import { getOptions } from './options.js'
+import { parseFile } from './parsers/index.js'
 import * as util from './utils.js'
 
 type AjvCore = typeof Ajv7
@@ -37,7 +38,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
   const ajv = new Ajv(opts)
   let invalid: boolean | undefined
   if (argv.spec !== 'jtd') {
-    ajv.addMetaSchema(util.readFile(draft6metaSchemaPath, 'default meta-schema'))
+    ajv.addMetaSchema(parseFile(draft6metaSchemaPath))
   }
   addSchemas(argv.m, 'addMetaSchema', 'meta-schema')
   addSchemas(argv.r, 'addSchema', 'schema')
@@ -56,7 +57,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
       return
     }
     for (const file of util.getFiles(args)) {
-      const schema = util.readFile(file, fileType)
+      const schema = parseFile(file)
       try {
         if (isValidate && method === 'addSchema') {
           injectPathToSchemas(schema)

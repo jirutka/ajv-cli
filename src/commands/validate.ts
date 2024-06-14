@@ -6,8 +6,9 @@ import type { ParsedArgs } from 'minimist'
 import { mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
+import { parseFile } from '../parsers/index.js'
 import type { Command } from '../types.js'
-import { getFiles, readFile } from '../utils.js'
+import { getFiles } from '../utils.js'
 
 const cmd: Command = {
   execute,
@@ -42,7 +43,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     .every(x => x)
 
   function validateDataFile(file: string): boolean {
-    const data = readFile(file, `data file ${file}`)
+    const data = parseFile(file)
     let original
     if (argv.changes) {
       original = JSON.parse(JSON.stringify(data))
@@ -76,7 +77,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
 }
 
 function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
-  const schema = readFile(schemaFile, 'schema')
+  const schema = parseFile(schemaFile)
   try {
     injectPathToSchemas(schema, '#')
     return ajv.compile(schema)
