@@ -9,13 +9,13 @@ import { type MergedErrorObject, mergeErrorObjects } from '../ajv-errors-merger.
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
 import { codespan } from '../codespan.js'
+import { type Command } from './index.js'
 import {
   type LocationRange,
   type ParsedFile,
   parseFile,
   parseFileWithMeta,
 } from '../parsers/index.js'
-import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
 const errorFormats = ['js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty'] as const

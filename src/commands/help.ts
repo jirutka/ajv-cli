@@ -1,6 +1,6 @@
 import type { ParsedArgs } from 'minimist'
 
-import type { CmdName, Command } from '../types.js'
+import type { CmdName, Command } from './index.js'
 
 const ajvOptions = `\
 Ajv strict mode options:
