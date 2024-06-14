@@ -5,10 +5,15 @@ import type { AnyValidateFunction, ErrorObject } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
 
-import { mergeErrorObjects } from '../ajv-errors-merger.js'
+import { type MergedErrorObject, mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
-import { parseFile } from '../parsers/index.js'
+import {
+  type LocationRange,
+  type ParsedFile,
+  parseFile,
+  parseFileWithMeta,
+} from '../parsers/index.js'
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
@@ -28,6 +33,7 @@ const cmd: Command = {
       r: { $ref: '#/$defs/stringOrArray' },
       m: { $ref: '#/$defs/stringOrArray' },
       c: { $ref: '#/$defs/stringOrArray' },
+      'errors-location': { type: 'boolean' },
       'merge-errors': { type: 'boolean' },
       errors: { enum: ['json', 'line', 'text', 'js', 'no'] },
       changes: { enum: [true, 'json', 'line', 'js'] },
@@ -46,16 +52,15 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     .map(validateDataFile)
     .every(x => x)
 
-  function validateDataFile(file: string): boolean {
-    const data = parseFile(file)
-    let original
-    if (argv.changes) {
-      original = JSON.parse(JSON.stringify(data))
-    }
+  function validateDataFile(filepath: string): boolean {
+    const file = parseFileWithMeta(filepath)
+    const { data } = file
+
+    const original = argv.changes ? JSON.parse(JSON.stringify(data)) : null
     const validData = validate(data) as boolean
 
     if (validData) {
-      console.log(file, 'valid')
+      console.log(filepath, 'valid')
       if (argv.changes) {
         const patch = jsonPatch.compare(original, data)
         if (patch.length === 0) {
@@ -66,11 +71,12 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
         }
       }
     } else {
-      console.error(file, 'invalid')
+      console.error(filepath, 'invalid')
 
       if (argv.errors !== 'no') {
-        const output = formatErrors(validate.errors!, ajv, {
+        const output = formatErrors(validate.errors!, ajv, file, {
           format: argv.errors,
+          location: !!argv['errors-location'],
           merge: !!argv['merge-errors'],
           verbose: !!argv.verbose,
         })
@@ -96,15 +102,21 @@ function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
 function formatErrors(
   rawErrors: ErrorObject[],
   ajv: Ajv,
-  opts: { format: ErrorFormat; merge: boolean; verbose: boolean },
+  file: ParsedFile,
+  opts: { format: ErrorFormat; location: boolean; merge: boolean; verbose: boolean },
 ): string {
+  let errors: MergedErrorObject[]
+
   if (opts.format === 'text') {
     return ajv.errorsText(rawErrors)
   } else if (opts.merge) {
-    const errors = rewriteSchemaPathInErrors(rawErrors, true)
-    return stringify(mergeErrorObjects(errors, opts.verbose), opts.format)
+    errors = mergeErrorObjects(rewriteSchemaPathInErrors(rawErrors, true), opts.verbose)
+  } else {
+    errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
   }
-  const errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
+  if (opts.location) {
+    errors = withInstanceLocation(errors, file)
+  }
   return stringify(errors, opts.format)
 }
 
@@ -117,4 +129,23 @@ function stringify(data: unknown, format: 'js' | 'json' | 'line'): string {
     default:
       return inspect(data, { colors: process.stdout.isTTY, depth: 5 })
   }
+}
+
+type WithInstanceLocation<T> = T & {
+  instanceLocation: Partial<LocationRange> & {
+    filename: string
+  }
+}
+
+function withInstanceLocation<T extends { instancePath: string }>(
+  errors: T[],
+  file: ParsedFile,
+): WithInstanceLocation<T>[] {
+  return errors.map(err => ({
+    ...err,
+    instanceLocation: {
+      filename: file.filename,
+      ...file.locate(err.instancePath.split('/').slice(1)),
+    },
+  }))
 }

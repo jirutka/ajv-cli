@@ -206,6 +206,9 @@ ${schemaSpecOption}
   --merge-errors
       Merge related errors for each instance path.
 
+  --errors-location
+      Include data location (filename, line and column number) in errors.
+
   --errors <format>
       Error reporting format:
       * js    JavaScript object (default).

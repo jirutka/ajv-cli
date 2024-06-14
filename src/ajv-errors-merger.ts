@@ -3,7 +3,7 @@ import type { ErrorObject } from 'ajv'
 import { getSimpleErrors } from './vendor/simple-ajv-errors/index.js'
 import type { VerboseErrorObject } from './vendor/simple-ajv-errors/types.js'
 
-type MergedErrorObject = Omit<ErrorObject, 'keyword' | 'params' | 'propertyName'>
+export type MergedErrorObject = Omit<ErrorObject, 'keyword' | 'params' | 'propertyName'>
 
 export function mergeErrorObjects(errors: ErrorObject[], verbose: boolean): MergedErrorObject[] {
   return getSimpleErrors(errors as VerboseErrorObject[], { dataVar: '$' }).map(err => {
