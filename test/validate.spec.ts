@@ -46,7 +46,7 @@ describe('validate', function () {
 
     it('should validate invalid data', done => {
       cli(
-        `-s ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=line`,
+        `-s ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
@@ -81,7 +81,7 @@ describe('validate', function () {
 
     it('should validate invalid data with JTD schema', done => {
       cli(
-        `validate -s ${fdir}/jtd/schema.json -d ${fdir}/jtd/invalid_data.json --spec=jtd --errors=line`,
+        `validate -s ${fdir}/jtd/schema.json -d ${fdir}/jtd/invalid_data.json --spec=jtd --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
@@ -107,7 +107,7 @@ describe('validate', function () {
 
       it('should exit with error if some files are invalid', done => {
         cli(
-          `-s ${fdir}/schema.json -d "${fdir}/{valid,invalid}*.json" --errors=line`,
+          `-s ${fdir}/schema.json -d "${fdir}/{valid,invalid}*.json" --errors=json-oneline`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
             assertValid(stdout, 2)
@@ -133,7 +133,7 @@ describe('validate', function () {
 
       it('should exit with error if some files are invalid', done => {
         cli(
-          `-s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/valid_data2.json -d ${fdir}/invalid_data.json --errors=line`,
+          `-s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/valid_data2.json -d ${fdir}/invalid_data.json --errors=json-oneline`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
             assertValid(stdout, 2)
@@ -145,7 +145,7 @@ describe('validate', function () {
 
       it('should exit with error if some files are invalid (multiple patterns)', done => {
         cli(
-          `-s ${fdir}/schema.json -d "${fdir}/valid*.json" -d "${fdir}/invalid*.json" --errors=line`,
+          `-s ${fdir}/schema.json -d "${fdir}/valid*.json" -d "${fdir}/invalid*.json" --errors=json-oneline`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
             assertValid(stdout, 2)
@@ -172,7 +172,7 @@ describe('validate', function () {
 
     it('should resolve reference and validate invalid data', done => {
       cli(
-        `-s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=line`,
+        `-s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
@@ -198,7 +198,7 @@ describe('validate', function () {
 
     it('should validate invalid data', done => {
       cli(
-        `-s ${fdir}/meta/schema.json -d ${fdir}/meta/invalid_data.json -m ${fdir}/meta/meta_schema.json --errors=line --strict=false`,
+        `-s ${fdir}/meta/schema.json -d ${fdir}/meta/invalid_data.json -m ${fdir}/meta/meta_schema.json --errors=json-oneline --strict=false`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
@@ -215,7 +215,7 @@ describe('validate', function () {
 
     it('should fail on invalid schema', done => {
       cli(
-        `-s ${fdir}/meta/invalid_schema.json -d ${fdir}/meta/valid_data.json -m ${fdir}/meta/meta_schema.json --errors=line`,
+        `-s ${fdir}/meta/invalid_schema.json -d ${fdir}/meta/valid_data.json -m ${fdir}/meta/meta_schema.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
@@ -234,7 +234,7 @@ describe('validate', function () {
   describe('option "changes"', () => {
     it('should log changes in the object after validation', done => {
       cli(
-        `-s ${fdir}/schema.json -d ${fdir}/data_with_additional.json --remove-additional  --changes=line`,
+        `-s ${fdir}/schema.json -d ${fdir}/data_with_additional.json --remove-additional  --changes=json-oneline`,
         (error, stdout, stderr) => {
           assert.strictEqual(error, null)
           const lines = assertValid(stdout, 1, 2)
@@ -306,7 +306,7 @@ describe('validate', function () {
 
     it('should validate invalid data; custom keyword definition in file', done => {
       cli(
-        `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -d ${fdir}/custom/invalid_data.json --errors=line`,
+        `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -d ${fdir}/custom/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
@@ -323,7 +323,7 @@ describe('validate', function () {
 
     it('should validate invalid data; custom keyword definition in package', done => {
       cli(
-        `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d ${fdir}/custom/invalid_data.json --errors=line`,
+        `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d ${fdir}/custom/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')

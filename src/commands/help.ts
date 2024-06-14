@@ -211,17 +211,17 @@ ${schemaSpecOption}
 
   --errors <format>
       Error reporting format:
-      * js    JavaScript object (default).
-      * json  Formatted JSON.
-      * line  Single line JSON.
-      * text  Text message
-      * no    Don't log errors.
+      * js            JavaScript object (default).
+      * json          Formatted JSON.
+      * json-oneline  Single line JSON.
+      * text          Text message
+      * no            Don't log errors.
 
   --changes <format>
       Log changes in the data after validation formatted as:
-      * js    JavaScript object (default).
-      * json  Formatted JSON.
-      * line  Single line JSON.
+      * js            JavaScript object (default).
+      * json          Formatted JSON.
+      * json-oneline  Single line JSON.
 
 ${ajvOptions}
 `

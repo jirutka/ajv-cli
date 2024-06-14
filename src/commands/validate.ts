@@ -17,7 +17,7 @@ import {
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
-type ErrorFormat = 'js' | 'json' | 'line' | 'text'
+type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'text'
 
 const cmd: Command = {
   execute,
@@ -35,8 +35,8 @@ const cmd: Command = {
       c: { $ref: '#/$defs/stringOrArray' },
       'errors-location': { type: 'boolean' },
       'merge-errors': { type: 'boolean' },
-      errors: { enum: ['json', 'line', 'text', 'js', 'no'] },
-      changes: { enum: [true, 'json', 'line', 'js'] },
+      errors: { enum: ['json', 'json-oneline', 'text', 'js', 'no'] },
+      changes: { enum: [true, 'json', 'json-oneline', 'js'] },
       spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
     },
     ajvOptions: true,
@@ -120,11 +120,11 @@ function formatErrors(
   return stringify(errors, opts.format)
 }
 
-function stringify(data: unknown, format: 'js' | 'json' | 'line'): string {
+function stringify(data: unknown, format: 'js' | 'json' | 'json-oneline'): string {
   switch (format) {
     case 'json':
       return JSON.stringify(data, null, '  ')
-    case 'line':
+    case 'json-oneline':
       return JSON.stringify(data)
     default:
       return inspect(data, { colors: process.stdout.isTTY, depth: 5 })
