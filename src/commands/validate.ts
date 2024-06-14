@@ -18,7 +18,8 @@ import {
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
-type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'line' | 'jsonpath' | 'pretty'
+const errorFormats = ['js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty'] as const
+type ErrorFormat = (typeof errorFormats)[number]
 
 const cmd: Command = {
   execute,
@@ -36,7 +37,9 @@ const cmd: Command = {
       c: { $ref: '#/$defs/stringOrArray' },
       'errors-location': { type: 'boolean' },
       'merge-errors': { type: 'boolean' },
-      errors: { enum: ['json', 'json-oneline', 'line', 'jsonpath', 'js', 'pretty', 'no'] },
+      errors: {
+        enum: [...errorFormats, 'no'],
+      },
       changes: { enum: [true, 'json', 'json-oneline', 'js'] },
       spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
     },
