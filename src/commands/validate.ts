@@ -8,6 +8,7 @@ import type { ParsedArgs } from 'minimist'
 import { type MergedErrorObject, mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
+import { codespan } from '../codespan.js'
 import {
   type LocationRange,
   type ParsedFile,
@@ -17,7 +18,7 @@ import {
 import type { Command } from '../types.js'
 import { getFiles } from '../utils.js'
 
-type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'line' | 'jsonpath'
+type ErrorFormat = 'js' | 'json' | 'json-oneline' | 'line' | 'jsonpath' | 'pretty'
 
 const cmd: Command = {
   execute,
@@ -35,7 +36,7 @@ const cmd: Command = {
       c: { $ref: '#/$defs/stringOrArray' },
       'errors-location': { type: 'boolean' },
       'merge-errors': { type: 'boolean' },
-      errors: { enum: ['json', 'json-oneline', 'line', 'jsonpath', 'js', 'no'] },
+      errors: { enum: ['json', 'json-oneline', 'line', 'jsonpath', 'js', 'pretty', 'no'] },
       changes: { enum: [true, 'json', 'json-oneline', 'js'] },
       spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
     },
@@ -111,18 +112,37 @@ function formatErrors(
   } else {
     errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
   }
-  if (opts.location || opts.format === 'line') {
+  if (opts.location || opts.format === 'line' || opts.format === 'pretty') {
     const errorsWithLoc = withInstanceLocation(errors, file)
+    const { filename } = file
 
-    if (opts.format === 'line') {
-      return errorsWithLoc
-        .map(err => {
-          const { start } = err.instanceLocation
-          return start ?
-              `${file.filename}:${start.line}:${start.col} - ${err.message}`
-            : `${file.filename} - ${err.message}`
-        })
-        .join('\n')
+    switch (opts.format) {
+      case 'line': {
+        return errorsWithLoc
+          .map(err => {
+            const { start } = err.instanceLocation
+            return start ?
+                `${filename}:${start.line}:${start.col} - ${err.message}`
+              : `${filename} - ${err.message}`
+          })
+          .join('\n')
+      }
+      case 'pretty': {
+        return errorsWithLoc
+          .map(({ message, instanceLocation: location, instancePath }) => {
+            if (location.start) {
+              return codespan(file.lines, location as LocationRange, {
+                colors: process.stdout.isTTY,
+                title: `#${instancePath}`,
+                filename,
+                message,
+              })
+            }
+            // This shouldn't happen...
+            return `${filename}: ${message}`
+          })
+          .join('\n\n')
+      }
     }
     errors = errorsWithLoc
   }

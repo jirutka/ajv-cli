@@ -219,6 +219,9 @@ ${schemaSpecOption}
       * line          One error message per line preceded by the location
                       (<filepath:<line>:<column>) of the invalid value. This
                       implicitly enables --errors-location.
+      * pretty        File location and JSON Path of the invalid value followed
+                      by a code span with an in-place error message. This
+                      implicitly enables --errors-location.
       * no            Don't log errors.
 
   --changes <format>
