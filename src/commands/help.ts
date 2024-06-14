@@ -19,7 +19,6 @@ const commands: { [Name in CmdName]: () => void } = {
   help: mainHelp,
   compile: helpCompile,
   validate: helpValidate,
-  migrate: helpMigrate,
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -43,13 +42,11 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
 function mainHelp(): void {
   _helpValidate()
   _helpCompile()
-  _helpMigrate()
   schemaSpecOption()
   console.log(`
 More information:
         ajv help validate
         ajv help compile
-        ajv help migrate
         ajv help test`)
 }
 
@@ -120,30 +117,6 @@ function _helpCompile(): void {
 Compile schema(s)
     ajv compile -s schema.json
     ajv compile -s "schema*.json"`)
-}
-
-function helpMigrate(): void {
-  _helpMigrate()
-  console.log(`
-parameters
-    -s JSON schema(s) to migrate to draft-07 or draft-2019-09 (required)
-    -o output file for migrated schema (only allowed for a single schema)
-
-    -s can be glob and can be used multiple times
-    If option -o is used only one schema can be migrated
-    glob should be enclosed in double quotes
-    .json extension can be omitted (but should be used in globs)`)
-  schemaSpecOption()
-  console.log(`
-    --indent=<N>            indentation in migrated schema JSON file, 4 by default
-    --validate-schema=false skip schema validation`)
-}
-
-function _helpMigrate(): void {
-  console.log(`
-Migrate schema(s) to draft-07 or draft-2019-09
-    ajv migrate -s schema.json -o migrated_schema.json
-    ajv migrate -s "schema*.json"`)
 }
 
 function helpAjvOptions(): void {
