@@ -121,62 +121,143 @@ Compile schema(s)
 
 function helpAjvOptions(): void {
   console.log(`
-Ajv options (see https://github.com/epoberezkin/ajv#options):
-    --strict=false     disable strict mode
+Ajv strict mode options:
 
-    --strict-tuples=   unconstrained tuples
-             true      throw exception
-             false     allow
-             log       log warning
+  --allow-matching-properties
+      Allow overlap between "properties" and "patternProperties". Does not
+      affect other strict mode restrictions.
 
-    --strict-types=    union or unspecified types
-             true      throw exception
-             false     allow
-             log       log warning
+  --allow-union-types
+      Allow using multiple non-null types in "type" keyword (one of
+      --strict-types restrictions).
 
-    --allow-matching-properties  allow "properties" matching patterns in "patternProperties"
+  --strict <bool | "log">
+      Strict mode:
+      * true       Throw an exception when any strict mode restriction is
+                   violated.
+      * log        Log warning when any strict mode restriction is violated.
+      * false      Ignore all strict mode violations.
+      * (default)  Use defaults for all --strict-* options.
 
-    --allow-union-types  allow union type keyword
+  --strict-numbers <bool>
+      Whether to accept NaN and Infinity as number types during validation:
+      * true   Fail validation if NaN or Infinity is passed where number is
+               expected  (default).
+      * false  Allow NaN and Infinity as number.
 
-    --validate-formats=false  disable format validation
+  --strict-required <bool | "log">
+      See https://ajv.js.org/strict-mode.html#defined-required-properties
+      * true   Throw an exception when strict required restriction is violated.
+      * log    Log warning when strict required restriction is violated.
+      * false  Ignore strict required violations (default).
 
-    --data             use $data references
+  --strict-schema <bool | "log">
+      Prevent unknown keywords, formats etc.
+      * true   Throw an exception when any strict schema restriction is
+               violated (default).
+      * log    Log warning when any strict schema restriction is violated.
+      * false  Ignore all strict schema violations.
 
-    --all-errors       collect all errors
+  --strict-tuples <bool | "log">
+      See https://ajv.js.org/strict-mode.html#unconstrained-tuples.
+      * true   Throw an exception when any strict tuples restriction is
+               violated.
+      * log    Log warning when any strict tuples restriction is violated
+               (default).
+      * false  Ignore all strict tuples violations.
 
-    --verbose          include schema and data in errors
+  --strict-types <bool | "log">
+      See https://ajv.js.org/strict-mode.html#strict-types. Option values:
+      * true   Throw an exception when any strict types restriction is violated.
+      * log    Log warning when any strict types restriction is violated
+               (default).
+      * false  Ignore all strict types violations.
 
-    --comment          log schema "$comment"s
+  --validate-formats <bool>
+      Disable format validation. In strict mode, unknown formats will throw
+      exception during schema compilation.
 
-    --inline-refs=     referenced schemas compilation mode
-             true      inline $ref code when possible
-             false     always compile $ref as a function call
-             <number>  inline $ref code up to this number of keywords
+Ajv validation and reporting options:
 
-    --remove-additional=  remove additional properties
-             all       remove all additional properties
-             true      remove if additionalProperties is false
-             failing   also remove if fails validation of schema in additionalProperties
+  --all-errors
+      Check all rules collecting all errors. Default is to return after the
+      first error.
 
-    --use-defaults     replace missing properties/items with the values from default keyword
+  --comment
+      Log schema "$comment"s.
 
-    --coerce-types     change type of data to match type keyword
+  --data
+      Use $data references.
 
-    --multiple-of-precision=N  pass integer number
+  --verbose
+      Include the reference to the part of the schema ("schema" and
+      "parentSchema") and validated data in errors (false by default).
 
-    --messages=false   do not include text messages in errors
+Ajv options to modify validated data:
 
-    --loop-required=   max size of "required to compile to expression (rather than to loop)
+  --coerce-types <bool | "array">
+      Change data type of data to match type keyword:
+      * false  No type coercion (default).
+      * true   Coerce scalar data types.
+      * array  In addition to coercions between scalar types, coerce scalar data
+               to an array with one element and vice versa (as required by the
+               schema).
 
-    --loop-enum=       max size of "enum" to compile to expression (rather than to loop)
+  --remove-additional <bool | "failing">
+      Remove additional properties:
+      * false    Not to remove additional properties (default).
+      * all      All additional properties are removed, regardless of
+                 "additionalProperties" keyword in schema (and no validation is
+                 made for them).
+      * true     Only additional properties with "additionalProperties" keyword
+                 equal to false are removed.
+      * failing  Additional properties that fail schema validation will be
+                 removed (where "additionalProperties" keyword is false or
+                 schema).
 
-    --own-properties   only validate own properties (not relevant for JSON, but can have effect for JavaScript objects)
+  --use-defaults <bool | "empty">
+      Replace missing or undefined properties and items with the values from
+      corresponding default keywords:
+      * false  Do not use defaults (default).
+      * true   Insert defaults by value (object literal is used).
+      * empty  In addition to missing or undefined, use defaults for properties
+               and items that are equal to null or "" (an empty string).
 
-    --code-es5         generate ES5 code
+Ajv advanced options:
 
-    --code-lines       generate multi-line code
+  --code-es5
+      Generate ES5 code.
 
-    --code-optimize=   code optimization
-             false     disable
-             <number>  number of optimization passes (1 pass by default)`)
+  --code-lines
+      Add line-breaks to code - to simplify debugging of generated functions.
+
+  --code-optimize <false | int>
+      Code optimization flag or number of passes, 1 pass by default.
+
+  --inline-refs <bool | int>
+      Compilation mode for referenced schemas:
+      * true   Inline $ref code when possible.
+      * false  Always compile $ref as a function call.
+      * <int>  Inline $ref code up to this number of keywords.
+
+  --loop-required <int>
+      Pass integer to set a different number of properties above which required
+      keyword will be validated in a loop.
+
+  --loop-enum <int>
+      Pass integer to set the number of values above which enum keyword will be
+      validated in a loop.
+
+  --messages <bool>
+      Whether to include text messages in errors (default is true).
+
+  --multiple-of-precision <int>
+      If you need to use fractional dividers for validating "multipleOf"
+      keywords, set this to some positive integer.
+
+  --own-properties
+      Only validate own properties (not relevant for JSON, but can have effect
+      for JavaScript objects).
+
+See https://github.com/epoberezkin/ajv#options for more information.`)
 }
