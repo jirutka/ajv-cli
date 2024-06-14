@@ -69,7 +69,7 @@ describe('validate', function () {
       cli(`-d ${fdir}/valid_data.json`, (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
-        assert(stderr.includes('usage'))
+        assert(stderr.includes('Usage'))
         assert(stderr.includes('parameter'))
         assert(stderr.includes('required'))
         done()

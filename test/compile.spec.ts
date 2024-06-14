@@ -149,7 +149,7 @@ describe('compile', function () {
     cli(`compile -s ${fdir}/schema.json -o ${fdir}/*.foo`, (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert(stderr.includes('only one file is allowed'))
-      assert(stderr.includes('usage'))
+      assert(stderr.includes('Usage'))
       assert.strictEqual(stdout, '')
       done()
     })
@@ -159,7 +159,7 @@ describe('compile', function () {
     cli(`compile file -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert(stderr.includes('too many arguments'))
-      assert(stderr.includes('usage'))
+      assert(stderr.includes('Usage'))
       assert.strictEqual(stdout, '')
       done()
     })

@@ -8,8 +8,8 @@ describe('help', function () {
   it('should print help', done => {
     cli('help', (error, stdout, stderr) => {
       assert.strictEqual(error, null)
-      assert(stdout.includes('Validate'))
-      assert(stdout.includes('Compile'))
+      assert(stdout.includes('validate'))
+      assert(stdout.includes('compile'))
       assert.strictEqual(stderr, '')
       done()
     })
@@ -41,7 +41,7 @@ describe('help', function () {
       assert.strictEqual(stdout, '')
       assert(stderr.includes('command'))
       assert(stderr.includes('unknown'))
-      assert(stderr.includes('usage'))
+      assert(stderr.includes('Usage'))
       done()
     })
   })
@@ -52,7 +52,7 @@ describe('help', function () {
       assert.strictEqual(stdout, '')
       assert(stderr.includes('command'))
       assert(stderr.includes('unknown'))
-      assert(stderr.includes('usage'))
+      assert(stderr.includes('Usage'))
       done()
     })
   })
@@ -61,7 +61,7 @@ describe('help', function () {
     cli('help -s test/schema.json', (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert.strictEqual(stdout, '')
-      assert(stderr.includes('usage'))
+      assert(stderr.includes('Usage'))
       assert(stderr.includes('parameter'))
       assert(stderr.includes('unknown'))
       done()
