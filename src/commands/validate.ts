@@ -17,6 +17,7 @@ import {
   parseFileWithMeta,
 } from '../parsers/index.js'
 import { getFiles } from '../utils.js'
+import { ProgramError } from '../errors.js'
 
 const errorFormats = ['js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty'] as const
 type ErrorFormat = (typeof errorFormats)[number]
@@ -97,9 +98,7 @@ function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
     injectPathToSchemas(schema, '#')
     return ajv.compile(schema)
   } catch (err: any) {
-    console.error(`schema ${schemaFile} is invalid`)
-    console.error(`error: ${err.message}`)
-    process.exit(1)
+    throw new ProgramError(`${schemaFile}: ${err.message}`, { cause: err })
   }
 }
 

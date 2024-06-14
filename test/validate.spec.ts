@@ -219,12 +219,9 @@ describe('validate', function () {
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
-          const lines = stderr.split('\n')
-          assert.strictEqual(lines.length, 3)
-          assert(lines[0].includes('schema'))
-          assert(lines[0].includes('invalid'))
-          assert(lines[1].includes('error'))
-          assert(/my_keyword\smust\sbe\sboolean/.test(lines[1]))
+          assert(stderr.includes('schema'))
+          assert(stderr.includes('invalid'))
+          assert(/my_keyword\smust\sbe\sboolean/.test(stderr))
           done()
         },
       )
@@ -258,7 +255,8 @@ describe('validate', function () {
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.strictEqual(stdout, '')
-          assert(stderr.includes(`${fdir}/schema_with_data_reference.json is invalid`))
+          assert(stderr.includes(`${fdir}/schema_with_data_reference.json`))
+          assert(stderr.includes('invalid'))
           assert(stderr.includes('larger/minimum'))
           assert(stderr.includes('must be number'))
           done()

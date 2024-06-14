@@ -185,7 +185,6 @@ function assertValid(stdout: string, count: number): void {
 
 function assertError(stderr: string): string[] {
   const lines = stderr.split('\n')
-  assert.strictEqual(lines.length, 3)
   assert(lines[0].includes('schema'))
   assert(/\sinvalid/.test(lines[0]))
   assert(lines[1].includes('error'))

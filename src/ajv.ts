@@ -10,6 +10,7 @@ import { injectPathToSchemas } from './ajv-schema-path-workaround.js'
 import { getOptions } from './options.js'
 import { parseFile } from './parsers/index.js'
 import * as util from './utils.js'
+import { ProgramError } from './errors.js'
 
 type AjvCore = typeof Ajv7
 type AjvMethod = 'addSchema' | 'addMetaSchema'
@@ -35,15 +36,20 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
   }
   const Ajv = Object.hasOwn(AjvClass, argv.spec) ? AjvClass[argv.spec] : Ajv7
   const ajv = new Ajv(opts)
-  let invalid: boolean | undefined
+  let invalid = 0
   if (argv.spec !== 'jtd') {
     ajv.addMetaSchema(parseFile(draft6metaSchemaPath))
   }
   addSchemas(argv.m, 'addMetaSchema', 'meta-schema')
   addSchemas(argv.r, 'addSchema', 'schema')
   await customFormatsKeywords(argv.c)
-  if (invalid) {
-    process.exit(1)
+
+  if (invalid > 0) {
+    throw new ProgramError(
+      invalid > 1 ?
+        `Found ${invalid} invalid schemas or modules`
+      : 'Found one invalid schema or module',
+    )
   }
   return ajv
 
@@ -65,7 +71,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
       } catch (err) {
         console.error(`${fileType} ${file} is invalid`)
         console.error(`error: ${(err as Error).message}`)
-        invalid = true
+        invalid++
       }
     }
   }
@@ -88,7 +94,7 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
       } catch (err) {
         console.error(`module ${file} is invalid; it should export function`)
         console.error(`error: ${(err as Error).message}`)
-        invalid = true
+        invalid++
       }
     }
   }

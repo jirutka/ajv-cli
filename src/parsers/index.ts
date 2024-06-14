@@ -1,6 +1,7 @@
 import * as FS from 'node:fs'
 import * as path from 'node:path'
 
+import { ProgramError } from '../errors.js'
 import * as JSON from './json.js'
 import * as YAML from './yaml.js'
 
@@ -30,8 +31,12 @@ export function parseFile(filepath: string, fileType?: FileType): any {
 export function parseFileWithMeta(filepath: string, fileType?: FileType): ParsedFile {
   const type = fileType || path.extname(filepath).slice(1)
 
-  const input = FS.readFileSync(filepath, 'utf-8')
-
+  let input: string
+  try {
+    input = FS.readFileSync(filepath, 'utf-8')
+  } catch (err: any) {
+    throw new ProgramError(err.message, { cause: err, exitCode: 66 })
+  }
   try {
     switch (type) {
       case 'json':
@@ -45,7 +50,6 @@ export function parseFileWithMeta(filepath: string, fileType?: FileType): Parsed
         throw new Error(`Unsupported file type: ${type}`)
     }
   } catch (err: any) {
-    err.message = `${filepath}: ${err.message}`
-    throw err
+    throw new ProgramError(`${filepath}: ${err.message}`, { cause: err, exitCode: 65 })
   }
 }
