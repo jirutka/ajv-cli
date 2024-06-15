@@ -34,6 +34,10 @@ export default async function (argv: ParsedArgs): Promise<InstanceType<AjvCore>>
   if (argv.o) {
     opts.code.source = true
   }
+  // This number's been pulled out of thin air. The higher the number, the
+  // longer schema compilation size and memory requirements.
+  opts.inlineRefs ??= 8
+
   const Ajv = Object.hasOwn(AjvClass, argv.spec) ? AjvClass[argv.spec] : Ajv7
   const ajv = new Ajv(opts)
   let invalid = 0

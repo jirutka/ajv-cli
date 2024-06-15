@@ -122,7 +122,7 @@ Ajv advanced options:
       Code optimization flag or number of passes, 1 pass by default.
 
   --inline-refs <bool | int>
-      Compilation mode for referenced schemas:
+      Compilation mode for referenced schemas (default is 8):
       * true   Inline $ref code when possible.
       * false  Always compile $ref as a function call.
       * <int>  Inline $ref code up to this number of keywords.
