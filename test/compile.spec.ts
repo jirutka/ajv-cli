@@ -9,9 +9,9 @@ describe('compile', function () {
 
   it('should compile valid schema', done => {
     cli(`compile -s ${fdir}/schema.json`, (error, stdout, stderr) => {
-      assert.strictEqual(error, null)
+      assert.equal(error, null)
       assertValid(stdout, 1)
-      assert.strictEqual(stderr, '')
+      assert.equal(stderr, '')
       done()
     })
   })
@@ -20,9 +20,9 @@ describe('compile', function () {
     cli(
       `compile -s ${fdir}/schema.json -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
-        assert.strictEqual(error, null)
+        assert.equal(error, null)
         assertValid(stdout, 2)
-        assert.strictEqual(stderr, '')
+        assert.equal(stderr, '')
         done()
       },
     )
@@ -36,14 +36,14 @@ describe('compile', function () {
         const validate = await import('./fixtures/validate_schema1.cjs')
         fs.unlinkSync(`${fdir}/validate_schema1.cjs`)
 
-        assert.strictEqual(error, null)
+        assert.equal(error, null)
         assertValid(stdout, 1)
-        assert.strictEqual(stderr, '')
+        assert.equal(stderr, '')
 
         const validData = readJson(`${fdir}/valid_data.json`)
         const invalidData = readJson(`${fdir}/invalid_data.json`)
-        assert.strictEqual(validate.default(validData), true)
-        assert.strictEqual(validate.default(invalidData), false)
+        assert.equal(validate.default(validData), true)
+        assert.equal(validate.default(invalidData), false)
       },
     ))
 
@@ -55,16 +55,16 @@ describe('compile', function () {
         const validators = await import('./fixtures/validate_schema2.cjs')
         fs.unlinkSync(`${fdir}/validate_schema2.cjs`)
 
-        assert.strictEqual(error, null)
+        assert.equal(error, null)
         assertValid(stdout, 2)
-        assert.strictEqual(stderr, '')
+        assert.equal(stderr, '')
 
         const validData = readJson(`${fdir}/valid_data.json`)
         const invalidData = readJson(`${fdir}/invalid_data.json`)
-        assert.strictEqual(validators['schema.json'](validData), true)
-        assert.strictEqual(validators['schema.json'](invalidData), false)
-        assert.strictEqual(validators['schema_with_ref.json'](validData), true)
-        assert.strictEqual(validators['schema_with_ref.json'](invalidData), false)
+        assert.equal(validators['schema.json'](validData), true)
+        assert.equal(validators['schema.json'](invalidData), false)
+        assert.equal(validators['schema_with_ref.json'](validData), true)
+        assert.equal(validators['schema_with_ref.json'](invalidData), false)
       },
     ))
 
@@ -72,9 +72,9 @@ describe('compile', function () {
     cli(
       `compile -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
-        assert.strictEqual(error, null)
+        assert.equal(error, null)
         assertValid(stdout, 1)
-        assert.strictEqual(stderr, '')
+        assert.equal(stderr, '')
         done()
       },
     )
@@ -97,7 +97,7 @@ describe('compile', function () {
       `compile -s ${fdir}/meta/invalid_schema.json -m ${fdir}/meta/meta_schema.json`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
-        assert.strictEqual(stdout, '')
+        assert.equal(stdout, '')
         const lines = assertError(stderr)
         assert.match(lines[1], /my_keyword\smust\sbe\sboolean/)
         done()
@@ -124,7 +124,7 @@ describe('compile', function () {
       `compile -s ${fdir}/schema.json -r ${fdir}/meta/invalid_schema2.json`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
-        assert.strictEqual(stdout, '')
+        assert.equal(stdout, '')
         const lines = assertError(stderr)
         assert.match(lines[0], /schema\s.*\sis\sinvalid/)
         done()
@@ -137,7 +137,7 @@ describe('compile', function () {
       `compile -s ${fdir}/custom/schema.json -c ${fdir}/custom/invalid_custom.js`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
-        assert.strictEqual(stdout, '')
+        assert.equal(stdout, '')
         const lines = stderr.split('\n')
         assert.match(lines[0], /module.*is\sinvalid.*should\sexport\sfunction/)
         done()
@@ -150,7 +150,7 @@ describe('compile', function () {
       assert(error instanceof Error)
       assert(stderr.includes('only one file is allowed'))
       assert(stderr.includes('Usage'))
-      assert.strictEqual(stdout, '')
+      assert.equal(stdout, '')
       done()
     })
   })
@@ -160,16 +160,16 @@ describe('compile', function () {
       assert(error instanceof Error)
       assert(stderr.includes('too many arguments'))
       assert(stderr.includes('Usage'))
-      assert.strictEqual(stdout, '')
+      assert.equal(stdout, '')
       done()
     })
   })
 
   it('should compile JTD schema', done => {
     cli(`compile -s ${fdir}/jtd/schema.json --spec=jtd`, (error, stdout, stderr) => {
-      assert.strictEqual(error, null)
+      assert.equal(error, null)
       assertValid(stdout, 1)
-      assert.strictEqual(stderr, '')
+      assert.equal(stderr, '')
       done()
     })
   })
@@ -177,7 +177,7 @@ describe('compile', function () {
 
 function assertValid(stdout: string, count: number): void {
   const lines = stdout.split('\n')
-  assert.strictEqual(lines.length, count + 1)
+  assert.equal(lines.length, count + 1)
   for (let i = 0; i < count; i++) {
     assert.match(lines[i], /\svalid/)
   }
@@ -196,16 +196,16 @@ async function assertCompiledCustom(
   stdout: string,
   stderr: string,
 ): Promise<void> {
-  assert.strictEqual(error, null)
+  assert.equal(error, null)
   assertValid(stdout, 1)
-  assert.strictEqual(stderr, '')
+  assert.equal(stderr, '')
 
   // @ts-ignore
   const validate = await import('./fixtures/custom/validate_schema.cjs')
   const validData = readJson(`${fdir}/custom/valid_data.json`)
   const invalidData = readJson(`${fdir}/custom/invalid_data.json`)
-  assert.strictEqual(validate.default(validData), true)
-  assert.strictEqual(validate.default(invalidData), false)
+  assert.equal(validate.default(validData), true)
+  assert.equal(validate.default(invalidData), false)
 
   fs.unlinkSync(`${fdir}/custom/validate_schema.cjs`)
 }
