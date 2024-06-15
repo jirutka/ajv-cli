@@ -1,13 +1,16 @@
 import type { ErrorObject } from 'ajv'
+import type { Required } from 'utility-types'
 
 import { getSimpleErrors } from './vendor/simple-ajv-errors/index.js'
 import type { VerboseErrorObject } from './vendor/simple-ajv-errors/types.js'
+import type { ValidationError } from './types.js'
 
-export type MergedErrorObject = Omit<ErrorObject, 'keyword' | 'params' | 'propertyName'>
-
-export function mergeErrorObjects(errors: ErrorObject[], verbose: boolean): MergedErrorObject[] {
+export function mergeErrorObjects(
+  errors: ErrorObject[],
+  verbose: boolean,
+): Required<ValidationError, 'message'>[] {
   return getSimpleErrors(errors as VerboseErrorObject[], { dataVar: '$' }).map(err => {
-    const obj: MergedErrorObject = {
+    const obj: Required<ValidationError, 'message'> = {
       message: err.message.replace(/^.*? (?=must )/, ''),
       instancePath: err.instancePath,
       schemaPath: err.schemaPath,

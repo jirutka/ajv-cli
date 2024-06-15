@@ -4,22 +4,15 @@ import * as path from 'node:path'
 import { ProgramError } from '../errors.js'
 import * as JSON from './json.js'
 import * as YAML from './yaml.js'
+import type { Location, LocationRange } from '../types.js'
+
+export type { Location, LocationRange }
 
 export interface ParsedFile {
   readonly data: any
   readonly lines: readonly string[]
   readonly filename: string
   locate: (path: readonly string[]) => LocationRange | undefined
-}
-
-export interface LocationRange {
-  start: Location
-  end: Location
-}
-
-export interface Location {
-  line: number
-  col: number
 }
 
 type FileType = 'json' | 'jsonc' | 'yaml'

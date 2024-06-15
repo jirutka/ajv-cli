@@ -4,20 +4,17 @@ import type { Ajv } from 'ajv'
 import type { AnyValidateFunction, ErrorObject } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { ParsedArgs } from 'minimist'
+import type { Required } from 'utility-types'
 
-import { type MergedErrorObject, mergeErrorObjects } from '../ajv-errors-merger.js'
+import { mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
 import { codespan } from '../codespan.js'
 import { type Command } from './index.js'
-import {
-  type LocationRange,
-  type ParsedFile,
-  parseFile,
-  parseFileWithMeta,
-} from '../parsers/index.js'
+import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
 import { getFiles } from '../utils.js'
 import { ProgramError } from '../errors.js'
+import type { LocationRange, ValidationError } from '../types.js'
 
 const errorFormats = ['js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty'] as const
 type ErrorFormat = (typeof errorFormats)[number]
@@ -107,7 +104,7 @@ function formatErrors(
   file: ParsedFile,
   opts: { format: ErrorFormat; location: boolean; merge: boolean; verbose: boolean },
 ): string {
-  let errors: MergedErrorObject[]
+  let errors: ValidationError[]
 
   if (opts.merge) {
     errors = mergeErrorObjects(rewriteSchemaPathInErrors(rawErrors, true), opts.verbose)
@@ -166,16 +163,10 @@ function stringify(data: unknown, format: 'js' | 'json' | 'json-oneline'): strin
   }
 }
 
-type WithInstanceLocation<T> = T & {
-  instanceLocation: Partial<LocationRange> & {
-    filename: string
-  }
-}
-
-function withInstanceLocation<T extends { instancePath: string }>(
+function withInstanceLocation<T extends ValidationError>(
   errors: T[],
   file: ParsedFile,
-): WithInstanceLocation<T>[] {
+): Required<T, 'instanceLocation'>[] {
   return errors.map(err => ({
     ...err,
     instanceLocation: {
