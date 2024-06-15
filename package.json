@@ -21,7 +21,7 @@
     "eslint": "eslint \"src/**/*.*s\" \"test/**/*.js\"",
     "prettier:write": "prettier --write \"./**/*.{json,yaml,js,ts}\"",
     "prettier:check": "prettier --list-different \"./**/*.{json,yaml,js,ts}\"",
-    "test-spec": "TS_NODE_PROJECT=test/tsconfig.json NODE_NO_WARNINGS=1 mocha -r ./test/ts-loader.js \"test/**/*.spec.{ts,js}\" -R spec",
+    "test-spec": "TS_NODE_PROJECT=test/tsconfig.json mocha",
     "test-cov": "nyc npm run test-spec",
     "test": "npm run build && npm run eslint && npm run test-cov"
   },
