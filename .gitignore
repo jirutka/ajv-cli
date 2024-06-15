@@ -1,18 +1,4 @@
-# Logs
-logs
-*.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-
-# Coverage directory
-coverage
-.nyc_output
-
-# Dependency directory
-node_modules
-
-.DS_Store
-dist
+/coverage
+/dist
+.nyc_output/
+node_modules/
