@@ -221,7 +221,7 @@ describe('validate', function () {
           assert.strictEqual(stdout, '')
           assert(stderr.includes('schema'))
           assert(stderr.includes('invalid'))
-          assert(/my_keyword\smust\sbe\sboolean/.test(stderr))
+          assert.match(stderr, /my_keyword\smust\sbe\sboolean/)
           done()
         },
       )
@@ -342,7 +342,7 @@ function assertValid(stdout: string, count: number, extraLines = 0): string[] {
   const lines = stdout.split('\n')
   assert.strictEqual(lines.length, count + extraLines + 1)
   for (let i = 0; i < count; i++) {
-    assert(/\svalid/.test(lines[i]))
+    assert.match(lines[i], /\svalid/)
   }
   return lines
 }
@@ -362,7 +362,7 @@ function assertErrors(stderr: string, count = 1): DefinedError[][] {
   assert.strictEqual(lines.length, count * 2 + 1)
   const results: DefinedError[][] = []
   for (let i = 0; i < count; i += 2) {
-    assert(/\sinvalid/.test(lines[i]))
+    assert.match(lines[i], /\sinvalid/)
     const errors = JSON.parse(lines[i + 1])
     assert.strictEqual(errors.length, 1)
     results.push(errors)

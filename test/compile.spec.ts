@@ -99,7 +99,7 @@ describe('compile', function () {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
         const lines = assertError(stderr)
-        assert(/my_keyword\smust\sbe\sboolean/.test(lines[1]))
+        assert.match(lines[1], /my_keyword\smust\sbe\sboolean/)
         done()
       },
     )
@@ -113,7 +113,7 @@ describe('compile', function () {
         assertValid(stdout, 1)
         const lines = stderr.split('\n')
         assert(lines.length > 1)
-        assert(/error\ssaving\sfile/.test(lines[0]))
+        assert.match(lines[0], /error\ssaving\sfile/)
         done()
       },
     )
@@ -126,7 +126,7 @@ describe('compile', function () {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
         const lines = assertError(stderr)
-        assert(/schema\s.*\sis\sinvalid/.test(lines[0]))
+        assert.match(lines[0], /schema\s.*\sis\sinvalid/)
         done()
       },
     )
@@ -139,7 +139,7 @@ describe('compile', function () {
         assert(error instanceof Error)
         assert.strictEqual(stdout, '')
         const lines = stderr.split('\n')
-        assert(/module.*is\sinvalid.*should\sexport\sfunction/.test(lines[0]))
+        assert.match(lines[0], /module.*is\sinvalid.*should\sexport\sfunction/)
         done()
       },
     )
@@ -179,14 +179,14 @@ function assertValid(stdout: string, count: number): void {
   const lines = stdout.split('\n')
   assert.strictEqual(lines.length, count + 1)
   for (let i = 0; i < count; i++) {
-    assert(/\svalid/.test(lines[i]))
+    assert.match(lines[i], /\svalid/)
   }
 }
 
 function assertError(stderr: string): string[] {
   const lines = stderr.split('\n')
   assert(lines[0].includes('schema'))
-  assert(/\sinvalid/.test(lines[0]))
+  assert.match(lines[0], /\sinvalid/)
   assert(lines[1].includes('error'))
   return lines
 }
