@@ -1,0 +1,8 @@
+{
+  "[typescript][javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "mochaExplorer.nodeArgv": ["--enable-source-maps"],
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

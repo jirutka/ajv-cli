@@ -22,6 +22,7 @@
 
     /* Interop Constraints */
     "esModuleInterop": false,                            /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
+    "allowSyntheticDefaultImports": true,                /* Allow 'import x from y' when a module doesn't have a default export. This is needed for the hbenl.vscode-mocha-test-adapter VS Code extension. */
     "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
 
     /* Type Checking */
