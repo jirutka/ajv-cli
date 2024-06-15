@@ -1,0 +1,43 @@
+= Ajv CLI
+:npm-name: @jirutka/ajv-cli
+:gh-name: jirutka/ajv-cli
+:version: 0.0.0
+:releases-uri: https://github.com/{gh-name}/releases/download/v{version}
+
+ifdef::env-github[]
+image:https://github.com/{gh-name}/workflows/CI/badge.svg[Build Status, link=https://github.com/{gh-name}/actions?query=workflow%3A%22CI%22]
+image:https://img.shields.io/npm/v/{npm-name}.svg[npm Version, link="https://www.npmjs.org/package/{npm-name}"]
+endif::env-github[]
+
+Command line interface for https://github.com/ajv-validator/ajv[Ajv], a JSON Schema validator.
+
+This is a fork of the original https://github.com/ajv-validator/ajv-cli[ajv-cli] with many improvements.
+
+
+== Changes from ajv-cli
+
+TBD
+
+
+== Install
+
+=== Using npm
+
+[source, sh, subs="+attributes"]
+npm install --global {npm-name}
+
+
+== Usage
+
+Refer to `ajv help validate` and `ajv help compile`.
+
+
+== Credits
+
+* This project is a fork of the original https://github.com/ajv-validator/ajv-cli[ajv-cli] written by https://github.com/epoberezkin[Evgeny Poberezkin].
+* The code for merging related Ajv validation errors is taken from the https://github.com/ghmcadams/vscode-lintlens/tree/master/packages/simple-ajv-errors[vscode-lintlens] project by https://github.com/ghmcadams[Gabriel McAdams].
+
+
+== License
+
+This project is licensed under https://opensource.org/license/mit/[MIT License].

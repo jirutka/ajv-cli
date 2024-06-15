@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: sudo apt-get install asciidoctor pandoc
+
       - name: Set up .npmrc file
         uses: actions/setup-node@v4
         with:
