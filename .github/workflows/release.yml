@@ -1,0 +1,24 @@
+name: Release
+on:
+  push:
+    tags: v*
+
+jobs:
+  npmjs:
+    name: Publish on npmjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .npmrc file
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm clean-install
+      - run: npm run build
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
