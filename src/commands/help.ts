@@ -206,8 +206,9 @@ ${srmcOptions}
 
 ${schemaSpecOption}
 
-  --merge-errors
-      Merge related errors for each instance path.
+  --merge-errors <bool>
+      Merge related errors per instance path instead of reporting individual
+      schema errors as returned by Ajv (default is true).
 
   --errors-location
       Include data location (filename, line and column number) in errors.

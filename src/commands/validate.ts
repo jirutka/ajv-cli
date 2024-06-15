@@ -105,7 +105,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
         const output = formatErrors(validate.errors!, file, {
           format: argv.errors,
           location: !!argv['errors-location'],
-          merge: !!argv['merge-errors'],
+          merge: argv['merge-errors'] !== false,
           verbose: !!argv.verbose,
         })
         console.log(output)
