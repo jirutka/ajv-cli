@@ -2,6 +2,8 @@ import type { ParsedArgs } from 'minimist'
 
 import type { CmdName, Command } from './index.js'
 
+const projectUrl = 'https://github.com/jirutka/ajv-cli/issues'
+
 const ajvOptions = `\
 Ajv strict mode options:
 
@@ -174,6 +176,8 @@ Usage:
   ajv validate [options] -s <schema-file> -d <data-file>
   ajv compile [options] -s <schema-file>
   ajv help [<command>]
+
+Report issues at <${projectUrl}>.
 `
 
 const compileHelp = `
