@@ -103,7 +103,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
 
       if (argv.errors !== 'no') {
         const output = formatErrors(validate.errors!, file, {
-          format: argv.errors,
+          format: argv.errors || 'pretty',
           location: !!argv['errors-location'],
           merge: argv['merge-errors'] !== false,
           verbose: !!argv.verbose,

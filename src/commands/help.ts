@@ -214,9 +214,9 @@ ${schemaSpecOption}
       Include data location (filename, line and column number) in errors.
 
   --errors <format>
-      Error reporting format:
+      Error reporting format (default is "pretty"):
       * code-climate  Code Climate Issue format for GitLab Code Quality report.
-      * js            JavaScript object (default).
+      * js            JavaScript object.
       * json          Formatted JSON.
       * json-oneline  Single line JSON.
       * jsonpath      One error message per line preceded by JSON Path of the
