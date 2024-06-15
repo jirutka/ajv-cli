@@ -1,3 +1,5 @@
+import * as crypto from 'node:crypto'
+
 import { glob } from './glob.js'
 
 function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
@@ -33,4 +35,8 @@ export function getFiles(args: string | string[]): string[] {
     }
     return files
   }, [] as string[])
+}
+
+export function sha1sum(data: unknown): string {
+  return crypto.createHash('sha1').update(JSON.stringify(data)).digest('hex')
 }

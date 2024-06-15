@@ -211,6 +211,7 @@ ${schemaSpecOption}
 
   --errors <format>
       Error reporting format:
+      * code-climate  Code Climate Issue format for GitLab Code Quality report.
       * js            JavaScript object (default).
       * json          Formatted JSON.
       * json-oneline  Single line JSON.

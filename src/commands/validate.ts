@@ -12,11 +12,37 @@ import getAjv from '../ajv.js'
 import { codespan } from '../codespan.js'
 import { type Command } from './index.js'
 import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
-import { getFiles } from '../utils.js'
+import { getFiles, sha1sum } from '../utils.js'
 import { ProgramError } from '../errors.js'
 import type { LocationRange, ValidationError } from '../types.js'
 
-const errorFormats = ['js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty'] as const
+// https://docs.gitlab.com/ee/ci/testing/code_quality.html#implement-a-custom-tool
+// https://github.com/codeclimate/platform/blob/master/spec/analyzers/SPEC.md#data-types
+interface CodeClimateIssue {
+  description: string
+  check_name: string
+  fingerprint: string
+  severity: 'info' | 'minor' | 'major' | 'critical' | 'blocker'
+  location: {
+    positions?: {
+      [K in 'begin' | 'end']?: {
+        line: number
+        column: number
+      }
+    }
+    path: string
+  }
+}
+
+const errorFormats = [
+  'code-climate',
+  'js',
+  'json',
+  'json-oneline',
+  'jsonpath',
+  'line',
+  'pretty',
+] as const
 type ErrorFormat = (typeof errorFormats)[number]
 
 const cmd: Command = {
@@ -111,11 +137,18 @@ function formatErrors(
   } else {
     errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
   }
-  if (opts.location || opts.format === 'line' || opts.format === 'pretty') {
+  if (
+    opts.location ||
+    opts.format === 'line' ||
+    opts.format === 'pretty' ||
+    opts.format === 'code-climate'
+  ) {
     const errorsWithLoc = withInstanceLocation(errors, file)
     const { filename } = file
 
     switch (opts.format) {
+      case 'code-climate':
+        return stringify(errorsWithLoc.map(formatCodeClimateIssue), 'json')
       case 'line': {
         return errorsWithLoc
           .map(err => {
@@ -150,6 +183,35 @@ function formatErrors(
   }
 
   return stringify(errors, opts.format)
+}
+
+function formatCodeClimateIssue({
+  instanceLocation: loc,
+  instancePath,
+  message,
+}: Required<ValidationError, 'instanceLocation'>): CodeClimateIssue {
+  return {
+    description: `[schema] #${instancePath} ${message}`,
+    check_name: 'json-schema',
+    fingerprint: sha1sum([loc.filename, instancePath, message]),
+    severity: 'major',
+    location: {
+      path: loc.filename,
+      positions:
+        loc.start ?
+          {
+            begin: {
+              line: loc.start.line,
+              column: loc.start.col,
+            },
+            end: {
+              line: loc.end.line,
+              column: loc.end.col,
+            },
+          }
+        : {},
+    },
+  }
 }
 
 function stringify(data: unknown, format: 'js' | 'json' | 'json-oneline'): string {
