@@ -88,13 +88,13 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     const validData = validate(data) as boolean
 
     if (validData) {
-      console.log(filepath, 'valid')
+      console.error(filepath, 'valid')
       if (argv.changes) {
         const patch = jsonPatch.compare(original, data)
         if (patch.length === 0) {
-          console.log('no changes')
+          console.error('no changes')
         } else {
-          console.log('changes:')
+          console.error('changes:')
           console.log(stringify(patch, argv.changes))
         }
       }
@@ -108,7 +108,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
           merge: !!argv['merge-errors'],
           verbose: !!argv.verbose,
         })
-        console.error(output)
+        console.log(output)
       }
     }
     return validData

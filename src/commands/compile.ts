@@ -60,7 +60,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
       ajv.addSchema(sch, id ? undefined : file)
       const validate = ajv.getSchema(id || file)
       if (argv.o !== true) {
-        console.log(`schema ${file} is valid`)
+        console.error(`schema ${file} is valid`)
       }
       return validate
     } catch (err) {

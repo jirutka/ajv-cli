@@ -11,8 +11,8 @@ describe('validate', function () {
     it('should validate valid data', done => {
       cli(`-s ${fdir}/schema.json -d ${fdir}/valid_data.json`, (error, stdout, stderr) => {
         assert.equal(error, null)
-        assertValid(stdout, 1)
-        assert.equal(stderr, '')
+        assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
+        assert.equal(stdout, '')
         done()
       })
     })
@@ -20,8 +20,8 @@ describe('validate', function () {
     it('should validate valid data with the "yml" extension', done => {
       cli(`-s ${fdir}/schema.json -d ${fdir}/valid_data.yml`, (error, stdout, stderr) => {
         assert.equal(error, null)
-        assertValid(stdout, 1)
-        assert.equal(stderr, '')
+        assert.match(stderr, /^.*\bvalid_data.yml valid\s$/)
+        assert.equal(stdout, '')
         done()
       })
     })
@@ -29,8 +29,8 @@ describe('validate', function () {
     it('should validate valid data with the "yaml" extension', done => {
       cli(`-s ${fdir}/schema.json -d ${fdir}/valid_data.yaml`, (error, stdout, stderr) => {
         assert.equal(error, null)
-        assertValid(stdout, 1)
-        assert.equal(stderr, '')
+        assert.match(stderr, /^.*\bvalid_data.yaml valid\s$/)
+        assert.equal(stdout, '')
         done()
       })
     })
@@ -38,8 +38,8 @@ describe('validate', function () {
     it('should validate valid data with the "jsonc" extension', done => {
       cli(`-s ${fdir}/schema.json -d ${fdir}/valid_data.jsonc`, (error, stdout, stderr) => {
         assert.equal(error, null)
-        assertValid(stdout, 1)
-        assert.equal(stderr, '')
+        assert.match(stderr, /^.*\bvalid_data.jsonc valid\s$/)
+        assert.equal(stdout, '')
         done()
       })
     })
@@ -49,8 +49,8 @@ describe('validate', function () {
         `-s ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
-          assert.equal(stdout, '')
-          assertRequiredErrors(stderr)
+          assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
+          assertRequiredErrors(stdout)
           done()
         },
       )
@@ -72,8 +72,8 @@ describe('validate', function () {
         `validate -s ${fdir}/jtd/schema.json -d ${fdir}/jtd/data.json --spec=jtd`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 1)
-          assert.equal(stderr, '')
+          assert.match(stderr, /^.*\bdata.json valid\s$/)
+          assert.equal(stdout, '')
           done()
         },
       )
@@ -84,10 +84,10 @@ describe('validate', function () {
         `validate -s ${fdir}/jtd/schema.json -d ${fdir}/jtd/invalid_data.json --spec=jtd --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
-          assert.equal(stdout, '')
-          for (const errors of assertErrors(stderr, 1)) {
-            assert.equal(errors.length, 1)
-          }
+          assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
+          const err = JSON.parse(stdout)[0]
+          assert.equal(err.keyword, 'optionalProperties')
+          assert.equal(err.schemaPath, '/mapping/b')
           done()
         },
       )
@@ -99,8 +99,8 @@ describe('validate', function () {
       it(`should exit without error if all files are valid`, done => {
         cli(`-s ${fdir}/schema.json -d "${fdir}/valid*.json"`, (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 2)
-          assert.equal(stderr, '')
+          assertValid(stderr, 2)
+          assert.equal(stdout, '')
           done()
         })
       })
@@ -110,8 +110,11 @@ describe('validate', function () {
           `-s ${fdir}/schema.json -d "${fdir}/{valid,invalid}*.json" --errors=json-oneline`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
-            assertValid(stdout, 2)
-            assertRequiredErrors(stderr, '#', 2)
+            assert.match(stderr, /\bvalid_data\.json valid/)
+            assert.match(stderr, /\bvalid_data2\.json valid/)
+            assert.match(stderr, /\binvalid_data\.json invalid/)
+            assert.match(stderr, /\binvalid_data2\.json invalid/)
+            assertRequiredErrors(stdout, '#', 2)
             done()
           },
         )
@@ -124,8 +127,9 @@ describe('validate', function () {
           `-s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/valid_data2.json`,
           (error, stdout, stderr) => {
             assert.equal(error, null)
-            assertValid(stdout, 2)
-            assert.equal(stderr, '')
+            assert.match(stderr, /\bvalid_data\.json valid/)
+            assert.match(stderr, /\bvalid_data2\.json valid/)
+            assert.equal(stdout, '')
             done()
           },
         )
@@ -136,8 +140,10 @@ describe('validate', function () {
           `-s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/valid_data2.json -d ${fdir}/invalid_data.json --errors=json-oneline`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
-            assertValid(stdout, 2)
-            assertRequiredErrors(stderr)
+            assert.match(stderr, /\bvalid_data\.json valid/)
+            assert.match(stderr, /\bvalid_data2\.json valid/)
+            assert.match(stderr, /\binvalid_data\.json invalid/)
+            assertRequiredErrors(stdout)
             done()
           },
         )
@@ -148,8 +154,11 @@ describe('validate', function () {
           `-s ${fdir}/schema.json -d "${fdir}/valid*.json" -d "${fdir}/invalid*.json" --errors=json-oneline`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
-            assertValid(stdout, 2)
-            assertRequiredErrors(stderr, '#', 2)
+            assert.match(stderr, /\bvalid_data\.json valid/)
+            assert.match(stderr, /\bvalid_data2\.json valid/)
+            assert.match(stderr, /\binvalid_data\.json invalid/)
+            assert.match(stderr, /\binvalid_data2\.json invalid/)
+            assertRequiredErrors(stdout, '#', 2)
             done()
           },
         )
@@ -163,8 +172,8 @@ describe('validate', function () {
         `-s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json -d ${fdir}/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 1)
-          assert.equal(stderr, '')
+          assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
+          assert.equal(stdout, '')
           done()
         },
       )
@@ -175,8 +184,8 @@ describe('validate', function () {
         `-s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
-          assert.equal(stdout, '')
-          assertRequiredErrors(stderr, 'schema.json#')
+          assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
+          assertRequiredErrors(stdout, 'schema.json#')
           done()
         },
       )
@@ -189,8 +198,8 @@ describe('validate', function () {
         `-s ${fdir}/meta/schema.json -d ${fdir}/meta/valid_data.json -m ${fdir}/meta/meta_schema.json --strict=false`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 1)
-          assert.equal(stderr, '')
+          assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
+          assert.equal(stdout, '')
           done()
         },
       )
@@ -201,10 +210,8 @@ describe('validate', function () {
         `-s ${fdir}/meta/schema.json -d ${fdir}/meta/invalid_data.json -m ${fdir}/meta/meta_schema.json --errors=json-oneline --strict=false`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
-          assert.equal(stdout, '')
-          const results = assertErrors(stderr)
-          const errors = results[0]
-          const err = errors[0]
+          assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
+          const err = JSON.parse(stdout)[0]
           assert.equal(err.keyword, 'type')
           assert.equal(err.instancePath, '/foo')
           assert.equal(err.schemaPath, '#/properties/foo/type')
@@ -219,9 +226,8 @@ describe('validate', function () {
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.equal(stdout, '')
-          assert(stderr.includes('schema'))
-          assert(stderr.includes('invalid'))
-          assert.match(stderr, /my_keyword\smust\sbe\sboolean/)
+          assert.match(stderr, /^.*\binvalid_schema.json: schema is invalid/)
+          assert.match(stderr, /^.*my_keyword must be boolean\s$/)
           done()
         },
       )
@@ -234,14 +240,12 @@ describe('validate', function () {
         `-s ${fdir}/schema.json -d ${fdir}/data_with_additional.json --remove-additional  --changes=json-oneline`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          const lines = assertValid(stdout, 1, 2)
-          assert(lines[1].includes('changes'))
-          const changes = JSON.parse(lines[2])
+          assert.match(stderr, /^.*\bdata_with_additional.json valid\nchanges/)
+          const changes = JSON.parse(stdout)
           assert.deepStrictEqual(changes, [
             { op: 'remove', path: '/1/additionalInfo' },
             { op: 'remove', path: '/0/additionalInfo' },
           ])
-          assert.equal(stderr, '')
           done()
         },
       )
@@ -269,8 +273,8 @@ describe('validate', function () {
         `validate --data -s ${fdir}/schema_with_data_reference.json -d ${fdir}/data_for_schema_with_data_reference.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 1)
-          assert.equal(stderr, '')
+          assert.match(stderr, /^.*\bdata_for_schema_with_data_reference.json valid\s$/)
+          assert.equal(stdout, '')
           done()
         },
       )
@@ -283,8 +287,8 @@ describe('validate', function () {
         `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -d ${fdir}/custom/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 1)
-          assert.equal(stderr, '')
+          assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
+          assert.equal(stdout, '')
           done()
         },
       )
@@ -295,8 +299,8 @@ describe('validate', function () {
         `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d ${fdir}/custom/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
-          assertValid(stdout, 1)
-          assert.equal(stderr, '')
+          assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
+          assert.equal(stdout, '')
           done()
         },
       )
@@ -307,10 +311,8 @@ describe('validate', function () {
         `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -d ${fdir}/custom/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
-          assert.equal(stdout, '')
-          const results = assertErrors(stderr)
-          const errors = results[0]
-          const err = errors[0]
+          assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
+          const err = JSON.parse(stdout)[0]
           assert.equal(err.keyword, 'typeof')
           assert.equal((err as DefinedError).instancePath, '')
           assert.equal((err as DefinedError).schemaPath, '#/typeof')
@@ -324,10 +326,8 @@ describe('validate', function () {
         `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d ${fdir}/custom/invalid_data.json --errors=json-oneline`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
-          assert.equal(stdout, '')
-          const results = assertErrors(stderr)
-          const errors = results[0]
-          const err = errors[0]
+          assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
+          const err = JSON.parse(stdout)[0]
           assert.equal(err.keyword, 'typeof')
           assert.equal((err as DefinedError).instancePath, '')
           assert.equal((err as DefinedError).schemaPath, '#/typeof')
@@ -347,25 +347,12 @@ function assertValid(stdout: string, count: number, extraLines = 0): string[] {
   return lines
 }
 
-function assertRequiredErrors(stderr: string, schemaRef = '#', count = 1): void {
-  for (const errors of assertErrors(stderr, count)) {
-    const err = errors[0]
+function assertRequiredErrors(output: string, schemaRef = '#', _count = 1): void {
+  for (const line of output.trim().split('\n')) {
+    const err = JSON.parse(line)[0]
     assert.equal(err.keyword, 'required')
     assert.equal(err.instancePath, '/0/dimensions')
     assert.equal(err.schemaPath, schemaRef + '/items/properties/dimensions/required')
     assert.deepStrictEqual(err.params, { missingProperty: 'height' })
   }
-}
-
-function assertErrors(stderr: string, count = 1): DefinedError[][] {
-  const lines = stderr.split('\n')
-  assert.equal(lines.length, count * 2 + 1)
-  const results: DefinedError[][] = []
-  for (let i = 0; i < count; i += 2) {
-    assert.match(lines[i], /\sinvalid/)
-    const errors = JSON.parse(lines[i + 1])
-    assert.equal(errors.length, 1)
-    results.push(errors)
-  }
-  return results
 }

@@ -10,8 +10,8 @@ describe('compile', function () {
   it('should compile valid schema', done => {
     cli(`compile -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert.equal(error, null)
-      assertValid(stdout, 1)
-      assert.equal(stderr, '')
+      assertValid(stderr, 1)
+      assert.equal(stdout, '')
       done()
     })
   })
@@ -21,8 +21,8 @@ describe('compile', function () {
       `compile -s ${fdir}/schema.json -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
         assert.equal(error, null)
-        assertValid(stdout, 2)
-        assert.equal(stderr, '')
+        assertValid(stderr, 2)
+        assert.equal(stdout, '')
         done()
       },
     )
@@ -37,8 +37,8 @@ describe('compile', function () {
         fs.unlinkSync(`${fdir}/validate_schema1.cjs`)
 
         assert.equal(error, null)
-        assertValid(stdout, 1)
-        assert.equal(stderr, '')
+        assertValid(stderr, 1)
+        assert.equal(stdout, '')
 
         const validData = readJson(`${fdir}/valid_data.json`)
         const invalidData = readJson(`${fdir}/invalid_data.json`)
@@ -56,8 +56,8 @@ describe('compile', function () {
         fs.unlinkSync(`${fdir}/validate_schema2.cjs`)
 
         assert.equal(error, null)
-        assertValid(stdout, 2)
-        assert.equal(stderr, '')
+        assertValid(stderr, 2)
+        assert.equal(stdout, '')
 
         const validData = readJson(`${fdir}/valid_data.json`)
         const invalidData = readJson(`${fdir}/invalid_data.json`)
@@ -73,8 +73,8 @@ describe('compile', function () {
       `compile -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
         assert.equal(error, null)
-        assertValid(stdout, 1)
-        assert.equal(stderr, '')
+        assertValid(stderr, 1)
+        assert.equal(stdout, '')
         done()
       },
     )
@@ -110,10 +110,11 @@ describe('compile', function () {
       `compile -s ${fdir}/schema.json -o no_folder/validate_schema.cjs`,
       (error, stdout, stderr) => {
         assert(error instanceof Error)
-        assertValid(stdout, 1)
+        assert.equal(stdout, '')
         const lines = stderr.split('\n')
         assert(lines.length > 1)
-        assert.match(lines[0], /error\ssaving\sfile/)
+        assert.match(lines[0], /schema .* is valid/)
+        assert.match(lines[1], /error\ssaving\sfile/)
         done()
       },
     )
@@ -168,8 +169,8 @@ describe('compile', function () {
   it('should compile JTD schema', done => {
     cli(`compile -s ${fdir}/jtd/schema.json --spec=jtd`, (error, stdout, stderr) => {
       assert.equal(error, null)
-      assertValid(stdout, 1)
-      assert.equal(stderr, '')
+      assertValid(stderr, 1)
+      assert.equal(stdout, '')
       done()
     })
   })
@@ -197,8 +198,8 @@ async function assertCompiledCustom(
   stderr: string,
 ): Promise<void> {
   assert.equal(error, null)
-  assertValid(stdout, 1)
-  assert.equal(stderr, '')
+  assertValid(stderr, 1)
+  assert.equal(stdout, '')
 
   // @ts-ignore
   const validate = await import('./fixtures/custom/validate_schema.cjs')
