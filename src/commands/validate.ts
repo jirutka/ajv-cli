@@ -130,6 +130,7 @@ function formatErrors(
   file: ParsedFile,
   opts: { format: ErrorFormat; location: boolean; merge: boolean; verbose: boolean },
 ): string {
+  const { format } = opts
   let errors: ValidationError[]
 
   if (opts.merge) {
@@ -137,52 +138,25 @@ function formatErrors(
   } else {
     errors = rewriteSchemaPathInErrors(rawErrors, opts.verbose)
   }
-  if (
-    opts.location ||
-    opts.format === 'line' ||
-    opts.format === 'pretty' ||
-    opts.format === 'code-climate'
-  ) {
-    const errorsWithLoc = withInstanceLocation(errors, file)
-    const { filename } = file
 
-    switch (opts.format) {
+  if (format === 'jsonpath') {
+    return errors.map(formatJsonPath).join('\n')
+  }
+  if (opts.location || format === 'line' || format === 'pretty' || format === 'code-climate') {
+    const errorsWithLoc = (errors = withInstanceLocation(errors, file))
+
+    switch (format) {
       case 'code-climate':
         return stringify(errorsWithLoc.map(formatCodeClimateIssue), 'json')
-      case 'line': {
-        return errorsWithLoc
-          .map(err => {
-            const { start } = err.instanceLocation
-            return start ?
-                `${filename}:${start.line}:${start.col} - ${err.message}`
-              : `${filename} - ${err.message}`
-          })
-          .join('\n')
-      }
+      case 'line':
+        return errorsWithLoc.map(formatLine).join('\n')
       case 'pretty': {
-        return errorsWithLoc
-          .map(({ message, instanceLocation: location, instancePath }) => {
-            if (location.start) {
-              return codespan(file.lines, location as LocationRange, {
-                colors: process.stdout.isTTY,
-                title: `#${instancePath}`,
-                filename,
-                message,
-              })
-            }
-            // This shouldn't happen...
-            return `${filename}: ${message}`
-          })
-          .join('\n\n')
+        return errorsWithLoc.map(err => formatPretty(err, file)).join('\n\n')
       }
     }
-    errors = errorsWithLoc
-  }
-  if (opts.format === 'jsonpath') {
-    return errors.map(err => `#${err.instancePath} - ${err.message}`).join('\n')
   }
 
-  return stringify(errors, opts.format)
+  return stringify(errors, format)
 }
 
 function formatCodeClimateIssue({
@@ -212,6 +186,37 @@ function formatCodeClimateIssue({
         : {},
     },
   }
+}
+
+function formatJsonPath(error: ValidationError): string {
+  return `#${error.instancePath} - ${error.message}`
+}
+
+function formatLine(error: Required<ValidationError, 'instanceLocation'>): string {
+  const { filename, start } = error.instanceLocation
+  if (!start) {
+    // This shouldn't happen...
+    return `${filename} - ${error.message}`
+  }
+  return `${filename}:${start.line}:${start.col} - ${error.message}`
+}
+
+function formatPretty(
+  error: Required<ValidationError, 'instanceLocation'>,
+  file: ParsedFile,
+): string {
+  const { instanceLocation: location, instancePath, message } = error
+
+  if (!location.start) {
+    // This shouldn't happen...
+    return `${file.filename}: ${message}`
+  }
+  return codespan(file.lines, location as LocationRange, {
+    colors: process.stdout.isTTY,
+    title: `#${instancePath}`,
+    filename: file.filename,
+    message,
+  })
 }
 
 function stringify(data: unknown, format: 'js' | 'json' | 'json-oneline'): string {
