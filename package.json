@@ -1,5 +1,5 @@
 {
-  "name": "ajv-cli",
+  "name": "@jirutka/ajv-cli",
   "version": "5.0.0",
   "description": "Command line interface for Ajv JSON schema validator",
   "author": {
