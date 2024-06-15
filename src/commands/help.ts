@@ -110,6 +110,9 @@ Ajv advanced options:
   --code-es5
       Generate ES5 code.
 
+  --code-esm
+      Export the validate function(s) as ES Modules instead of CommonJS.
+
   --code-lines
       Add line-breaks to code - to simplify debugging of generated functions.
 
