@@ -10,6 +10,7 @@ module.exports = {
         project: ['./test/tsconfig.json'],
       },
       rules: {
+        '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-invalid-this': 'off',
       },
     },

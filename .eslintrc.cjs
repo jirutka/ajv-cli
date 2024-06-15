@@ -39,9 +39,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  ignorePatterns: [
-    'src/vendor/**'
-  ],
+  ignorePatterns: ['src/vendor/**'],
   overrides: [
     {
       files: ['*.js'],

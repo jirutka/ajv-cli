@@ -12,6 +12,7 @@ export async function asyncCli(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(`node dist/index ${params}`, { cwd }, (error, stdout, stderr) => {
+      // eslint-disable-next-line callback-return
       callback(error, stdout, stderr).then(resolve).catch(reject)
     })
   })

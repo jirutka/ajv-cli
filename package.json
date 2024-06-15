@@ -18,7 +18,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "format": "prettier --write \"./**/*.{js,json,ts,yaml}\"",
-    "lint": "eslint \"src/**/*.ts\" \"test/**/*.js\"",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.[jt]s\"",
     "prepublishOnly": "npm run build",
     "stylecheck": "prettier --check \"./**/*.{js,json,ts,yaml}\"",
     "test-cov": "c8 npm run test-only",
