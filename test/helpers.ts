@@ -11,7 +11,7 @@ export async function asyncCli(
   callback: (error: ExecException | null, stdout: string, stderr: string) => Promise<void>,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    exec(`node dist/index ${params}`, { cwd }, (error, stdout, stderr) => {
+    exec(`node dist/main.js ${params}`, { cwd }, (error, stdout, stderr) => {
       // eslint-disable-next-line callback-return
       callback(error, stdout, stderr).then(resolve).catch(reject)
     })
@@ -22,7 +22,7 @@ export function cli(
   params: string,
   callback?: (error: ExecException | null, stdout: string, stderr: string) => void,
 ): void {
-  exec(`node dist/index ${params}`, { cwd }, callback)
+  exec(`node dist/main.js ${params}`, { cwd }, callback)
 }
 
 export function readJson(filepath: string): any {

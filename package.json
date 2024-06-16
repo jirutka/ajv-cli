@@ -13,7 +13,7 @@
   },
   "type": "module",
   "bin": {
-    "ajv": "dist/index.js"
+    "ajv": "dist/main.js"
   },
   "files": [
     "dist"
