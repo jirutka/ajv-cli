@@ -1,4 +1,6 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
+import { exit } from 'node:process'
+
 import minimist from 'minimist'
 
 import { usage } from './commands/help.js'
@@ -6,29 +8,34 @@ import commands, { type CmdName } from './commands/index.js'
 import { checkOptions } from './options.js'
 import { ProgramError } from './errors.js'
 
-const argv = minimist(process.argv.slice(2))
-const command = argv._[0] || 'validate'
-if (command in commands) {
-  const cmd = commands[command as CmdName]
-  const errors = checkOptions(cmd.schema, argv)
+function main(argv: string[]): void {
+  const opts = minimist(argv)
+  const cmdName = opts._[0] || 'validate'
+
+  if (!Object.hasOwn(commands, cmdName)) {
+    console.error(`Unknown command ${cmdName}`)
+    usage()
+    exit(2)
+  }
+  const cmd = commands[cmdName as CmdName]
+
+  const errors = checkOptions(cmd.schema, opts)
   if (errors) {
     console.error(errors)
     usage()
-    process.exit(2)
-  } else {
-    cmd
-      .execute(argv)
-      .then(ok => process.exit(ok ? 0 : 1))
-      .catch(err => {
-        if (err instanceof ProgramError) {
-          console.error(err.message)
-          process.exit(err.exitCode)
-        }
-        throw err
-      })
+    exit(2)
   }
-} else {
-  console.error(`Unknown command ${command}`)
-  usage()
-  process.exit(2)
+
+  cmd
+    .execute(opts)
+    .then(ok => exit(ok ? 0 : 1))
+    .catch(err => {
+      if (err instanceof ProgramError) {
+        console.error(err.message)
+        exit(err.exitCode)
+      }
+      throw err
+    })
 }
+
+main(process.argv.slice(2))
