@@ -1,16 +1,25 @@
 {
   "name": "@jirutka/ajv-cli",
   "version": "6.0.0-beta.0",
-  "description": "Command line interface for Ajv JSON schema validator",
+  "description": "CLI for Ajv JSON Schema Validator with human-friendly error messages",
   "author": {
     "name": "Jakub Jirutka",
     "email": "jakub@jirutka.cz"
   },
   "license": "MIT",
+  "homepage": "https://github.com/jirutka/ajv-cli",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jirutka/ajv-cli"
+    "url": "https://github.com/jirutka/ajv-cli.git"
   },
+  "keywords": [
+    "ajv",
+    "cli",
+    "json-schema-validator",
+    "json-schema",
+    "validator",
+    "yaml-schema"
+  ],
   "type": "module",
   "bin": {
     "ajv": "dist/main.js"
