@@ -176,6 +176,7 @@ Usage:
   ajv validate [options] -s <schema-file> -d <data-file>
   ajv compile [options] -s <schema-file>
   ajv help [<command>]
+  ajv --version
 
 Report issues at <${projectUrl}>.
 `

@@ -8,9 +8,17 @@ import commands, { type CmdName } from './commands/index.js'
 import { checkOptions } from './options.js'
 import { ProgramError } from './errors.js'
 
+const pkgName = '@jirutka/ajv-cli'
+const pkgVersion = '6.0.0-beta.0'
+
 function main(argv: string[]): void {
   const opts = minimist(argv)
   const cmdName = opts._[0] || 'validate'
+
+  if (opts.version || opts.V) {
+    console.log(`${pkgName} ${pkgVersion}`)
+    exit(0)
+  }
 
   if (!Object.hasOwn(commands, cmdName)) {
     console.error(`Unknown command ${cmdName}`)
