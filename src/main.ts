@@ -13,7 +13,7 @@ const pkgVersion = '6.0.0-beta.0'
 
 function main(argv: string[]): void {
   const opts = minimist(argv)
-  const cmdName = opts._[0] || 'validate'
+  const cmdName = opts._[0] || ''
 
   if (opts.version || opts.V) {
     console.log(`${pkgName} ${pkgVersion}`)
