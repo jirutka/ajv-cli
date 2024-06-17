@@ -7,3 +7,7 @@ export class ProgramError extends Error {
     this.exitCode = exitCode ?? 1
   }
 }
+
+export class UsageError extends ProgramError {
+  override exitCode = 64
+}

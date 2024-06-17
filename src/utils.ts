@@ -2,7 +2,7 @@ import * as crypto from 'node:crypto'
 
 import { glob } from './glob.js'
 
-function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
+export function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
   return (
     value == null ? []
     : Array.isArray(value) ? value

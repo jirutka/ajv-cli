@@ -1,49 +1,45 @@
-#!/usr/bin/env node
 import { exit } from 'node:process'
 
-import minimist from 'minimist'
-
+import { parseArgv } from './args-parser.js'
+import { commands } from './commands/index.js'
 import { usage } from './commands/help.js'
-import commands, { type CmdName } from './commands/index.js'
-import { checkOptions } from './options.js'
-import { ProgramError } from './errors.js'
+import { ProgramError, UsageError } from './errors.js'
 
 const pkgName = '@jirutka/ajv-cli'
 const pkgVersion = '6.0.0-beta.0'
 
-function main(argv: string[]): void {
-  const opts = minimist(argv)
-  const cmdName = opts._[0] || ''
-
-  if (opts.version || opts.V) {
-    console.log(`${pkgName} ${pkgVersion}`)
-    exit(0)
+async function main(argv: string[]): Promise<boolean> {
+  switch (argv[0]) {
+    case '--version':
+    case '-V':
+      printVersion()
   }
+  const cmdName = argv.shift() ?? ''
 
   if (!Object.hasOwn(commands, cmdName)) {
-    console.error(`Unknown command ${cmdName}`)
-    usage()
-    exit(2)
+    throw new UsageError(`Unknown command: ${cmdName}`)
   }
-  const cmd = commands[cmdName as CmdName]
+  const command = commands[cmdName as keyof typeof commands]
 
-  const errors = checkOptions(cmd.schema, opts)
-  if (errors) {
-    console.error(errors)
-    usage()
-    exit(2)
-  }
+  const [opts, args] = parseArgv(command.options, argv)
 
-  cmd
-    .execute(opts)
-    .then(ok => exit(ok ? 0 : 1))
-    .catch(err => {
-      if (err instanceof ProgramError) {
-        console.error(err.message)
-        exit(err.exitCode)
-      }
-      throw err
-    })
+  return await command.execute(opts as any, args)
+}
+
+function printVersion(): never {
+  console.log(`${pkgName} ${pkgVersion}`)
+  exit(0)
 }
 
 main(process.argv.slice(2))
+  .then(ok => exit(ok ? 0 : 1))
+  .catch(err => {
+    if (err instanceof ProgramError) {
+      console.error(`ajv: ${err.message}`)
+      if (err instanceof UsageError) {
+        usage()
+      }
+      exit(err.exitCode)
+    }
+    throw err
+  })

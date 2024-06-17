@@ -3,18 +3,46 @@ import { inspect } from 'node:util'
 import type { Ajv } from 'ajv'
 import type { AnyValidateFunction, ErrorObject } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
-import type { ParsedArgs } from 'minimist'
 import type { Required } from 'utility-types'
 
 import { mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import getAjv from '../ajv.js'
+import { AnyOf, Bool, Enum, InferOptions, OptionsSchema } from '../args-parser.js'
 import { codespan } from '../codespan.js'
-import { type Command } from './index.js'
+import { type Command, commonOptionsSchema } from './common.js'
 import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
 import { getFiles, sha1sum } from '../utils.js'
 import { ProgramError } from '../errors.js'
 import type { LocationRange, ValidationError } from '../types.js'
+
+const optionsSchema = {
+  ...commonOptionsSchema,
+  dataFile: {
+    required: true,
+    type: [String],
+    alias: 'd',
+    default: () => [] as string[],
+  },
+  changes: AnyOf(Bool, Enum('json', 'json-oneline', 'js')),
+  errors: {
+    type: Enum('code-climate', 'js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty', 'no'),
+    default: 'pretty' as const,
+  },
+  errorsLocation: Bool,
+  mergeErrors: {
+    type: Bool,
+    default: true,
+  },
+  _: {
+    type: [String],
+    maxItems: 0,
+  },
+} satisfies OptionsSchema
+
+type Options = InferOptions<typeof optionsSchema>
+
+type ErrorFormat = Exclude<Options['errors'], 'no'>
 
 // https://docs.gitlab.com/ee/ci/testing/code_quality.html#implement-a-custom-tool
 // https://github.com/codeclimate/platform/blob/master/spec/analyzers/SPEC.md#data-types
@@ -34,49 +62,15 @@ interface CodeClimateIssue {
   }
 }
 
-const errorFormats = [
-  'code-climate',
-  'js',
-  'json',
-  'json-oneline',
-  'jsonpath',
-  'line',
-  'pretty',
-] as const
-type ErrorFormat = (typeof errorFormats)[number]
+export default {
+  options: optionsSchema,
+  execute: validate,
+} satisfies Command<typeof optionsSchema>
 
-const cmd: Command = {
-  execute,
-  schema: {
-    type: 'object',
-    required: ['s', 'd'],
-    properties: {
-      s: {
-        type: 'string',
-        format: 'notGlob',
-      },
-      d: { $ref: '#/$defs/stringOrArray' },
-      r: { $ref: '#/$defs/stringOrArray' },
-      m: { $ref: '#/$defs/stringOrArray' },
-      c: { $ref: '#/$defs/stringOrArray' },
-      'errors-location': { type: 'boolean' },
-      'merge-errors': { type: 'boolean' },
-      errors: {
-        enum: [...errorFormats, 'no'],
-      },
-      changes: { enum: [true, 'json', 'json-oneline', 'js'] },
-      spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
-    },
-    ajvOptions: true,
-  },
-}
-
-export default cmd
-
-async function execute(argv: ParsedArgs): Promise<boolean> {
-  const ajv = await getAjv(argv)
-  const validate = compileSchema(ajv, argv.s)
-  return getFiles(argv.d)
+async function validate(opts: Options, _args: string[]): Promise<boolean> {
+  const ajv = await getAjv(opts, 'validate')
+  const validateData = compileSchema(ajv, opts.schema[0])
+  return getFiles(opts.dataFile)
     .map(validateDataFile)
     .every(x => x)
 
@@ -84,29 +78,29 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     const file = parseFileWithMeta(filepath)
     const { data } = file
 
-    const original = argv.changes ? JSON.parse(JSON.stringify(data)) : null
-    const validData = validate(data) as boolean
+    const original = opts.changes ? JSON.parse(JSON.stringify(data)) : null
+    const validData = validateData(data) as boolean
 
     if (validData) {
       console.error(filepath, 'valid')
-      if (argv.changes) {
+      if (opts.changes) {
         const patch = jsonPatch.compare(original, data)
         if (patch.length === 0) {
           console.error('no changes')
         } else {
           console.error('changes:')
-          console.log(stringify(patch, argv.changes))
+          console.log(stringify(patch, opts.changes === true ? 'js' : opts.changes))
         }
       }
     } else {
       console.error(filepath, 'invalid')
 
-      if (argv.errors !== 'no') {
-        const output = formatErrors(validate.errors!, file, {
-          format: argv.errors || 'pretty',
-          location: !!argv['errors-location'],
-          merge: argv['merge-errors'] !== false,
-          verbose: !!argv.verbose,
+      if (opts.errors !== 'no') {
+        const output = formatErrors(validateData.errors!, file, {
+          format: opts.errors,
+          location: !!opts.errorsLocation,
+          merge: opts.mergeErrors !== false,
+          verbose: !!opts.verbose,
         })
         console.log(output)
       }

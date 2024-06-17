@@ -2,36 +2,36 @@ import * as fs from 'node:fs'
 
 import type { AnyValidateFunction } from 'ajv/dist/core.js'
 import standaloneCode from 'ajv/dist/standalone/index.js'
-import type { ParsedArgs } from 'minimist'
 
 import getAjv from '../ajv.js'
-import type { Command } from './index.js'
+import { AnyOf, Bool, type InferOptions, type OptionsSchema } from '../args-parser.js'
+import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
 import { getFiles } from '../utils.js'
 
-const cmd: Command = {
-  execute,
-  schema: {
-    type: 'object',
-    required: ['s'],
-    properties: {
-      s: { $ref: '#/$defs/stringOrArray' },
-      r: { $ref: '#/$defs/stringOrArray' },
-      m: { $ref: '#/$defs/stringOrArray' },
-      c: { $ref: '#/$defs/stringOrArray' },
-      o: { anyOf: [{ type: 'string', format: 'notGlob' }, { type: 'boolean' }] },
-      spec: { enum: ['draft7', 'draft2019', 'draft2020', 'jtd'] },
-    },
-    ajvOptions: true,
+const optionsSchema = {
+  ...commonOptionsSchema,
+  output: {
+    type: AnyOf(Bool, String),
+    alias: 'o',
   },
-}
+  _: {
+    type: [String],
+    maxItems: 0,
+  },
+} satisfies OptionsSchema
 
-export default cmd
+type Options = InferOptions<typeof optionsSchema>
 
-async function execute(argv: ParsedArgs): Promise<boolean> {
-  const ajv = await getAjv(argv)
-  const schemaFiles = getFiles(argv.s)
-  if ('o' in argv && schemaFiles.length > 1) {
+export default {
+  options: optionsSchema,
+  execute: compile,
+} satisfies Command<typeof optionsSchema>
+
+async function compile(opts: Options, _args: string[]): Promise<boolean> {
+  const ajv = await getAjv(opts, 'compile')
+  const schemaFiles = getFiles(opts.schema)
+  if (opts.output != null && schemaFiles.length > 1) {
     return compileMultiExportModule(schemaFiles)
   }
   return schemaFiles.map(compileSchemaAndSave).every(x => x)
@@ -48,7 +48,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
   function compileSchemaAndSave(file: string): boolean {
     const validate = compileSchema(file)
     if (validate) {
-      return 'o' in argv ? saveStandaloneCode(validate) : true
+      return opts.output != null ? saveStandaloneCode(validate) : true
     }
     return false
   }
@@ -59,7 +59,7 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
       const id = sch?.$id
       ajv.addSchema(sch, id ? undefined : file)
       const validate = ajv.getSchema(id || file)
-      if (argv.o !== true) {
+      if (opts.output !== true) {
         console.error(`schema ${file} is valid`)
       }
       return validate
@@ -90,10 +90,10 @@ async function execute(argv: ParsedArgs): Promise<boolean> {
     try {
       const moduleCode = standaloneCode.default(ajv, refsOrFunc)
       try {
-        if (argv.o === true) {
+        if (opts.output === true) {
           console.log(moduleCode)
         } else {
-          fs.writeFileSync(argv.o, moduleCode)
+          fs.writeFileSync(opts.output as string, moduleCode)
         }
         return true
       } catch (e) {

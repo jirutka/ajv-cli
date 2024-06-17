@@ -40,7 +40,7 @@ describe('help', function () {
       assert(error instanceof Error)
       assert.equal(stdout, '')
       assert(stderr.includes('command'))
-      assert(stderr.includes('unknown'))
+      assert(stderr.includes('Unknown'))
       assert(stderr.includes('Usage'))
       done()
     })
@@ -51,19 +51,18 @@ describe('help', function () {
       assert(error instanceof Error)
       assert.equal(stdout, '')
       assert(stderr.includes('command'))
-      assert(stderr.includes('unknown'))
+      assert(stderr.includes('Unknown'))
       assert(stderr.includes('Usage'))
       done()
     })
   })
 
   it('should print usage if syntax is invalid', done => {
-    cli('help -s test/schema.json', (error, stdout, stderr) => {
+    cli('help --foo test/schema.json', (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert.equal(stdout, '')
+      assert(stderr.includes('Unknown'))
       assert(stderr.includes('Usage'))
-      assert(stderr.includes('parameter'))
-      assert(stderr.includes('unknown'))
       done()
     })
   })

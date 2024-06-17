@@ -1,6 +1,5 @@
-import type { ParsedArgs } from 'minimist'
-
-import type { CmdName, Command } from './index.js'
+import type { Command } from './common.js'
+import type { CmdName } from './index.js'
 
 const projectUrl = 'https://github.com/jirutka/ajv-cli/issues'
 
@@ -155,16 +154,16 @@ See https://github.com/epoberezkin/ajv#options for more information.\
 `
 
 const srmcOptions = `\
-  -s <schema-file>
+  -s --schema <schema-file>
       Path to JSON schema to validate against (supports globbing). REQUIRED
 
-  -r <schema-file>...
+  -r --ref-schema <schema-file>...
       Path(s) to referenced schema(s) (supports globbing).
 
-  -m <schema-file>...
+  -m --meta-schema <schema-file>...
       Path(s) to meta schema(s) (supports globbing).
 
-  -c <module-file>...
+  -c --keywords <module-file>...
       JS module(s) with custom keywords/formats definitions. Module should
       export a function that accepts Ajv instance as parameter. File path should
       start with ".", otherwise used as require package. Path can be a globbing.\
@@ -195,7 +194,7 @@ Compile JSON schema(s) to JavaScript.
 Options:
 ${srmcOptions}
 
-  -o <out-file>
+  -o --output <out-file>
       Path to output file.
 
 ${schemaSpecOption}
@@ -248,18 +247,6 @@ ${schemaSpecOption}
 ${ajvOptions}
 `
 
-const cmd: Command = {
-  execute,
-  schema: {
-    type: 'object',
-    properties: {
-      _: { maxItems: 2 },
-    },
-  },
-}
-
-export default cmd
-
 export function usage(): void {
   console.error(mainHelp)
 }
@@ -270,9 +257,14 @@ const helps: Record<CmdName, string> = {
   validate: validateHelp,
 }
 
+export default {
+  execute: help,
+  options: {},
+} satisfies Command<any>
+
 // eslint-disable-next-line @typescript-eslint/require-await
-async function execute(argv: ParsedArgs): Promise<boolean> {
-  const command = argv._[1]
+async function help(_: object, args: string[]): Promise<boolean> {
+  const command = args[0]
   if (!command) {
     console.log(mainHelp)
     return true

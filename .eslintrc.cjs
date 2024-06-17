@@ -7,7 +7,7 @@ const jsConfigRules = {
   eqeqeq: ['error', 'smart'],
   'id-match': 'error',
   'linebreak-style': ['error', 'unix'],
-  'new-cap': 'error',
+  'new-cap': 'off',
   'no-console': 'off',
   'no-debugger': 'error',
   'no-duplicate-imports': 'error',

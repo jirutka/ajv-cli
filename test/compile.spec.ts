@@ -146,20 +146,10 @@ describe('compile', function () {
     )
   })
 
-  it('should fail if output file is glob', done => {
-    cli(`compile -s ${fdir}/schema.json -o ${fdir}/*.foo`, (error, stdout, stderr) => {
-      assert(error instanceof Error)
-      assert(stderr.includes('only one file is allowed'))
-      assert(stderr.includes('Usage'))
-      assert.equal(stdout, '')
-      done()
-    })
-  })
-
   it('should fail if too many parameters', done => {
     cli(`compile file -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert(error instanceof Error)
-      assert(stderr.includes('too many arguments'))
+      assert(stderr.includes('Too many arguments'))
       assert(stderr.includes('Usage'))
       assert.equal(stdout, '')
       done()
