@@ -115,6 +115,11 @@ Ajv advanced options:
   --code-esm
       Export the validate function(s) as ES Modules instead of CommonJS.
 
+  --code-formats
+      Code snippet created with '_' tagged template literal that contains all
+      format definitions. It can be the code of actual definitions or 'require'
+      call: "_\`require("./my-formats")\`".
+
   --code-lines
       Add line-breaks to code - to simplify debugging of generated functions.
 
