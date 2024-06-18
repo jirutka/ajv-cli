@@ -4,7 +4,7 @@ import type { AnyValidateFunction } from 'ajv/dist/core.js'
 import standaloneCode from 'ajv/dist/standalone/index.js'
 
 import { initAjv } from '../ajv.js'
-import { AnyOf, Bool, type InferOptions, type OptionsSchema } from '../args-parser.js'
+import { type InferOptions, type OptionsSchema } from '../args-parser.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
 import { expandFilePaths } from '../utils.js'
@@ -12,7 +12,7 @@ import { expandFilePaths } from '../utils.js'
 const optionsSchema = {
   ...commonOptionsSchema,
   output: {
-    type: AnyOf(Bool, String),
+    type: String,
     alias: 'o',
   },
   _: {
@@ -31,10 +31,10 @@ export default {
 async function compile(opts: Options, _args: string[]): Promise<boolean> {
   const ajv = await initAjv(opts, 'compile')
   const schemaFiles = expandFilePaths(opts.schema)
-  if (opts.output != null && schemaFiles.length > 1) {
+  if (schemaFiles.length > 1) {
     return compileMultiExportModule(schemaFiles)
   }
-  return schemaFiles.map(compileSchemaAndSave).every(x => x)
+  return compileSchemaAndSave(schemaFiles[0])
 
   function compileMultiExportModule(files: string[]): boolean {
     const validators = files.map(compileSchema)
@@ -48,7 +48,7 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
   function compileSchemaAndSave(file: string): boolean {
     const validate = compileSchema(file)
     if (validate) {
-      return opts.output != null ? saveStandaloneCode(validate) : true
+      return saveStandaloneCode(validate)
     }
     return false
   }
@@ -59,9 +59,7 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
       const id = sch?.$id
       ajv.addSchema(sch, id ? undefined : file)
       const validate = ajv.getSchema(id || file)
-      if (opts.output !== true) {
-        console.error(`schema ${file} is valid`)
-      }
+      console.error(`schema ${file} is valid`)
       return validate
     } catch (err) {
       console.error(`schema ${file} is invalid`)
@@ -90,10 +88,10 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
     try {
       const moduleCode = standaloneCode.default(ajv, refsOrFunc)
       try {
-        if (opts.output === true) {
+        if (!opts.output) {
           console.log(moduleCode)
         } else {
-          fs.writeFileSync(opts.output as string, moduleCode)
+          fs.writeFileSync(opts.output, moduleCode)
         }
         return true
       } catch (e) {

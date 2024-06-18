@@ -7,22 +7,23 @@ import { asyncCli, cli, fixturesDir as fdir, readJson } from './helpers.js'
 describe('compile', function () {
   this.timeout(10000)
 
-  it('should compile valid schema', done => {
+  it('should compile valid schema to stdout', done => {
     cli(`compile -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert.equal(error, null)
       assertValid(stderr, 1)
-      assert.equal(stdout, '')
+      assert.match(stdout, /"warehouseLocation"/)
       done()
     })
   })
 
-  it('should compile multiple schemas', done => {
+  it('should compile multiple schemas to stdout', done => {
     cli(
       `compile -s ${fdir}/schema.json -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
         assert.equal(error, null)
         assertValid(stderr, 2)
-        assert.equal(stdout, '')
+        assert.match(stdout, /"warehouseLocation"/)
+        assert.match(stdout, /"my_keyword"/)
         done()
       },
     )
@@ -68,13 +69,13 @@ describe('compile', function () {
       },
     ))
 
-  it('should compile valid schema with a custom meta-schema', done => {
+  it('should compile valid schema with a custom meta-schema to stdout', done => {
     cli(
       `compile -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
       (error, stdout, stderr) => {
         assert.equal(error, null)
         assertValid(stderr, 1)
-        assert.equal(stdout, '')
+        assert.match(stdout, /"my_keyword"/)
         done()
       },
     )
@@ -156,11 +157,11 @@ describe('compile', function () {
     })
   })
 
-  it('should compile JTD schema', done => {
+  it('should compile JTD schema to stdout', done => {
     cli(`compile -s ${fdir}/jtd/schema.json --spec=jtd`, (error, stdout, stderr) => {
       assert.equal(error, null)
       assertValid(stderr, 1)
-      assert.equal(stdout, '')
+      assert.match(stdout, /"timestamp"/)
       done()
     })
   })

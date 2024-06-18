@@ -191,7 +191,8 @@ Options:
       Path(s) to JSON schema(s) to compile (supports globbing). REQUIRED
 
   -o --output <out-file>
-      Path to output file.
+      Path to the output file where the generated JS code will be written.
+      If not specified, it will be written to STDOUT.
 
 ${commonOptions}
 

@@ -32,8 +32,8 @@ export async function initAjv(
   if (mode === 'validate') {
     // verbose is needed for ajv-schema-path-workaround.
     ajvOpts.verbose = true
-  }
-  if ('output' in opts && opts.output) {
+  } else {
+    // This is required by the standalone code generator.
     ajvOpts.code.source = true
   }
   if (ajvOpts.strict == null) {
