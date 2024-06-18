@@ -6,7 +6,7 @@ import { usage } from './commands/help.js'
 import { ProgramError, UsageError } from './errors.js'
 
 const pkgName = '@jirutka/ajv-cli'
-const pkgVersion = '6.0.0-beta.0'
+const pkgVersion = '6.0.0-beta.1'
 
 async function main(argv: string[]): Promise<boolean> {
   switch (argv[0]) {
