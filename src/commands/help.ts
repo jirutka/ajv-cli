@@ -153,10 +153,7 @@ Ajv advanced options:
 See https://github.com/epoberezkin/ajv#options for more information.\
 `
 
-const srmcOptions = `\
-  -s --schema <schema-file>
-      Path to JSON schema to validate against (supports globbing). REQUIRED
-
+const commonOptions = `\
   -r --ref-schema <schema-file>...
       Path(s) to referenced schema(s) (supports globbing).
 
@@ -166,10 +163,8 @@ const srmcOptions = `\
   -c --keywords <module-file>...
       JS module(s) with custom keywords/formats definitions. Module should
       export a function that accepts Ajv instance as parameter. File path should
-      start with ".", otherwise used as require package. Path can be a globbing.\
-`
+      start with ".", otherwise used as require package. Path can be a globbing.
 
-const schemaSpecOption = `\
   --spec <spec>
       JSON schema specification to use: draft7, draft2019, draft2020, or jtd.
       Default is draft-07.\
@@ -187,17 +182,19 @@ Report issues at <${projectUrl}>.
 
 const compileHelp = `
 Usage:
-  ajv compile [options] -s <schema-file>
+  ajv compile [options] -s <schema-file>...
 
 Compile JSON schema(s) to JavaScript.
 
 Options:
-${srmcOptions}
+  -s --schema <schema-file>...
+      Path(s) to JSON schema(s) to compile (supports globbing). REQUIRED
 
   -o --output <out-file>
       Path to output file.
 
-${schemaSpecOption}
+${commonOptions}
+
 ${ajvOptions}
 `
 
@@ -212,9 +209,10 @@ Arguments:
       Path(s) to data file(s) to be validated (supports globbing). REQUIRED
 
 Options:
-${srmcOptions}
+  -s --schema <schema-file>
+      Path to JSON schema to validate against (supports globbing). REQUIRED
 
-${schemaSpecOption}
+${commonOptions}
 
   --merge-errors <bool>
       Merge related errors per instance path instead of reporting individual
