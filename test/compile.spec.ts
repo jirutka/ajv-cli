@@ -11,11 +11,23 @@ describe('compile', function () {
     fs.mkdirSync(tmpDir, { recursive: true })
   })
 
-  it('should compile valid schema to stdout', done => {
+  it('should compile valid schema to stdout in CJS', done => {
     cli(`compile -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert.equal(error, null)
       assertValid(stderr, 1)
       assert.match(stdout, /"warehouseLocation"/)
+      assert.match(stdout, /\bmodule.exports\s*=/)
+      done()
+    })
+  })
+
+  it('should compile valid schema to stdout in ESM', done => {
+    cli(`compile --code-esm -s ${fdir}/schema.json`, (error, stdout, stderr) => {
+      assert.equal(error, null)
+      assertValid(stderr, 1)
+      assert.match(stdout, /"warehouseLocation"/)
+      assert.match(stdout, /\bexport const\b/)
+      assert.doesNotMatch(stdout, /\bmodule.exports\s*=/)
       done()
     })
   })
@@ -33,13 +45,32 @@ describe('compile', function () {
     )
   })
 
-  it('should compile schema to output file', () =>
+  it('should compile schema to output file in CJS', () =>
     asyncCli(
       `compile -s ${fdir}/schema.json -o ${tmpDir}/validate_schema1.cjs`,
       async (error, stdout, stderr) => {
         // @ts-ignore
         const validate = await import(`../${tmpDir}/validate_schema1.cjs`)
         fs.unlinkSync(`${tmpDir}/validate_schema1.cjs`)
+
+        assert.equal(error, null)
+        assertValid(stderr, 1)
+        assert.equal(stdout, '')
+
+        const validData = readJson(`${fdir}/valid_data.json`)
+        const invalidData = readJson(`${fdir}/invalid_data.json`)
+        assert.equal(validate.default(validData), true)
+        assert.equal(validate.default(invalidData), false)
+      },
+    ))
+
+  it('should compile schema to output file in ESM', () =>
+    asyncCli(
+      `compile --code-esm -s ${fdir}/schema.json -o ${tmpDir}/validate_schema1.mjs`,
+      async (error, stdout, stderr) => {
+        // @ts-ignore
+        const validate = await import(`../${tmpDir}/validate_schema1.mjs`)
+        fs.unlinkSync(`${tmpDir}/validate_schema1.mjs`)
 
         assert.equal(error, null)
         assertValid(stderr, 1)
