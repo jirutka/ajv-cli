@@ -63,44 +63,45 @@ export default {
 
 async function validate(opts: Options, dataFiles: string[]): Promise<boolean> {
   const ajv = await initAjv(opts, 'validate')
-  const validateData = compileSchema(ajv, opts.schema[0])
+  const validateFn = compileSchema(ajv, opts.schema[0])
+
   return expandFilePaths(dataFiles)
-    .map(validateDataFile)
+    .map(filepath => validateFile(validateFn, opts, filepath))
     .every(x => x)
+}
 
-  function validateDataFile(filepath: string): boolean {
-    const file = parseFileWithMeta(filepath)
-    const { data } = file
+function validateFile(validateFn: AnyValidateFunction, opts: Options, filepath: string): boolean {
+  const file = parseFileWithMeta(filepath)
+  const { data } = file
 
-    const original = opts.changes ? JSON.parse(JSON.stringify(data)) : null
-    const validData = validateData(data) as boolean
+  const original = opts.changes ? JSON.parse(JSON.stringify(data)) : null
+  const isValid = validateFn(data) as boolean
 
-    if (validData) {
-      console.error(filepath, 'valid')
-      if (opts.changes) {
-        const patch = jsonPatch.compare(original, data)
-        if (patch.length === 0) {
-          console.error('no changes')
-        } else {
-          console.error('changes:')
-          console.log(stringify(patch, opts.changes === true ? 'js' : opts.changes))
-        }
-      }
-    } else {
-      console.error(filepath, 'invalid')
-
-      if (opts.errors !== 'no') {
-        const output = formatErrors(validateData.errors!, file, {
-          format: opts.errors,
-          location: !!opts.errorsLocation,
-          merge: opts.mergeErrors !== false,
-          verbose: !!opts.verbose,
-        })
-        console.log(output)
+  if (isValid) {
+    console.error(filepath, 'valid')
+    if (opts.changes) {
+      const patch = jsonPatch.compare(original, data)
+      if (patch.length === 0) {
+        console.error('no changes')
+      } else {
+        console.error('changes:')
+        console.log(stringify(patch, opts.changes === true ? 'js' : opts.changes))
       }
     }
-    return validData
+  } else {
+    console.error(filepath, 'invalid')
+
+    if (opts.errors !== 'no') {
+      const output = formatErrors(validateFn.errors!, file, {
+        format: opts.errors,
+        location: !!opts.errorsLocation,
+        merge: opts.mergeErrors !== false,
+        verbose: !!opts.verbose,
+      })
+      console.log(output)
+    }
   }
+  return isValid
 }
 
 function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
