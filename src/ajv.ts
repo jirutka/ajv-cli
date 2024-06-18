@@ -117,7 +117,7 @@ function extractAjvOptions(opts: CommonOptions): Required<AjvOptions, 'code'> {
         return acc
       }
       if (/^code[A-Z]/.test(key)) {
-        acc.code[key[5].toLowerCase() + key.slice(6)] = value
+        acc.code[key[4].toLowerCase() + key.slice(5)] = value
       } else if (key === 'data') {
         acc.$data = value
       } else {
