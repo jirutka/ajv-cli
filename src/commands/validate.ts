@@ -18,12 +18,6 @@ import type { LocationRange, ValidationError } from '../types.js'
 
 const optionsSchema = {
   ...commonOptionsSchema,
-  dataFile: {
-    required: true,
-    type: [String],
-    alias: 'd',
-    default: () => [] as string[],
-  },
   changes: AnyOf(Bool, Enum('json', 'json-oneline', 'js')),
   errors: {
     type: Enum('code-climate', 'js', 'json', 'json-oneline', 'jsonpath', 'line', 'pretty', 'no'),
@@ -36,7 +30,7 @@ const optionsSchema = {
   },
   _: {
     type: [String],
-    maxItems: 0,
+    minItems: 1,
   },
 } satisfies OptionsSchema
 
@@ -67,10 +61,10 @@ export default {
   execute: validate,
 } satisfies Command<typeof optionsSchema>
 
-async function validate(opts: Options, _args: string[]): Promise<boolean> {
+async function validate(opts: Options, dataFiles: string[]): Promise<boolean> {
   const ajv = await getAjv(opts, 'validate')
   const validateData = compileSchema(ajv, opts.schema[0])
-  return getFiles(opts.dataFile)
+  return getFiles(dataFiles)
     .map(validateDataFile)
     .every(x => x)
 

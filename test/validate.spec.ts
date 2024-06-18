@@ -9,19 +9,16 @@ describe('validate', function () {
 
   describe('single file validation', () => {
     it('should validate valid data', done => {
-      cli(
-        `validate -s ${fdir}/schema.json -d ${fdir}/valid_data.json`,
-        (error, stdout, stderr) => {
-          assert.equal(error, null)
-          assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
-          assert.equal(stdout, '')
-          done()
-        },
-      )
+      cli(`validate -s ${fdir}/schema.json ${fdir}/valid_data.json`, (error, stdout, stderr) => {
+        assert.equal(error, null)
+        assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
+        assert.equal(stdout, '')
+        done()
+      })
     })
 
     it('should validate valid data with the "yml" extension', done => {
-      cli(`validate -s ${fdir}/schema.json -d ${fdir}/valid_data.yml`, (error, stdout, stderr) => {
+      cli(`validate -s ${fdir}/schema.json ${fdir}/valid_data.yml`, (error, stdout, stderr) => {
         assert.equal(error, null)
         assert.match(stderr, /^.*\bvalid_data.yml valid\s$/)
         assert.equal(stdout, '')
@@ -30,32 +27,26 @@ describe('validate', function () {
     })
 
     it('should validate valid data with the "yaml" extension', done => {
-      cli(
-        `validate -s ${fdir}/schema.json -d ${fdir}/valid_data.yaml`,
-        (error, stdout, stderr) => {
-          assert.equal(error, null)
-          assert.match(stderr, /^.*\bvalid_data.yaml valid\s$/)
-          assert.equal(stdout, '')
-          done()
-        },
-      )
+      cli(`validate -s ${fdir}/schema.json ${fdir}/valid_data.yaml`, (error, stdout, stderr) => {
+        assert.equal(error, null)
+        assert.match(stderr, /^.*\bvalid_data.yaml valid\s$/)
+        assert.equal(stdout, '')
+        done()
+      })
     })
 
     it('should validate valid data with the "jsonc" extension', done => {
-      cli(
-        `validate -s ${fdir}/schema.json -d ${fdir}/valid_data.jsonc`,
-        (error, stdout, stderr) => {
-          assert.equal(error, null)
-          assert.match(stderr, /^.*\bvalid_data.jsonc valid\s$/)
-          assert.equal(stdout, '')
-          done()
-        },
-      )
+      cli(`validate -s ${fdir}/schema.json ${fdir}/valid_data.jsonc`, (error, stdout, stderr) => {
+        assert.equal(error, null)
+        assert.match(stderr, /^.*\bvalid_data.jsonc valid\s$/)
+        assert.equal(stdout, '')
+        done()
+      })
     })
 
     it('should validate invalid data', done => {
       cli(
-        `validate -s ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=json-oneline --merge-errors=false`,
+        `validate --errors=json-oneline --merge-errors=false -s ${fdir}/schema.json ${fdir}/invalid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
@@ -66,7 +57,7 @@ describe('validate', function () {
     })
 
     it('should print usage if syntax is invalid', done => {
-      cli(`validate -d ${fdir}/valid_data.json`, (error, stdout, stderr) => {
+      cli(`validate ${fdir}/valid_data.json`, (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.equal(stdout, '')
         assert(stderr.includes('Usage'))
@@ -77,7 +68,7 @@ describe('validate', function () {
 
     it('should validate valid data with JTD schema', done => {
       cli(
-        `validate -s ${fdir}/jtd/schema.json -d ${fdir}/jtd/data.json --spec=jtd`,
+        `validate --spec=jtd -s ${fdir}/jtd/schema.json ${fdir}/jtd/data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bdata.json valid\s$/)
@@ -89,7 +80,7 @@ describe('validate', function () {
 
     it('should validate invalid data with JTD schema', done => {
       cli(
-        `validate -s ${fdir}/jtd/schema.json -d ${fdir}/jtd/invalid_data.json --spec=jtd --errors=json-oneline --merge-errors=false`,
+        `validate --spec=jtd --errors=json-oneline --merge-errors=false -s ${fdir}/jtd/schema.json ${fdir}/jtd/invalid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
@@ -105,20 +96,17 @@ describe('validate', function () {
   describe('multiple file validation', () => {
     describe('with glob', () => {
       it(`should exit without error if all files are valid`, done => {
-        cli(
-          `validate -s ${fdir}/schema.json -d "${fdir}/valid*.json"`,
-          (error, stdout, stderr) => {
-            assert.equal(error, null)
-            assertValid(stderr, 2)
-            assert.equal(stdout, '')
-            done()
-          },
-        )
+        cli(`validate -s ${fdir}/schema.json "${fdir}/valid*.json"`, (error, stdout, stderr) => {
+          assert.equal(error, null)
+          assertValid(stderr, 2)
+          assert.equal(stdout, '')
+          done()
+        })
       })
 
       it('should exit with error if some files are invalid', done => {
         cli(
-          `validate -s ${fdir}/schema.json -d "${fdir}/{valid,invalid}*.json" --errors=json-oneline --merge-errors=false`,
+          `validate --errors=json-oneline --merge-errors=false -s ${fdir}/schema.json "${fdir}/{valid,invalid}*.json"`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
             assert.match(stderr, /\bvalid_data\.json valid/)
@@ -135,7 +123,7 @@ describe('validate', function () {
     describe('with multiple files or patterns', () => {
       it('should exit without error if all files are valid', done => {
         cli(
-          `validate -s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/valid_data2.json`,
+          `validate -s ${fdir}/schema.json -- ${fdir}/valid_data.json ${fdir}/valid_data2.json`,
           (error, stdout, stderr) => {
             assert.equal(error, null)
             assert.match(stderr, /\bvalid_data\.json valid/)
@@ -148,7 +136,7 @@ describe('validate', function () {
 
       it('should exit with error if some files are invalid', done => {
         cli(
-          `validate -s ${fdir}/schema.json -d ${fdir}/valid_data.json -d ${fdir}/valid_data2.json -d ${fdir}/invalid_data.json --errors=json-oneline --merge-errors=false`,
+          `validate --errors=json-oneline --merge-errors=false -s ${fdir}/schema.json -- ${fdir}/valid_data.json ${fdir}/valid_data2.json ${fdir}/invalid_data.json`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
             assert.match(stderr, /\bvalid_data\.json valid/)
@@ -162,7 +150,7 @@ describe('validate', function () {
 
       it('should exit with error if some files are invalid (multiple patterns)', done => {
         cli(
-          `validate -s ${fdir}/schema.json -d "${fdir}/valid*.json" -d "${fdir}/invalid*.json" --errors=json-oneline --merge-errors=false`,
+          `validate --errors=json-oneline --merge-errors=false -s ${fdir}/schema.json "${fdir}/valid*.json" "${fdir}/invalid*.json"`,
           (error, stdout, stderr) => {
             assert(error instanceof Error)
             assert.match(stderr, /\bvalid_data\.json valid/)
@@ -180,7 +168,7 @@ describe('validate', function () {
   describe('validate schema with $ref', () => {
     it('should resolve reference and validate', done => {
       cli(
-        `validate -s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json -d ${fdir}/valid_data.json`,
+        `validate -s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json ${fdir}/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
@@ -192,7 +180,7 @@ describe('validate', function () {
 
     it('should resolve reference and validate invalid data', done => {
       cli(
-        `validate -s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json -d ${fdir}/invalid_data.json --errors=json-oneline --merge-errors=false`,
+        `validate --errors=json-oneline --merge-errors=false -s ${fdir}/schema_with_ref.json -r ${fdir}/schema.json ${fdir}/invalid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
@@ -206,7 +194,7 @@ describe('validate', function () {
   describe('validate with schema using added meta-schema', () => {
     it('should validate valid data', done => {
       cli(
-        `validate -s ${fdir}/meta/schema.json -d ${fdir}/meta/valid_data.json -m ${fdir}/meta/meta_schema.json --strict=false`,
+        `validate --strict=false -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json ${fdir}/meta/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
@@ -218,7 +206,7 @@ describe('validate', function () {
 
     it('should validate invalid data', done => {
       cli(
-        `validate -s ${fdir}/meta/schema.json -d ${fdir}/meta/invalid_data.json -m ${fdir}/meta/meta_schema.json --errors=json-oneline --merge-errors=false --strict=false`,
+        `validate --errors=json-oneline --merge-errors=false --strict=false -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json ${fdir}/meta/invalid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
@@ -233,7 +221,7 @@ describe('validate', function () {
 
     it('should fail on invalid schema', done => {
       cli(
-        `validate -s ${fdir}/meta/invalid_schema.json -d ${fdir}/meta/valid_data.json -m ${fdir}/meta/meta_schema.json --errors=json-oneline`,
+        `validate --errors=json-oneline -s ${fdir}/meta/invalid_schema.json -m ${fdir}/meta/meta_schema.json ${fdir}/meta/valid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.equal(stdout, '')
@@ -248,7 +236,7 @@ describe('validate', function () {
   describe('option "changes"', () => {
     it('should log changes in the object after validation', done => {
       cli(
-        `validate -s ${fdir}/schema.json -d ${fdir}/data_with_additional.json --remove-additional  --changes=json-oneline`,
+        `validate --remove-additional --changes=json-oneline -s ${fdir}/schema.json ${fdir}/data_with_additional.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bdata_with_additional.json valid\nchanges/)
@@ -266,7 +254,7 @@ describe('validate', function () {
   describe('option "data"', () => {
     it('should exit with error when not specified in the presence of `$data` references', done => {
       cli(
-        `validate -s ${fdir}/schema_with_data_reference.json -d ${fdir}/data_for_schema_with_data_reference.json`,
+        `validate -s ${fdir}/schema_with_data_reference.json ${fdir}/data_for_schema_with_data_reference.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.equal(stdout, '')
@@ -281,7 +269,7 @@ describe('validate', function () {
 
     it('it should enable `$data` references when specified', done => {
       cli(
-        `validate --data -s ${fdir}/schema_with_data_reference.json -d ${fdir}/data_for_schema_with_data_reference.json`,
+        `validate --data -s ${fdir}/schema_with_data_reference.json ${fdir}/data_for_schema_with_data_reference.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bdata_for_schema_with_data_reference.json valid\s$/)
@@ -295,7 +283,7 @@ describe('validate', function () {
   describe('custom keywords', () => {
     it('should validate valid data; custom keyword definition in file', done => {
       cli(
-        `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -d ${fdir}/custom/valid_data.json`,
+        `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js ${fdir}/custom/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
@@ -307,7 +295,7 @@ describe('validate', function () {
 
     it('should validate valid data; custom keyword definition in package', done => {
       cli(
-        `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d ${fdir}/custom/valid_data.json`,
+        `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js ${fdir}/custom/valid_data.json`,
         (error, stdout, stderr) => {
           assert.equal(error, null)
           assert.match(stderr, /^.*\bvalid_data.json valid\s$/)
@@ -319,7 +307,7 @@ describe('validate', function () {
 
     it('should validate invalid data; custom keyword definition in file', done => {
       cli(
-        `validate -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js -d ${fdir}/custom/invalid_data.json --errors=json-oneline --merge-errors=false`,
+        `validate --errors=json-oneline --merge-errors=false -s ${fdir}/custom/schema.json -c ./${fdir}/custom/typeof.js ${fdir}/custom/invalid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)
@@ -334,7 +322,7 @@ describe('validate', function () {
 
     it('should validate invalid data; custom keyword definition in package', done => {
       cli(
-        `validate -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js -d ${fdir}/custom/invalid_data.json --errors=json-oneline --merge-errors=false`,
+        `validate --errors=json-oneline --merge-errors=false -s ${fdir}/custom/schema.json -c ajv-keywords/dist/keywords/typeof.js ${fdir}/custom/invalid_data.json`,
         (error, stdout, stderr) => {
           assert(error instanceof Error)
           assert.match(stderr, /^.*\binvalid_data.json invalid\s$/)

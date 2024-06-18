@@ -177,7 +177,7 @@ const schemaSpecOption = `\
 
 const mainHelp = `\
 Usage:
-  ajv validate [options] -s <schema-file> -d <data-file>
+  ajv validate [options] -s <schema-file> [--] <data-file>...
   ajv compile [options] -s <schema-file>
   ajv help [<command>]
   ajv --version
@@ -203,14 +203,15 @@ ${ajvOptions}
 
 const validateHelp = `\
 Usage:
-  ajv validate [options] -s <schema-file> -d <data-file>
+  ajv validate [options] -s <schema-file> [--] <data-file>...
 
 Validate data file(s) against JSON schema.
 
-Options:
-  -d <data-file>...
+Arguments:
+  <data-file>...
       Path(s) to data file(s) to be validated (supports globbing). REQUIRED
 
+Options:
 ${srmcOptions}
 
 ${schemaSpecOption}
