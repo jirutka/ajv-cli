@@ -22,16 +22,8 @@ export function deepClone<T>(input: T): T {
   return cloned
 }
 
-export function getFiles(args: string | string[]): string[] {
-  return arrify(args).reduce((files, fileOrPattern) => {
-    const dataFiles = glob(fileOrPattern)
-    if (dataFiles) {
-      files = files.concat(dataFiles)
-    } else {
-      files.push(fileOrPattern)
-    }
-    return files
-  }, [] as string[])
+export function expandFilePaths(args: string | string[]): string[] {
+  return arrify(args).flatMap(arg => glob(arg) ?? arg)
 }
 
 export function sha1sum(data: unknown): string {

@@ -12,7 +12,7 @@ import { AnyOf, Bool, Enum, InferOptions, OptionsSchema } from '../args-parser.j
 import { codespan } from '../codespan.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
-import { getFiles, sha1sum } from '../utils.js'
+import { expandFilePaths, sha1sum } from '../utils.js'
 import { ProgramError } from '../errors.js'
 import type { LocationRange, ValidationError } from '../types.js'
 
@@ -64,7 +64,7 @@ export default {
 async function validate(opts: Options, dataFiles: string[]): Promise<boolean> {
   const ajv = await getAjv(opts, 'validate')
   const validateData = compileSchema(ajv, opts.schema[0])
-  return getFiles(dataFiles)
+  return expandFilePaths(dataFiles)
     .map(validateDataFile)
     .every(x => x)
 

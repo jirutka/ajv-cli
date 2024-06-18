@@ -7,7 +7,7 @@ import getAjv from '../ajv.js'
 import { AnyOf, Bool, type InferOptions, type OptionsSchema } from '../args-parser.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
-import { getFiles } from '../utils.js'
+import { expandFilePaths } from '../utils.js'
 
 const optionsSchema = {
   ...commonOptionsSchema,
@@ -30,7 +30,7 @@ export default {
 
 async function compile(opts: Options, _args: string[]): Promise<boolean> {
   const ajv = await getAjv(opts, 'compile')
-  const schemaFiles = getFiles(opts.schema)
+  const schemaFiles = expandFilePaths(opts.schema)
   if (opts.output != null && schemaFiles.length > 1) {
     return compileMultiExportModule(schemaFiles)
   }

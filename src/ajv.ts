@@ -10,7 +10,7 @@ import { injectPathToSchemas } from './ajv-schema-path-workaround.js'
 import { type CommonOptions, ajvOptionNames } from './commands/common.js'
 import { ProgramError } from './errors.js'
 import { parseFile } from './parsers/index.js'
-import * as util from './utils.js'
+import { expandFilePaths } from './utils.js'
 
 type AjvCore = typeof Ajv7
 type AjvMethod = 'addSchema' | 'addMetaSchema'
@@ -71,7 +71,7 @@ export default async function (
     if (!args) {
       return
     }
-    for (const file of util.getFiles(args)) {
+    for (const file of expandFilePaths(args)) {
       const schema = parseFile(file)
       try {
         if (mode === 'validate' && method === 'addSchema') {
@@ -90,7 +90,7 @@ export default async function (
     if (!args) {
       return
     }
-    for (let file of util.getFiles(args)) {
+    for (let file of expandFilePaths(args)) {
       if (file[0] === '.') {
         file = path.resolve(process.cwd(), file)
       }
