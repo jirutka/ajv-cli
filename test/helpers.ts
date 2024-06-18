@@ -5,6 +5,7 @@ import * as path from 'node:path'
 const cwd = path.join(import.meta.dirname, '..')
 
 export const fixturesDir = 'test/fixtures'
+export const tmpDir = '.tmp'
 
 export async function asyncCli(
   params: string,
