@@ -37,9 +37,9 @@ Ajv strict mode options:
   --strict-schema <bool | "log">
       Prevent unknown keywords, formats etc.
       * true   Throw an exception when any strict schema restriction is
-               violated (default).
+               violated.
       * log    Log warning when any strict schema restriction is violated.
-      * false  Ignore all strict schema violations.
+      * false  Ignore all strict schema violations (default for CLI).
 
   --strict-tuples <bool | "log">
       See https://ajv.js.org/strict-mode.html#unconstrained-tuples.

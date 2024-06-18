@@ -36,6 +36,10 @@ export default async function (
   if ('output' in opts && opts.output) {
     ajvOpts.code.source = true
   }
+  if (ajvOpts.strict == null) {
+    // Ignore unknown keywords (specification-compliant behavior).
+    ajvOpts.strictSchema ??= false
+  }
   // This number's been pulled out of thin air. The higher the number, the
   // longer schema compilation size and memory requirements.
   ajvOpts.inlineRefs ??= 8
