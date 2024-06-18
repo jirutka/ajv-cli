@@ -8,7 +8,7 @@ import { initAjv } from '../ajv.js'
 import { type InferOptions, type OptionsSchema } from '../args-parser.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
-import { expandFilePaths } from '../utils.js'
+import { expandFilePaths, sanitizeId } from '../utils.js'
 
 const optionsSchema = {
   ...commonOptionsSchema,
@@ -40,7 +40,7 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
     if (validators.every(v => v)) {
       return saveStandaloneCode(
         ajv,
-        getRefs(validators as AnyValidateFunction[], schemaPaths),
+        getRefs(validators as AnyValidateFunction[], schemaPaths, !!ajv.opts.code.esm),
         opts.output,
       )
     }
@@ -55,12 +55,17 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
   return false
 }
 
-function getRefs(validators: AnyValidateFunction[], files: string[]): { [K in string]?: string } {
+function getRefs(
+  validators: AnyValidateFunction[],
+  schemaPaths: string[],
+  esm: boolean,
+): { [K in string]?: string } {
   return validators.reduce(
-    (refs, { schema }, idx) => {
-      const ref = typeof schema === 'object' ? schema.$id || files[idx] : files[idx]
-      refs[ref] = ref
-      return refs
+    (acc, { schema }, idx) => {
+      const ref = (typeof schema === 'object' && schema.$id) || schemaPaths[idx]
+      const exportName = esm ? sanitizeId(ref.replace(/\.json$/, '')) : ref
+      acc[exportName] = ref
+      return acc
     },
     {} as { [K in string]?: string },
   )

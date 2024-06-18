@@ -1,6 +1,7 @@
 import * as crypto from 'node:crypto'
 
 import { glob } from './glob.js'
+import reservedWords from './reserved-words.js'
 
 export function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
   return (value == null ? [] : Array.isArray(value) ? value : [value]) as T[]
@@ -24,6 +25,12 @@ export function deepClone<T>(input: T): T {
 
 export function expandFilePaths(args: string | string[]): string[] {
   return arrify(args).flatMap(arg => glob(arg) ?? arg)
+}
+
+/** Sanitises `input` to be a valid JS identifier. */
+export function sanitizeId(input: string): string {
+  const id = input.trim().replace(/\W+/g, '_')
+  return reservedWords.has(id) || /^\d/.test(id) ? `_${id}` : id
 }
 
 export function sha1sum(data: unknown): string {

@@ -104,6 +104,27 @@ describe('compile', function () {
       },
     ))
 
+  it('should compile multiple schemas to output file in ESM', () =>
+    asyncCli(
+      `compile --code-esm -s ${fdir}/schema.json -s ${fdir}/schema_with_ref.json -o ${tmpDir}/validate_schema2.mjs`,
+      async (error, stdout, stderr) => {
+        // @ts-ignore
+        const validators = await import(`../${tmpDir}/validate_schema2.mjs`)
+        fs.unlinkSync(`${tmpDir}/validate_schema2.mjs`)
+
+        assert.equal(error, null)
+        assertValid(stderr, 2)
+        assert.equal(stdout, '')
+
+        const validData = readJson(`${fdir}/valid_data.json`)
+        const invalidData = readJson(`${fdir}/invalid_data.json`)
+        assert.equal(validators.schema(validData), true)
+        assert.equal(validators.schema(invalidData), false)
+        assert.equal(validators.schema_with_ref(validData), true)
+        assert.equal(validators.schema_with_ref(invalidData), false)
+      },
+    ))
+
   it('should compile valid schema with a custom meta-schema to stdout', done => {
     cli(
       `compile -s ${fdir}/meta/schema.json -m ${fdir}/meta/meta_schema.json --strict=false`,
