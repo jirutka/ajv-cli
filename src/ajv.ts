@@ -24,7 +24,7 @@ const AjvClass = {
   draft2020: Ajv2020,
 } satisfies Record<string, AjvCore>
 
-export default async function (
+export async function initAjv(
   opts: CommonOptions,
   mode: 'compile' | 'validate',
 ): Promise<InstanceType<AjvCore>> {

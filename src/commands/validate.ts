@@ -7,7 +7,7 @@ import type { Required } from 'utility-types'
 
 import { mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
-import getAjv from '../ajv.js'
+import { initAjv } from '../ajv.js'
 import { AnyOf, Bool, Enum, InferOptions, OptionsSchema } from '../args-parser.js'
 import { codespan } from '../codespan.js'
 import { type Command, commonOptionsSchema } from './common.js'
@@ -62,7 +62,7 @@ export default {
 } satisfies Command<typeof optionsSchema>
 
 async function validate(opts: Options, dataFiles: string[]): Promise<boolean> {
-  const ajv = await getAjv(opts, 'validate')
+  const ajv = await initAjv(opts, 'validate')
   const validateData = compileSchema(ajv, opts.schema[0])
   return expandFilePaths(dataFiles)
     .map(validateDataFile)

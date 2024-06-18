@@ -3,7 +3,7 @@ import * as fs from 'node:fs'
 import type { AnyValidateFunction } from 'ajv/dist/core.js'
 import standaloneCode from 'ajv/dist/standalone/index.js'
 
-import getAjv from '../ajv.js'
+import { initAjv } from '../ajv.js'
 import { AnyOf, Bool, type InferOptions, type OptionsSchema } from '../args-parser.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
@@ -29,7 +29,7 @@ export default {
 } satisfies Command<typeof optionsSchema>
 
 async function compile(opts: Options, _args: string[]): Promise<boolean> {
-  const ajv = await getAjv(opts, 'compile')
+  const ajv = await initAjv(opts, 'compile')
   const schemaFiles = expandFilePaths(opts.schema)
   if (opts.output != null && schemaFiles.length > 1) {
     return compileMultiExportModule(schemaFiles)
