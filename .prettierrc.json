@@ -1,6 +1,5 @@
 {
   "arrowParens": "avoid",
-  "experimentalTernaries": true,
   "printWidth": 99,
   "semi": false,
   "singleQuote": true

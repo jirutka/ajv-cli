@@ -3,10 +3,7 @@ import * as crypto from 'node:crypto'
 import { glob } from './glob.js'
 
 export function arrify<T>(value: T | readonly T[] | undefined | null): T[] {
-  return (
-    value == null ? []
-    : Array.isArray(value) ? value
-    : [value]) as T[]
+  return (value == null ? [] : Array.isArray(value) ? value : [value]) as T[]
 }
 
 export function deepClone<T>(input: T): T {

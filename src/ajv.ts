@@ -56,9 +56,9 @@ export default async function (
 
   if (invalid > 0) {
     throw new ProgramError(
-      invalid > 1 ?
-        `Found ${invalid} invalid schemas or modules`
-      : 'Found one invalid schema or module',
+      invalid > 1
+        ? `Found ${invalid} invalid schemas or modules`
+        : 'Found one invalid schema or module',
     )
   }
   return ajv

@@ -159,9 +159,8 @@ function formatCodeClimateIssue({
     severity: 'major',
     location: {
       path: loc.filename,
-      positions:
-        loc.start ?
-          {
+      positions: loc.start
+        ? {
             begin: {
               line: loc.start.line,
               column: loc.start.col,
