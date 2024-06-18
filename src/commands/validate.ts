@@ -5,15 +5,16 @@ import type { AnyValidateFunction, ErrorObject } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { Required } from 'utility-types'
 
-import { mergeErrorObjects } from '../ajv-errors-merger.js'
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
 import { initAjv } from '../ajv.js'
 import { AnyOf, Bool, Enum, InferOptions, OptionsSchema } from '../args-parser.js'
 import { codespan } from '../codespan.js'
 import { type Command, commonOptionsSchema } from './common.js'
-import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
-import { expandFilePaths, sha1sum } from '../utils.js'
 import { ProgramError } from '../errors.js'
+import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
+import { getSimpleErrors } from '../vendor/simple-ajv-errors/index.js'
+import type { VerboseErrorObject } from '../vendor/simple-ajv-errors/types.js'
+import { expandFilePaths, sha1sum } from '../utils.js'
 import type { LocationRange, ValidationError } from '../types.js'
 
 const optionsSchema = {
@@ -146,6 +147,25 @@ function formatErrors(
   }
 
   return stringify(errors, format)
+}
+
+function mergeErrorObjects(
+  errors: ErrorObject[],
+  verbose: boolean,
+): Required<ValidationError, 'message'>[] {
+  return getSimpleErrors(errors as VerboseErrorObject[], { dataVar: '$' }).map(err => {
+    const obj: Required<ValidationError, 'message'> = {
+      message: err.message.replace(/^.*? (?=must )/, ''),
+      instancePath: err.instancePath,
+      schemaPath: err.schemaPath,
+    }
+    if (verbose) {
+      obj.data = err.data
+      obj.schema = err.schema
+      obj.parentSchema = err.parentSchema
+    }
+    return obj
+  })
 }
 
 function formatCodeClimateIssue({
