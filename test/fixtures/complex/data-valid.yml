@@ -1,0 +1,7 @@
+example.org:
+  owners: [ flynnkev, bradlala ]
+  A: 1.2.3.4
+
+www.example.org:
+  owners: flynnkev
+  CNAME: example.org

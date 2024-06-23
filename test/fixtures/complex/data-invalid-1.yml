@@ -1,0 +1,9 @@
+encom.com:
+  owners: flynnsam
+  A: 1.2.3.4
+www.encom.com:
+  owners: flynnsam
+  CNAME: [ encom.com ]
+tron.encom.com:
+  owners: [ flynnkev, bradlala ]
+  A: { ttl: "0", rdata: 1.2.3.5 }

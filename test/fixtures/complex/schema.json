@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "complex.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9_-]+(.[a-z0-9_-]+)*.?$": {
+      "$ref": "#/$defs/DomainObject"
+    }
+  },
+  "$defs": {
+    "DomainObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owners": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9_@.+~-]+$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9_@.+~-]+$"
+              }
+            }
+          ]
+        },
+        "tags": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_:.-]+$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_:.-]+$"
+              }
+            }
+          ]
+        },
+        "A": {
+          "$ref": "#/$defs/GenericRRecord"
+        },
+        "CNAME": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DomainName"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["rdata"],
+              "properties": {
+                "rdata": {
+                  "$ref": "#/$defs/DomainName"
+                },
+                "ttl": {
+                  "type": "number"
+                }
+              }
+            }
+          ]
+        },
+        "TXT": {
+          "$ref": "#/$defs/GenericRRecord"
+        }
+      }
+    },
+    "DomainName": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+(.[a-z0-9_-]+)*.?$"
+    },
+    "GenericRRecord": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rdata"],
+          "properties": {
+            "rdata": {
+              "type": "string"
+            },
+            "ttl": {
+              "type": "number"
+            }
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "rdata": {
+                    "type": "string"
+                  },
+                  "ttl": {
+                    "type": "number"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
