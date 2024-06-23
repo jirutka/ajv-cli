@@ -1,8 +1,6 @@
 = Ajv CLI
 :npm-name: @jirutka/ajv-cli
 :gh-name: jirutka/ajv-cli
-:version: 0.0.0
-:releases-uri: https://github.com/{gh-name}/releases/download/v{version}
 
 ifdef::env-github[]
 image:https://github.com/{gh-name}/workflows/CI/badge.svg[Build Status, link=https://github.com/{gh-name}/actions?query=workflow%3A%22CI%22]
