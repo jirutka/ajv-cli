@@ -32,6 +32,213 @@ npm install --global {npm-name}
 Refer to `ajv help validate` and `ajv help compile`.
 
 
+=== Examples
+
+==== Pretty format
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json data-invalid-1.yml
+
+....
+--> data-invalid-1.yml:6:10
+    #/www.encom.com/CNAME
+
+    |   A: 1.2.3.4
+    | www.encom.com:
+    |   owners: flynnsam
+  6 |   CNAME: [ encom.com ]
+    |          ^^^^^^^^^^^^^ must be string or object
+    | tron.encom.com:
+    |   owners: [ flynnkev, bradlala ]
+    |   A: 1.2.3.5
+....
+
+
+==== Line format
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json *--errors=line* data-invalid-1.yml
+
+....
+data-invalid-1.yml:6:10 - must be string or object
+....
+
+
+==== JSON format
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json *--errors=json* data-invalid-1.yml
+
+[source, json]
+----
+[
+  {
+    "message": "must be string or object",
+    "instancePath": "/www.encom.com/CNAME",
+    "schemaPath": "#/$defs/DomainObject/properties/CNAME/anyOf"
+  }
+]
+----
+
+
+==== JSON format with location
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json *--errors=json --errors-location* data-invalid-1.yml
+
+[source, json]
+----
+[
+  {
+    "message": "must be string or object",
+    "instancePath": "/www.encom.com/CNAME",
+    "schemaPath": "#/$defs/DomainObject/properties/CNAME/anyOf",
+    "instanceLocation": {
+      "filename": "data-invalid-1.yml",
+      "start": {
+        "line": 6,
+        "col": 10
+      },
+      "end": {
+        "line": 6,
+        "col": 23
+      }
+    }
+  }
+]
+----
+
+
+==== JSON format verbose
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json *--errors=json --verbose* data-invalid-1.yml
+
+[source, json]
+----
+[
+  {
+    "message": "must be string or object",
+    "instancePath": "/www.encom.com/CNAME",
+    "schemaPath": "#/$defs/DomainObject/properties/CNAME/anyOf",
+    "data": [
+      "encom.com"
+    ],
+    "schema": [
+      {
+        "$ref": "#/$defs/DomainName"
+      },
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rdata"
+        ],
+        "properties": {
+          "rdata": {
+            "$ref": "#/$defs/DomainName"
+          },
+          "ttl": {
+            "type": "number"
+          }
+        }
+      }
+    ],
+    "parentSchema": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DomainName"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rdata"
+          ],
+          "properties": {
+            "rdata": {
+              "$ref": "#/$defs/DomainName"
+            },
+            "ttl": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    }
+  }
+]
+----
+
+
+==== JSON format without merging errors
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json *--errors=json --merge-errors=false* data-invalid-1.yml
+
+[source, json]
+----
+[
+  {
+    "instancePath": "/www.encom.com/CNAME",
+    "schemaPath": "#/$defs/DomainName/type",
+    "keyword": "type",
+    "params": {
+      "type": "string"
+    },
+    "message": "must be string"
+  },
+  {
+    "instancePath": "/www.encom.com/CNAME",
+    "schemaPath": "#/$defs/DomainObject/properties/CNAME/anyOf/1/type",
+    "keyword": "type",
+    "params": {
+      "type": "object"
+    },
+    "message": "must be object"
+  },
+  {
+    "instancePath": "/www.encom.com/CNAME",
+    "schemaPath": "#/$defs/DomainObject/properties/CNAME/anyOf",
+    "keyword": "anyOf",
+    "params": {},
+    "message": "must match a schema in anyOf"
+  }
+]
+----
+
+
+==== Code Climate format
+
+[source, subs="+quotes"]
+$ ajv validate -s schema.json *--errors=code-climate* data-invalid-1.yml
+
+[source, json]
+----
+[
+  {
+    "description": "[schema] #/www.encom.com/CNAME must be string or object",
+    "check_name": "json-schema",
+    "fingerprint": "344ef8205ab8c5dea3b0ebd537519dfb005c5f5c",
+    "severity": "major",
+    "location": {
+      "path": "data-invalid-1.yml",
+      "positions": {
+        "begin": {
+          "line": 6,
+          "column": 10
+        },
+        "end": {
+          "line": 6,
+          "column": 23
+        }
+      }
+    }
+  }
+]
+----
+
+
 == Credits
 
 * This project is a fork of the original https://github.com/ajv-validator/ajv-cli[ajv-cli] written by https://github.com/epoberezkin[Evgeny Poberezkin].
