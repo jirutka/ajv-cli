@@ -11,12 +11,69 @@ endif::env-github[]
 
 Command line interface for https://github.com/ajv-validator/ajv[Ajv], a JSON Schema validator.
 
-This is a fork of the original https://github.com/ajv-validator/ajv-cli[ajv-cli] with many improvements.
+This is a fork of the original https://github.com/ajv-validator/ajv-cli[ajv-cli] 5 with many improvements (see below).
 
 
-== Changes from ajv-cli
+== Changes from ajv-cli 5
 
-TBD
+Notable changes from the original ajv-cli 5.
+
+
+=== New features
+
+* A new human-friendly *error format `pretty`* that combines the source file location and JSON path of the invalid value, followed by a code span (a snippet of the validated file) with an in-place error message (see <<Pretty format>> in Examples).
+
+* A new *error format `line`*: `<filepath>:<line>:<column> - <message>` (see <<Line format>> in Examples).
+
+* Support for the https://github.com/codeclimate/platform/blob/master/spec/analyzers/SPEC.md#data-types[Code Climate Issue] format compatible with the https://docs.gitlab.com/ee/ci/testing/code_quality.html#implement-a-custom-tool[Code Quality report] in GitLab CI (see <<Code Climate format>> in Examples).
+
+* A _validate_ option `*--merge-errors*`, enabled by default, to merge related errors per instance path instead of reporting individual schema errors as returned by Ajv (see <<JSON format without merging errors>> in Examples).
+
+* A _validate_ option `*--errors-location*` to add the source location (filename, line and column number) of each invalid value to validation errors (see <<JSON format with location>> in Examples).
+
+* A _compile_ option `*--code-esm*` to export the validate function(s) as ECMAScript Modules (ESM) instead of CommonJS (see `code.esm` in Ajv options).
+
+* Workaround to *fix incorrect `schemaPath`* in validation errors (see link:src/ajv-schema-path-workaround.ts[] and https://github.com/ajv-validator/ajv/issues/512[ajv-validator/ajv#512]).
+
+
+=== (Breaking) Changes
+
+* *`-d` option* has been replaced with positional arguments (`ajv validate -s <schema> <data-file>...`).
+
+* *`--no-<option>`* no longer works, boolean options can be disabled as `--<option>=false` or `--<option> false`.
+
+* The `validate` command is no longer implicit, it must always be specified (e.g. `ajv validate [options]`, not `ajv [options]`).
+
+* *Limited glob support* – The bloated https://www.npmjs.com/package/glob[Glob] dependency has been replaced by https://www.npmjs.com/package/picomatch[picomatch] and a custom implementation to traverse directories. However, it’s a simplified solution that does not support complex nested globs (e.g. `++alpha/beta/*.{yml,d/**/*.yml}++`).
+
+* The *default error format* has been changed from `js` to `pretty`.
+
+* The `*line*` format has been renamed to `json-oneline`.
+
+* The `*text*` format for errors has been replaced by the `jsonpath` format.
+
+* Only (structured) validation errors (see `--errors`) and changes (see `--changes`) are printed to *stdout*, all other messages are logged to *stderr*.
+
+* *`--strict-schema*` is disabled by default* (i.e. unknown keywords and formats are ignored) to comply with the JSON Schema specification.
+
+* `ajv compile` prints the generated code to stdout instead of nowhere if the *`-o`* option is not specified.
+
+* The default value of `*--inline-refs*` has been changed from `true` to `8` to speed up schema compilation (and validation).
+
+* ajv-cli is now transpiled to *ECMAScript Modules* (ESM) instead of CommonJS.
+
+
+=== Removed features
+
+* The *test* command (use `validate` instead).
+
+* The *migrate* command.
+
+* Support for loading schema and data files via `require` and omitting the `.json` extension in file paths.
+
+* Support for loading custom keywords modules in *TypeScript*.
+
+* Loading schemas and data in the *JSON5* format (CJSON is still supported).
 
 
 == Install
