@@ -63,14 +63,7 @@ export async function initAjv(
   }
   return ajv
 
-  function addSchemas(
-    args: string | string[] | undefined,
-    method: AjvMethod,
-    fileType: string,
-  ): void {
-    if (!args) {
-      return
-    }
+  function addSchemas(args: string[], method: AjvMethod, fileType: string): void {
     for (const file of expandFilePaths(args)) {
       const schema = parseFile(file)
       try {
@@ -86,10 +79,7 @@ export async function initAjv(
     }
   }
 
-  async function customFormatsKeywords(args: string | string[] | undefined): Promise<void> {
-    if (!args) {
-      return
-    }
+  async function customFormatsKeywords(args: string[]): Promise<void> {
     for (let file of expandFilePaths(args)) {
       if (file[0] === '.') {
         file = path.resolve(process.cwd(), file)
