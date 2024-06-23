@@ -230,9 +230,9 @@ ${commonOptions}
       * json-oneline  Single line JSON.
       * jsonpath      One error message per line preceded by JSON Path of the
                       invalid value.
-      * line          One error message per line preceded by the location
-                      (<filepath:<line>:<column>) of the invalid value. This
-                      implicitly enables --errors-location.
+      * line          One error message per line preceded by the location of the
+                      invalid value: '<filepath>:<line>:<column> - <message>'.
+                      This implicitly enables --errors-location.
       * pretty        File location and JSON Path of the invalid value followed
                       by a code span with an in-place error message. This
                       implicitly enables --errors-location.
