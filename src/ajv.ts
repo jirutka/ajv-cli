@@ -47,6 +47,7 @@ export async function initAjv(
   const Ajv: AjvCore = Object.hasOwn(AjvClass, opts.spec) ? AjvClass[opts.spec] : Ajv7
   const ajv = new Ajv(ajvOpts)
   let invalid = 0
+
   if (opts.spec !== 'jtd') {
     ajv.addMetaSchema(await parseFile(draft6metaSchemaPath))
   }
@@ -64,19 +65,21 @@ export async function initAjv(
   return ajv
 
   async function addSchemas(args: string[], method: AjvMethod, fileType: string): Promise<void> {
-    for (const file of expandFilePaths(args)) {
-      const schema = await parseFile(file)
-      try {
-        if (mode === 'validate' && method === 'addSchema') {
-          injectPathToSchemas(schema)
+    await Promise.all(
+      expandFilePaths(args).map(async file => {
+        const schema = await parseFile(file)
+        try {
+          if (mode === 'validate' && method === 'addSchema') {
+            injectPathToSchemas(schema)
+          }
+          ajv[method](schema)
+        } catch (err) {
+          console.error(`${fileType} ${file} is invalid`)
+          console.error(`error: ${(err as Error).message}`)
+          invalid++
         }
-        ajv[method](schema)
-      } catch (err) {
-        console.error(`${fileType} ${file} is invalid`)
-        console.error(`error: ${(err as Error).message}`)
-        invalid++
-      }
-    }
+      }),
+    )
   }
 
   async function customFormatsKeywords(args: string[]): Promise<void> {
