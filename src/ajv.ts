@@ -48,10 +48,10 @@ export async function initAjv(
   const ajv = new Ajv(ajvOpts)
   let invalid = 0
   if (opts.spec !== 'jtd') {
-    ajv.addMetaSchema(parseFile(draft6metaSchemaPath))
+    ajv.addMetaSchema(await parseFile(draft6metaSchemaPath))
   }
-  addSchemas(opts.metaSchema, 'addMetaSchema', 'meta-schema')
-  addSchemas(opts.refSchema, 'addSchema', 'schema')
+  await addSchemas(opts.metaSchema, 'addMetaSchema', 'meta-schema')
+  await addSchemas(opts.refSchema, 'addSchema', 'schema')
   await customFormatsKeywords(opts.keywords)
 
   if (invalid > 0) {
@@ -63,9 +63,9 @@ export async function initAjv(
   }
   return ajv
 
-  function addSchemas(args: string[], method: AjvMethod, fileType: string): void {
+  async function addSchemas(args: string[], method: AjvMethod, fileType: string): Promise<void> {
     for (const file of expandFilePaths(args)) {
-      const schema = parseFile(file)
+      const schema = await parseFile(file)
       try {
         if (mode === 'validate' && method === 'addSchema') {
           injectPathToSchemas(schema)

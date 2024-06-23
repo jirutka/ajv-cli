@@ -36,7 +36,7 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
 
   if (schemaPaths.length > 1) {
     // Generate multi-export module.
-    const validators = schemaPaths.map(filepath => compileSchema(ajv, filepath))
+    const validators = await Promise.all(schemaPaths.map(filepath => compileSchema(ajv, filepath)))
     if (validators.every(v => v)) {
       return saveStandaloneCode(
         ajv,
@@ -47,7 +47,7 @@ async function compile(opts: Options, _args: string[]): Promise<boolean> {
     console.error('module not saved')
   } else {
     // Generate single-export module.
-    const validate = compileSchema(ajv, schemaPaths[0])
+    const validate = await compileSchema(ajv, schemaPaths[0])
     if (validate) {
       return saveStandaloneCode(ajv, validate, opts.output)
     }
@@ -71,8 +71,11 @@ function getRefs(
   )
 }
 
-function compileSchema(ajv: Ajv, schemaPath: string): AnyValidateFunction | undefined {
-  const schema = parseFile(schemaPath)
+async function compileSchema(
+  ajv: Ajv,
+  schemaPath: string,
+): Promise<AnyValidateFunction | undefined> {
+  const schema = await parseFile(schemaPath)
   try {
     const id = schema?.$id
 

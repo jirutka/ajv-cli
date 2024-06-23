@@ -1,4 +1,4 @@
-import * as FS from 'node:fs'
+import * as FS from 'node:fs/promises'
 import * as path from 'node:path'
 
 import { ProgramError } from '../errors.js'
@@ -17,16 +17,20 @@ export interface ParsedFile {
 
 type FileType = 'json' | 'jsonc' | 'yaml'
 
-export function parseFile(filepath: string, fileType?: FileType): any {
-  return parseFileWithMeta(filepath, fileType).data
+export async function parseFile(filepath: string, fileType?: FileType): Promise<any> {
+  const file = await parseFileWithMeta(filepath, fileType)
+  return file.data
 }
 
-export function parseFileWithMeta(filepath: string, fileType?: FileType): ParsedFile {
+export async function parseFileWithMeta(
+  filepath: string,
+  fileType?: FileType,
+): Promise<ParsedFile> {
   const type = fileType || path.extname(filepath).slice(1)
 
   let input: string
   try {
-    input = FS.readFileSync(filepath, 'utf-8')
+    input = await FS.readFile(filepath, 'utf-8')
   } catch (err: any) {
     throw new ProgramError(err.message, { cause: err, exitCode: 66 })
   }

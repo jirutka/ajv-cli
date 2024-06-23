@@ -64,15 +64,20 @@ export default {
 
 async function validate(opts: Options, dataFiles: string[]): Promise<boolean> {
   const ajv = await initAjv(opts, 'validate')
-  const validateFn = compileSchema(ajv, opts.schema[0])
+  const validateFn = await compileSchema(ajv, opts.schema[0])
 
-  return expandFilePaths(dataFiles)
-    .map(filepath => validateFile(validateFn, opts, filepath))
-    .every(x => x)
+  const results = await Promise.all(
+    expandFilePaths(dataFiles).map(filepath => validateFile(validateFn, opts, filepath)),
+  )
+  return results.every(x => x)
 }
 
-function validateFile(validateFn: AnyValidateFunction, opts: Options, filepath: string): boolean {
-  const file = parseFileWithMeta(filepath)
+async function validateFile(
+  validateFn: AnyValidateFunction,
+  opts: Options,
+  filepath: string,
+): Promise<boolean> {
+  const file = await parseFileWithMeta(filepath)
   const { data } = file
 
   const original = opts.changes ? JSON.parse(JSON.stringify(data)) : null
@@ -105,8 +110,8 @@ function validateFile(validateFn: AnyValidateFunction, opts: Options, filepath: 
   return isValid
 }
 
-function compileSchema(ajv: Ajv, schemaFile: string): AnyValidateFunction {
-  const schema = parseFile(schemaFile)
+async function compileSchema(ajv: Ajv, schemaFile: string): Promise<AnyValidateFunction> {
+  const schema = await parseFile(schemaFile)
   try {
     injectPathToSchemas(schema, '#')
     return ajv.compile(schema)
