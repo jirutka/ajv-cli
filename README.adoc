@@ -96,7 +96,7 @@ install -D -m755 ajv.cjs /usr/local/bin/ajv
 
 == Usage
 
-Refer to `ajv help validate` and `ajv help compile`.
+Refer to `ajv validate --help` and `ajv compile --help`.
 
 
 === Examples

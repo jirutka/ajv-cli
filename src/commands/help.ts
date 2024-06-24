@@ -1,5 +1,3 @@
-import { Bool, type OptionsSchema } from '../args-parser.js'
-import type { Command } from './common.js'
 import type { CmdName } from './index.js'
 
 const projectUrl = 'https://github.com/jirutka/ajv-cli/issues'
@@ -175,7 +173,6 @@ const mainHelp = `\
 Usage:
   ajv validate [options] -s <schema-file> [--] <data-file>...
   ajv compile [options] -s <schema-file>
-  ajv help [<command>]
   ajv (--help | --version)
 
 Report issues at <${projectUrl}>.\
@@ -250,38 +247,16 @@ ${commonOptions}
 ${ajvOptions}\
 `
 
-const helps: Record<CmdName, string> = {
-  help: mainHelp,
-  compile: compileHelp,
-  validate: validateHelp,
-}
-
-const optionsSchema = {
-  help: {
-    type: Bool,
-    alias: 'h',
-  },
-} satisfies OptionsSchema
-
-export default {
-  execute: help,
-  options: optionsSchema,
-} satisfies Command<typeof optionsSchema>
-
-// eslint-disable-next-line @typescript-eslint/require-await
-async function help(_: object, args: string[]): Promise<boolean> {
-  const command = args[0]
-  if (!command) {
-    console.log(mainHelp)
-    return true
+export function printHelp(cmdName?: CmdName): true {
+  switch (cmdName) {
+    case 'compile':
+      console.log(compileHelp)
+      return true
+    case 'validate':
+      console.log(validateHelp)
+      return true
+    default:
+      console.log(mainHelp)
+      return true
   }
-
-  if (command in helps) {
-    console.log(helps[command as CmdName])
-    return true
-  }
-
-  console.error('Unknown command', command)
-  console.error(mainHelp)
-  return false
 }

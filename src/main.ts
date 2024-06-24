@@ -1,17 +1,24 @@
 import { exit } from 'node:process'
 
-import { parseArgv } from './args-parser.js'
-import { commands } from './commands/index.js'
+import { Bool, type OptionsSchema, parseArgv } from './args-parser.js'
+import { CmdName, commands, printHelp } from './commands/index.js'
 import { ProgramError, UsageError } from './errors.js'
 
 const pkgName = '@jirutka/ajv-cli'
 const pkgVersion = '6.0.0-beta.3'
 
+const globalOptions = {
+  help: {
+    type: Bool,
+    alias: 'h',
+  },
+} satisfies OptionsSchema
+
 async function main(argv: string[]): Promise<boolean> {
   switch (argv[0]) {
     case '--help':
     case '-h':
-      return await commands.help.execute({}, [])
+      return printHelp()
     case '--version':
     case '-V':
       return printVersion()
@@ -23,19 +30,19 @@ async function main(argv: string[]): Promise<boolean> {
   }
   const command = commands[cmdName as keyof typeof commands]
 
-  const [opts, args] = parseArgv({ ...command.options, ...commands.help.options }, argv)
+  const [opts, args] = parseArgv({ ...command.options, ...globalOptions }, argv)
 
   if (opts.help) {
-    await commands.help.execute({}, [cmdName])
+    printHelp(cmdName as CmdName)
     return true
   }
 
   return await command.execute(opts as any, args)
 }
 
-function printVersion(): never {
+function printVersion(): true {
   console.log(`${pkgName} ${pkgVersion}`)
-  exit(0)
+  return true
 }
 
 main(process.argv.slice(2))
