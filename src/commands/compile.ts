@@ -2,13 +2,16 @@ import * as FS from 'node:fs'
 
 import type { Ajv } from 'ajv'
 import type { AnyValidateFunction } from 'ajv/dist/core.js'
-import standaloneCode from 'ajv/dist/standalone/index.js'
+import _standaloneCode from 'ajv/dist/standalone/index.js'
 
 import { initAjv } from '../ajv.js'
 import { type InferOptions, type OptionsSchema } from '../args-parser.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
 import { expandFilePaths, sanitizeId } from '../utils.js'
+
+// Workaround to make it work both directly and in bundle.
+const standaloneCode = 'default' in _standaloneCode ? _standaloneCode.default : _standaloneCode
 
 const optionsSchema = {
   ...commonOptionsSchema,
@@ -98,7 +101,7 @@ function saveStandaloneCode(
 ): boolean {
   let moduleCode: string
   try {
-    moduleCode = standaloneCode.default(ajv, refsOrFunc)
+    moduleCode = standaloneCode(ajv, refsOrFunc)
   } catch (err) {
     console.error('error preparing module:', err)
     return false

@@ -1,10 +1,12 @@
-import traverse from '@json-schema-tools/traverse'
+// This is a workaround for https://github.com/ajv-validator/ajv/issues/512
+import _traverse from '@json-schema-tools/traverse'
 import type { ErrorObject } from 'ajv'
 import type { JSONSchema7 as JSONSchema } from 'json-schema'
 
 import { deepClone } from './utils.js'
 
-// This is a workaround for https://github.com/ajv-validator/ajv/issues/512
+// Workaround to make it work both directly and in bundle.
+const traverse = 'default' in _traverse ? _traverse.default : _traverse
 
 const SchemaPathSymbol = Symbol('schemaPath')
 
@@ -15,7 +17,7 @@ const SchemaPathSymbol = Symbol('schemaPath')
 export function injectPathToSchemas(jsonSchema: JSONSchema, prefix?: string): void {
   prefix ??= `${jsonSchema.$id || ''}#`
 
-  traverse.default(
+  traverse(
     jsonSchema,
     (schema, _isCycle, path) => {
       if (!('$ref' in schema) && !(SchemaPathSymbol in schema)) {
