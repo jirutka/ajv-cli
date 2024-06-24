@@ -250,10 +250,6 @@ ${commonOptions}
 ${ajvOptions}\
 `
 
-export function usage(): void {
-  console.error(mainHelp)
-}
-
 const helps: Record<CmdName, string> = {
   help: mainHelp,
   compile: compileHelp,
@@ -286,6 +282,6 @@ async function help(_: object, args: string[]): Promise<boolean> {
   }
 
   console.error('Unknown command', command)
-  usage()
+  console.error(mainHelp)
   return false
 }

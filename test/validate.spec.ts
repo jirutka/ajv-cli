@@ -56,12 +56,11 @@ describe('validate', function () {
       )
     })
 
-    it('should print usage if syntax is invalid', done => {
+    it('should fail with message if missing --schema option', done => {
       cli(`validate ${fdir}/valid_data.json`, (error, stdout, stderr) => {
         assert(error instanceof Error)
         assert.equal(stdout, '')
-        assert(stderr.includes('Usage'))
-        assert(stderr.includes('Missing required option'))
+        assert.equal(stderr, 'ajv: Missing required option: --schema\n')
         done()
       })
     })

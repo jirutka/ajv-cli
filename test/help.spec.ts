@@ -35,18 +35,16 @@ describe('help', function () {
     })
   })
 
-  it('should print usage if unknown command is used', done => {
+  it('should fail with message if unknown command is used', done => {
     cli('unknown', (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert.equal(stdout, '')
-      assert(stderr.includes('command'))
-      assert(stderr.includes('Unknown'))
-      assert(stderr.includes('Usage'))
+      assert.equal(stderr, 'ajv: Unknown command: unknown\n')
       done()
     })
   })
 
-  it('should print usage if help command is unknown', done => {
+  it('should fail with usage if help command is unknown', done => {
     cli('help unknown', (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert.equal(stdout, '')
@@ -57,12 +55,11 @@ describe('help', function () {
     })
   })
 
-  it('should print usage if syntax is invalid', done => {
+  it('should fail with message if invalid option is given', done => {
     cli('help --foo test/schema.json', (error, stdout, stderr) => {
       assert(error instanceof Error)
       assert.equal(stdout, '')
-      assert(stderr.includes('Unknown'))
-      assert(stderr.includes('Usage'))
+      assert.equal(stderr, 'ajv: Unknown options: --foo (see --help)\n')
       done()
     })
   })

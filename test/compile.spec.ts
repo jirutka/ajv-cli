@@ -203,12 +203,11 @@ describe('compile', function () {
     )
   })
 
-  it('should fail if too many parameters', done => {
+  it('should fail with message if too many arguments are given', done => {
     cli(`compile file -s ${fdir}/schema.json`, (error, stdout, stderr) => {
       assert(error instanceof Error)
-      assert(stderr.includes('Too many arguments'))
-      assert(stderr.includes('Usage'))
       assert.equal(stdout, '')
+      assert.equal(stderr, 'ajv: Too many arguments\n')
       done()
     })
   })

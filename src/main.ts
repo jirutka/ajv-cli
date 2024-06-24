@@ -2,7 +2,6 @@ import { exit } from 'node:process'
 
 import { parseArgv } from './args-parser.js'
 import { commands } from './commands/index.js'
-import { usage } from './commands/help.js'
 import { ProgramError, UsageError } from './errors.js'
 
 const pkgName = '@jirutka/ajv-cli'
@@ -44,9 +43,6 @@ main(process.argv.slice(2))
   .catch(err => {
     if (err instanceof ProgramError) {
       console.error(`ajv: ${err.message}`)
-      if (err instanceof UsageError) {
-        usage()
-      }
       exit(err.exitCode)
     }
     throw err
