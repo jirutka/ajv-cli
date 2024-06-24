@@ -1,3 +1,4 @@
+import { Bool, type OptionsSchema } from '../args-parser.js'
 import type { Command } from './common.js'
 import type { CmdName } from './index.js'
 
@@ -175,7 +176,7 @@ Usage:
   ajv validate [options] -s <schema-file> [--] <data-file>...
   ajv compile [options] -s <schema-file>
   ajv help [<command>]
-  ajv --version
+  ajv (--help | --version)
 
 Report issues at <${projectUrl}>.\
 `
@@ -183,6 +184,7 @@ Report issues at <${projectUrl}>.\
 const compileHelp = `
 Usage:
   ajv compile [options] -s <schema-file>...
+  ajv compile --help
 
 Compile JSON schema(s) to JavaScript.
 
@@ -202,6 +204,7 @@ ${ajvOptions}\
 const validateHelp = `\
 Usage:
   ajv validate [options] -s <schema-file> [--] <data-file>...
+  ajv validate --help
 
 Validate data file(s) against JSON schema.
 
@@ -257,10 +260,17 @@ const helps: Record<CmdName, string> = {
   validate: validateHelp,
 }
 
+const optionsSchema = {
+  help: {
+    type: Bool,
+    alias: 'h',
+  },
+} satisfies OptionsSchema
+
 export default {
   execute: help,
-  options: {},
-} satisfies Command<any>
+  options: optionsSchema,
+} satisfies Command<typeof optionsSchema>
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function help(_: object, args: string[]): Promise<boolean> {

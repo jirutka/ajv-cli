@@ -10,9 +10,12 @@ const pkgVersion = '6.0.0-beta.3'
 
 async function main(argv: string[]): Promise<boolean> {
   switch (argv[0]) {
+    case '--help':
+    case '-h':
+      return await commands.help.execute({}, [])
     case '--version':
     case '-V':
-      printVersion()
+      return printVersion()
   }
   const cmdName = argv.shift() ?? ''
 
@@ -21,7 +24,12 @@ async function main(argv: string[]): Promise<boolean> {
   }
   const command = commands[cmdName as keyof typeof commands]
 
-  const [opts, args] = parseArgv(command.options, argv)
+  const [opts, args] = parseArgv({ ...command.options, ...commands.help.options }, argv)
+
+  if (opts.help) {
+    await commands.help.execute({}, [cmdName])
+    return true
+  }
 
   return await command.execute(opts as any, args)
 }

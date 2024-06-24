@@ -118,6 +118,11 @@ export function parseArgv<T extends OptionsSchema>(
 
   const { _: args, flags, unknownFlags } = typeFlag(newSchema, argv)
 
+  // Skip all following checks if --help is provided.
+  if (flags.help) {
+    return [flags, args]
+  }
+
   const unknowns = Object.keys(unknownFlags).map(flag =>
     flag.length > 1 ? `--${flag}` : `-${flag}`,
   )
