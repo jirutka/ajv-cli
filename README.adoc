@@ -1,6 +1,8 @@
 = Ajv CLI
 :npm-name: @jirutka/ajv-cli
 :gh-name: jirutka/ajv-cli
+:version: 0.6.0-beta.2
+:releases-uri: https://github.com/{gh-name}/releases/download/v{version}
 
 ifdef::env-github[]
 image:https://github.com/{gh-name}/workflows/CI/badge.svg[Build Status, link=https://github.com/{gh-name}/actions?query=workflow%3A%22CI%22]
@@ -80,6 +82,16 @@ Notable changes from the original ajv-cli 5.
 
 [source, sh, subs="+attributes"]
 npm install --global {npm-name}
+
+
+=== Download from Releases
+
+ajv-cli is also provided as a single JavaScript file with bundled dependencies, requiring only Node.js (version 20 or later) on the system.
+
+[source, sh, subs="+attributes"]
+curl -LO  {releases-uri}/ajv.cjs
+curl -fsSL {releases-uri}/checksums.txt | sha256sum -c --ignore-missing
+install -D -m755 ajv.cjs /usr/local/bin/ajv
 
 
 == Usage
