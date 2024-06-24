@@ -10,12 +10,11 @@ import { injectPathToSchemas } from './ajv-schema-path-workaround.js'
 import { type CommonOptions, ajvOptionNames } from './commands/common.js'
 import { ProgramError } from './errors.js'
 import { parseFile } from './parsers/index.js'
+import jsonSchemaDraft06 from './vendor/json-schema-draft-06.cjs'
 import { expandFilePaths } from './utils.js'
 
 type AjvCore = typeof Ajv7
 type AjvMethod = 'addSchema' | 'addMetaSchema'
-
-const draft6metaSchemaPath = import.meta.resolve('ajv/lib/refs/json-schema-draft-06.json').slice(6) // strip `file://`
 
 const AjvClass = {
   jtd: AjvJTD,
@@ -49,7 +48,7 @@ export async function initAjv(
   let invalid = 0
 
   if (opts.spec !== 'jtd') {
-    ajv.addMetaSchema(await parseFile(draft6metaSchemaPath))
+    ajv.addMetaSchema(jsonSchemaDraft06)
   }
   await addSchemas(opts.metaSchema, 'addMetaSchema', 'meta-schema')
   await addSchemas(opts.refSchema, 'addSchema', 'schema')
