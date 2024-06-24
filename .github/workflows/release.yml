@@ -4,8 +4,41 @@ on:
     tags: v*
 
 jobs:
+  releases:
+    name: Upload to Releases
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: npm clean-install
+
+      - run: npm run bundle
+
+      - name: Generate checksums.txt
+        run: shasum -a 256 * > checksums.txt
+        working-directory: dist
+
+      - name: Upload to Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.cjs
+            dist/*.cjs.map
+            dist/*.mjs
+            dist/*.mjs.map
+            dist/checksums.txt
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   npmjs:
     name: Publish on npmjs
+    # It doesn't depend on releases, but we want to run this after the releases
+    # job succeeded.
+    needs:
+      - releases
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
