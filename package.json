@@ -22,13 +22,13 @@
   ],
   "type": "module",
   "bin": {
-    "ajv": "dist/main.js"
+    "ajv": "lib/main.js"
   },
   "files": [
-    "dist"
+    "lib"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf lib && tsc",
     "format": "prettier --write \"./**/*.{js,json,ts,yaml}\"",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.[jt]s\"",
     "prepublishOnly": "npm run build && asciidoctor -b docbook -a npm-readme -o - README.adoc | pandoc -f docbook -t gfm --shift-heading-level-by 1 --wrap preserve -o README.md",

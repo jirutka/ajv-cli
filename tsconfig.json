@@ -16,7 +16,7 @@
     /* Emit */
     "declaration": true,                                 /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     "sourceMap": true,                                   /* Create source map files for emitted JavaScript files. */
-    "outDir": "./dist",
+    "outDir": "./lib",
     "newLine": "lf",                                     /* Set the newline character for emitting files. */
     "stripInternal": true,                               /* Disable emitting declarations that have '@internal' in their JSDoc comments. */
 

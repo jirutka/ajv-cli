@@ -1,5 +1,6 @@
 coverage
 dist
+lib
 .nyc_output
 src/vendor/**
 tsconfig.json
