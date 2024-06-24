@@ -29,6 +29,7 @@
   ],
   "scripts": {
     "build": "rm -rf lib && tsc",
+    "bundle": "rollup -c",
     "format": "prettier --write \"./**/*.{js,json,ts,yaml}\"",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.[jt]s\"",
     "prepublishOnly": "npm run build && asciidoctor -b docbook -a npm-readme -o - README.adoc | pandoc -f docbook -t gfm --shift-heading-level-by 1 --wrap preserve -o README.md",
@@ -50,6 +51,11 @@
     "yaml": "^2.4.5"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/wasm-node": "^4.17.2",
     "@types/damerau-levenshtein": "^1.0.2",
     "@types/json-schema": "^7.0.15",
     "@types/json5": "^2.2.0",
@@ -64,7 +70,10 @@
     "eslint-config-prettier": "^9.1.0",
     "mocha": "^10.4.0",
     "prettier": "^3.3.0",
+    "rollup-plugin-cleanup": "^3.2.1",
+    "rollup-plugin-license": "^3.4.0",
     "ts-node": "^10.9.0",
+    "tslib": "^2.6.3",
     "typescript": "^5.4.5",
     "utility-types": "^3.11.0"
   },
