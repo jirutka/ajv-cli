@@ -220,6 +220,17 @@ describe('compile', function () {
       done()
     })
   })
+
+  it('should print help message if --help is given', done => {
+    cli('compile --help', (error, stdout, stderr) => {
+      assert.equal(error, null)
+      assert.match(stdout, /^Usage:/)
+      assert.match(stdout, /^Options:/m)
+      assert.match(stdout, /^\s*ajv compile \[options\]/m)
+      assert.equal(stderr, '')
+      done()
+    })
+  })
 })
 
 function assertValid(stdout: string, count: number): void {
