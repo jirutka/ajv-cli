@@ -177,7 +177,7 @@ Usage:
   ajv help [<command>]
   ajv --version
 
-Report issues at <${projectUrl}>.
+Report issues at <${projectUrl}>.\
 `
 
 const compileHelp = `
@@ -196,7 +196,7 @@ Options:
 
 ${commonOptions}
 
-${ajvOptions}
+${ajvOptions}\
 `
 
 const validateHelp = `\
@@ -244,7 +244,7 @@ ${commonOptions}
       * json          Formatted JSON.
       * json-oneline  Single line JSON.
 
-${ajvOptions}
+${ajvOptions}\
 `
 
 export function usage(): void {
