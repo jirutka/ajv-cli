@@ -181,7 +181,7 @@ Usage:
 Report issues at <${projectUrl}>.\
 `
 
-const compileHelp = `
+const compileHelp = `\
 Usage:
   ajv compile [options] -s <schema-file>...
   ajv compile --help
