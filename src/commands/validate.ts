@@ -247,11 +247,18 @@ function withInstanceLocation<T extends ValidationError>(
   errors: T[],
   file: ParsedFile,
 ): Required<T, 'instanceLocation'>[] {
-  return errors.map(err => ({
-    ...err,
-    instanceLocation: {
-      filename: file.filename,
-      ...file.locate(err.instancePath.split('/').slice(1).map(unescapeJsonPointer)),
-    },
-  }))
+  return errors.map(err => {
+    const location = file.locate(err.instancePath.split('/').slice(1).map(unescapeJsonPointer))
+    if (!location) {
+      // This shouldn't happen...
+      console.warn(`Warning: Unable to resolve instance location: ${err.instancePath}`)
+    }
+    return {
+      ...err,
+      instanceLocation: {
+        filename: file.filename,
+        ...location,
+      },
+    }
+  })
 }
