@@ -14,7 +14,7 @@ import { ProgramError } from '../errors.js'
 import { type ParsedFile, parseFile, parseFileWithMeta } from '../parsers/index.js'
 import { getSimpleErrors } from '../vendor/simple-ajv-errors/index.js'
 import type { VerboseErrorObject } from '../vendor/simple-ajv-errors/types.js'
-import { expandFilePaths, sha1sum } from '../utils.js'
+import { expandFilePaths, sha1sum, unescapeJsonPointer } from '../utils.js'
 import type { LocationRange, ValidationError } from '../types.js'
 
 const optionsSchema = {
@@ -251,7 +251,7 @@ function withInstanceLocation<T extends ValidationError>(
     ...err,
     instanceLocation: {
       filename: file.filename,
-      ...file.locate(err.instancePath.split('/').slice(1)),
+      ...file.locate(err.instancePath.split('/').slice(1).map(unescapeJsonPointer)),
     },
   }))
 }

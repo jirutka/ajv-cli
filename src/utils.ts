@@ -36,3 +36,7 @@ export function sanitizeId(input: string): string {
 export function sha1sum(data: unknown): string {
   return crypto.createHash('sha1').update(JSON.stringify(data)).digest('hex')
 }
+
+export function unescapeJsonPointer(pointer: string): string {
+  return pointer.replaceAll('~1', '/').replaceAll('~0', '~')
+}
