@@ -5,7 +5,7 @@ import { CmdName, commands, printHelp } from './commands/index.js'
 import { ProgramError, UsageError } from './errors.js'
 
 const pkgName = '@jirutka/ajv-cli'
-const pkgVersion = '6.0.0-beta.3'
+const pkgVersion = '6.0.0-beta.4'
 
 const globalOptions = {
   help: {
