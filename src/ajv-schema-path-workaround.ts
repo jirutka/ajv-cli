@@ -29,7 +29,7 @@ export function injectPathToSchemas(jsonSchema: JSONSchema, prefix?: string): vo
   )
 
   if (typeof jsonSchema.$defs === 'object') {
-    for (const [key, schema] of Object.entries(jsonSchema.$defs)) {
+    for (const [key, schema] of Object.entries(jsonSchema.$defs ?? jsonSchema.definitions)) {
       injectPathToSchemas(schema as JSONSchema, `${prefix}/$defs/${key}`)
     }
   }
