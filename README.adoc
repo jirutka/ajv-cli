@@ -60,6 +60,8 @@ Notable changes from the original ajv-cli 5.
 
 * The default value of `*--inline-refs*` has been changed from `true` to `8` to speed up schema compilation (and validation).
 
+* If `*--spec*` is not provided, it’s determined by the `$schema` URI in the first passed schema (`-s`). It will only fallback to `draft-07` if it’s not found.
+
 * ajv-cli is now transpiled to *ECMAScript Modules* (ESM) instead of CommonJS.
 
 

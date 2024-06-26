@@ -1,13 +1,13 @@
 import * as path from 'node:path'
 
-import { Ajv as Ajv7, type Options as AjvOptions } from 'ajv'
+import { Ajv as Ajv7, SchemaObject, type Options as AjvOptions } from 'ajv'
 import { Ajv2019 } from 'ajv/dist/2019.js'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { Ajv as AjvJTD } from 'ajv/dist/jtd.js'
 import type { Required } from 'utility-types'
 
 import { injectPathToSchemas } from './ajv-schema-path-workaround.js'
-import { type CommonOptions, ajvOptionNames } from './commands/common.js'
+import { type CommonOptions, ajvOptionNames, schemaSpecs } from './commands/common.js'
 import { ProgramError } from './errors.js'
 import { parseFile } from './parsers/index.js'
 import jsonSchemaDraft06 from './vendor/json-schema-draft-06.cjs'
@@ -15,18 +15,27 @@ import { expandFilePaths } from './utils.js'
 
 type AjvCore = typeof Ajv7
 type AjvMethod = 'addSchema' | 'addMetaSchema'
+type JsonSchemaSpec = (typeof schemaSpecs)[number]
 
-const AjvClass = {
+const ajvClasses: Record<JsonSchemaSpec, AjvCore> = {
   jtd: AjvJTD,
   draft7: Ajv7,
   draft2019: Ajv2019,
   draft2020: Ajv2020,
-} satisfies Record<string, AjvCore>
+}
+
+const specUris: Record<string, JsonSchemaSpec> = {
+  'https://json-schema.org/draft/2020-12/schema': 'draft2020',
+  'https://json-schema.org/draft/2019-09/schema': 'draft2019',
+  'http://json-schema.org/draft-07/schema': 'draft7',
+}
 
 export async function initAjv(
   opts: CommonOptions,
   mode: 'compile' | 'validate',
 ): Promise<InstanceType<AjvCore>> {
+  const spec = opts.spec || 'draft7'
+
   const ajvOpts = extractAjvOptions(opts)
   if (mode === 'validate') {
     // verbose is needed for ajv-schema-path-workaround.
@@ -43,8 +52,9 @@ export async function initAjv(
   // longer schema compilation size and memory requirements.
   ajvOpts.inlineRefs ??= 8
 
-  const Ajv: AjvCore = Object.hasOwn(AjvClass, opts.spec) ? AjvClass[opts.spec] : Ajv7
+  const Ajv = ajvClasses[spec]
   const ajv = new Ajv(ajvOpts)
+
   let invalid = 0
 
   if (opts.spec !== 'jtd') {
@@ -99,6 +109,16 @@ export async function initAjv(
         invalid++
       }
     }
+  }
+}
+
+export function resolveSchemaSpec(
+  schema: SchemaObject,
+): Exclude<JsonSchemaSpec, 'jdt'> | undefined {
+  const schemaId = schema.$schema?.replace(/#.*$/, '')
+
+  if (schemaId && Object.hasOwn(specUris, schemaId)) {
+    return specUris[schemaId]
   }
 }
 

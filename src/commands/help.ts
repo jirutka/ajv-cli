@@ -166,7 +166,8 @@ const commonOptions = `\
 
   --spec <spec>
       JSON schema specification to use: draft7, draft2019, draft2020, or jtd.
-      Default is draft-07.\
+      If not specified, it will be determined by the $schema URI in the first
+      passed --schema. If not found, it will fallback to draft-07.\
 `
 
 const mainHelp = `\

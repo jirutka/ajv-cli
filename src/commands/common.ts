@@ -8,6 +8,8 @@ import {
   Uint,
 } from '../args-parser.js'
 
+export const schemaSpecs = ['jtd', 'draft7', 'draft2019', 'draft2020'] as const
+
 const ajvOptionsSchema = {
   // Ajv strict mode options
   allowMatchingProperties: Bool,
@@ -67,8 +69,7 @@ export const commonOptionsSchema = {
     default: () => [] as string[],
   },
   spec: {
-    type: Enum('draft7', 'draft2019', 'draft2020', 'jtd'),
-    default: 'draft7' as const,
+    type: Enum(...schemaSpecs),
   },
   ...ajvOptionsSchema,
 } satisfies OptionsSchema

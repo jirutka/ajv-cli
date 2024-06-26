@@ -1,12 +1,12 @@
 import { inspect } from 'node:util'
 
-import type { Ajv } from 'ajv'
+import type { Ajv, SchemaObject } from 'ajv'
 import type { AnyValidateFunction, ErrorObject } from 'ajv/dist/core.js'
 import jsonPatch from 'fast-json-patch'
 import type { Required } from 'utility-types'
 
 import { injectPathToSchemas, rewriteSchemaPathInErrors } from '../ajv-schema-path-workaround.js'
-import { initAjv } from '../ajv.js'
+import { initAjv, resolveSchemaSpec } from '../ajv.js'
 import { AnyOf, Bool, Enum, InferOptions, OptionsSchema } from '../args-parser.js'
 import { codespan } from '../codespan.js'
 import { type Command, commonOptionsSchema } from './common.js'
@@ -63,8 +63,13 @@ export default {
 } satisfies Command<typeof optionsSchema>
 
 async function validate(opts: Options, dataFiles: string[]): Promise<boolean> {
-  const ajv = await initAjv(opts, 'validate')
-  const validateFn = await compileSchema(ajv, opts.schema[0])
+  const schemaPath = opts.schema[0]
+  const schema: SchemaObject = await parseFile(schemaPath)
+
+  const spec = opts.spec || resolveSchemaSpec(schema)
+  const ajv = await initAjv({ ...opts, spec }, 'validate')
+
+  const validateFn = compileSchema(ajv, schema, schemaPath)
 
   const results = await Promise.all(
     expandFilePaths(dataFiles).map(filepath => validateFile(validateFn, opts, filepath)),
@@ -110,13 +115,12 @@ async function validateFile(
   return isValid
 }
 
-async function compileSchema(ajv: Ajv, schemaFile: string): Promise<AnyValidateFunction> {
-  const schema = await parseFile(schemaFile)
+function compileSchema(ajv: Ajv, schema: SchemaObject, schemaPath: string): AnyValidateFunction {
   try {
     injectPathToSchemas(schema, '#')
     return ajv.compile(schema)
   } catch (err: any) {
-    throw new ProgramError(`${schemaFile}: ${err.message}`, { cause: err })
+    throw new ProgramError(`${schemaPath}: ${err.message}`, { cause: err })
   }
 }
 

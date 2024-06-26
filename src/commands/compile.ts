@@ -1,10 +1,10 @@
 import * as FS from 'node:fs'
 
 import type { Ajv } from 'ajv'
-import type { AnyValidateFunction } from 'ajv/dist/core.js'
+import type { AnyValidateFunction, SchemaObject } from 'ajv/dist/core.js'
 import _standaloneCode from 'ajv/dist/standalone/index.js'
 
-import { initAjv } from '../ajv.js'
+import { initAjv, resolveSchemaSpec } from '../ajv.js'
 import { type InferOptions, type OptionsSchema } from '../args-parser.js'
 import { type Command, commonOptionsSchema } from './common.js'
 import { parseFile } from '../parsers/index.js'
@@ -33,9 +33,15 @@ export default {
 } satisfies Command<typeof optionsSchema>
 
 async function compile(opts: Options, _args: string[]): Promise<boolean> {
-  const ajv = await initAjv(opts, 'compile')
-
   const schemaPaths = expandFilePaths(opts.schema)
+
+  let { spec } = opts
+  if (!spec) {
+    const schema: SchemaObject = await parseFile(schemaPaths[0])
+    spec = resolveSchemaSpec(schema) || 'draft7'
+  }
+
+  const ajv = await initAjv({ ...opts, spec }, 'compile')
 
   if (schemaPaths.length > 1) {
     // Generate multi-export module.
