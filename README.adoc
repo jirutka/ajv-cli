@@ -1,7 +1,7 @@
 = Ajv CLI
 :npm-name: @jirutka/ajv-cli
 :gh-name: jirutka/ajv-cli
-:version: 6.0.0-beta.4
+:version: 6.0.0-beta.5
 :releases-uri: https://github.com/{gh-name}/releases/download/v{version}
 
 ifdef::env-github[]
