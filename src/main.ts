@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { exit } from 'node:process'
 
 import { Bool, type OptionsSchema, parseArgv } from './args-parser.js'

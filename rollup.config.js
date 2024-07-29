@@ -31,7 +31,16 @@ const executable = () => ({
   // license plugin.
   renderChunk(code, _, opts) {
     const magic = new MagicString(code)
-    magic.prepend('#!/usr/bin/env node\n')
+
+    const match = /^#!.*$/dm.exec(code)
+    if (match) {
+      // If code already contains a shebang, move it to the top.
+      magic.remove(match.index, match.index + match[0].length + 1)
+      magic.prepend(`${match[0]}\n`)
+    } else {
+      magic.prepend('#!/usr/bin/env node\n')
+    }
+
     return {
       code: magic.toString(),
       map: opts.sourcemap !== false ? magic.generateMap() : null,
