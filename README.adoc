@@ -54,7 +54,7 @@ Notable changes from the original ajv-cli 5.
 
 * Only (structured) validation errors (see `--errors`) and changes (see `--changes`) are printed to *stdout*, all other messages are logged to *stderr*.
 
-* *`--strict-schema*` is disabled by default* (i.e. unknown keywords and formats are ignored) to comply with the JSON Schema specification.
+* *`--strict-schema`* is disabled by default* (i.e. unknown keywords and formats are ignored) to comply with the JSON Schema specification.
 
 * `ajv compile` prints the generated code to stdout instead of nowhere if the *`-o`* option is not specified.
 
