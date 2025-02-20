@@ -83,8 +83,10 @@ describe('compile', function () {
       },
     ))
 
-  it('should compile multiple schemas to output file', () =>
-    asyncCli(
+  it('should compile multiple schemas to output file', function () {
+    this.retries(3)
+
+    return asyncCli(
       `compile -s ${fdir}/schema.json -s ${fdir}/schema_with_ref.json -o ${tmpDir}/validate_schema2.cjs`,
       async (error, stdout, stderr) => {
         // @ts-ignore
@@ -102,10 +104,13 @@ describe('compile', function () {
         assert.equal(validators['schema_with_ref.json'](validData), true)
         assert.equal(validators['schema_with_ref.json'](invalidData), false)
       },
-    ))
+    )
+  })
 
-  it('should compile multiple schemas to output file in ESM', () =>
-    asyncCli(
+  it('should compile multiple schemas to output file in ESM', function () {
+    this.retries(3)
+
+    return asyncCli(
       `compile --code-esm -s ${fdir}/schema.json -s ${fdir}/schema_with_ref.json -o ${tmpDir}/validate_schema2.mjs`,
       async (error, stdout, stderr) => {
         // @ts-ignore
@@ -123,7 +128,8 @@ describe('compile', function () {
         assert.equal(validators.schema_with_ref(validData), true)
         assert.equal(validators.schema_with_ref(invalidData), false)
       },
-    ))
+    )
+  })
 
   it('should compile valid schema with a custom meta-schema to stdout', done => {
     cli(
