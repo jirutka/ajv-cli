@@ -53,3 +53,13 @@ jobs:
           name: ajv-cli
           path: dist/*
           if-no-files-found: error
+
+  readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: sudo apt-get install asciidoctor npm pandoc
+
+      - run: npm run readme
+      - run: cat README.md
