@@ -47,8 +47,8 @@ export function parse(input: string, filename: string, mode?: 'json' | 'jsonc'):
       const node = getValueAtPath(jsonAst, jsonPath)
       if (node) {
         return {
-          start: convertLocation(node.loc!.start),
-          end: convertLocation(node.loc!.end),
+          start: convertLocation(node.loc.start),
+          end: convertLocation(node.loc.end),
         }
       }
     },
@@ -64,7 +64,9 @@ function getValueAtPath(
   for (const key of jsonPath) {
     switch (value.type) {
       case 'Object': {
-        const filtered = value.members.filter(member => member.name.value === key)
+        const filtered = value.members.filter(
+          member => 'value' in member.name && member.name.value === key,
+        )
         if (filtered.length !== 1) {
           return undefined
         }
